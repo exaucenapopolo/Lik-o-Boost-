@@ -147,6 +147,7 @@
             justify-content: center;
             padding: 120px 0 60px;
             animation: fadeIn 1s ease-out;
+            width: 100%;
         }
 
         @keyframes fadeIn {
@@ -166,8 +167,9 @@
             animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
             transform-style: preserve-3d;
             perspective: 1000px;
-            /* CENTRAGE HORIZONTAL AJOUTÉ */
-            margin: 0 auto;
+            /* CENTRAGE CORRIGÉ */
+            margin-left: auto;
+            margin-right: auto;
         }
 
         @keyframes slideUp {
@@ -1072,15 +1074,25 @@
                 const user = userCredential.user;
                 
                 // Enregistrer les informations supplémentaires dans Firestore
+                // AJOUT DE TOUS LES CHAMPS NÉCESSAIRES POUR LE TABLEAU DE BORD
                 await db.collection('users').doc(user.uid).set({
                     uid: user.uid,
                     username: username,
                     email: email,
                     country: country,
                     phone: phone,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    
+                    // CHAMPS POUR LE TABLEAU DE BORD
+                    balance: 0,                    // Solde initial
+                    totalOrders: 0,               // Nombre total de commandes
+                    activeOrders: 0,              // Commandes actives
+                    totalSpent: 0,                // Total dépensé
+                    
+                    // Informations système
                     role: 'user',
-                    status: 'active'
+                    status: 'active',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
                 // Envoyer l'email de vérification
@@ -1097,7 +1109,7 @@
                 document.getElementById('registerForm').reset();
                 document.getElementById('countryCode').value = '+';
                 
-                // REDIRECTION MODIFIÉE : Vers le tableau de bord
+                // Redirection vers le tableau de bord après 3 secondes
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 3000);
