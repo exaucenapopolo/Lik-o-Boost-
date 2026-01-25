@@ -448,6 +448,7 @@
         .order-success i { font-size: 4rem; color: var(--success-green); margin-bottom: 20px; }
         .order-success h2 { color: var(--dark-blue); margin-bottom: 15px; }
         .order-success p { color: var(--text-light); margin-bottom: 30px; }
+        .order-success .exo-order-id { font-size: 1.1rem; color: var(--primary-blue); font-weight: 600; margin-bottom: 20px; }
 
         .notification-container {
             position: fixed; top: 80px; right: 20px;
@@ -515,7 +516,7 @@
     <div class="menu-overlay" id="menuOverlay"></div>
     <div class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
-            <a href="#" class="logo">Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost</a>
+            <a href="#" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
             <button class="menu-close" id="menuClose"><i class="fas fa-times"></i></button>
         </div>
         <div class="user-info">
@@ -532,18 +533,18 @@
         <nav class="menu-nav">
             <a href="#" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
             <a href="#" class="menu-item"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
-            <a href="depot.html" class="menu-item"><i class="fas fa-wallet"></i>Dépôt</a>
+            <a href="depot.html" class="menu-item"><i class="fas fa-wallet"></i>Depot</a>
             <a href="#" class="menu-item"><i class="fas fa-history"></i>Historique</a>
             <a href="#" class="menu-item"><i class="fas fa-user"></i>Mon profil</a>
             <a href="#" class="menu-item"><i class="fas fa-headset"></i>Support</a>
-            <a href="#" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Déconnexion</a>
+            <a href="#" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Deconnexion</a>
         </nav>
     </div>
 
     <header class="mobile-header">
         <div class="container">
             <div class="mobile-header-content">
-                <a href="#" class="logo">Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost</a>
+                <a href="#" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
                 <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
             </div>
         </div>
@@ -553,11 +554,11 @@
         <div class="container">
             <section class="welcome-section">
                 <div class="welcome-text">
-                    <h1>Bienvenue <span class="welcome-user" id="welcomeUserName">Utilisateur</span> sur Likéo Boost!</h1>
-                    <p>Boostez votre présence en ligne avec nos services de qualité</p>
+                    <h1>Bienvenue <span class="welcome-user" id="welcomeUserName">Utilisateur</span> sur Likeo Boost!</h1>
+                    <p>Boostez votre presence en ligne avec nos services de qualite</p>
                 </div>
                 <div class="deposit-btn-container">
-                    <a href="depot.html" class="btn btn-yellow"><i class="fas fa-wallet"></i> Déposer</a>
+                    <a href="depot.html" class="btn btn-yellow"><i class="fas fa-wallet"></i> Deposer</a>
                 </div>
             </section>
 
@@ -588,14 +589,14 @@
                         <i class="fas fa-coins"></i>
                     </div>
                     <div class="stat-value" id="totalSpent">0 XAF</div>
-                    <div class="stat-label">Total dépensé</div>
+                    <div class="stat-label">Total depense</div>
                 </div>
             </section>
 
             <section class="service-flow">
                 <div class="flow-header">
                     <h2>Commander un service</h2>
-                    <p>Sélectionnez une plateforme pour commencer</p>
+                    <p>Selectionnez une plateforme pour commencer</p>
                 </div>
 
                 <div class="flow-steps">
@@ -609,11 +610,11 @@
                     </div>
                     <div class="step" data-step="3">
                         <div class="step-icon"><i class="fas fa-gem"></i></div>
-                        <span class="step-label">Qualité</span>
+                        <span class="step-label">Qualite</span>
                     </div>
                     <div class="step" data-step="4">
                         <div class="step-icon"><i class="fas fa-sort-numeric-up"></i></div>
-                        <span class="step-label">Quantité</span>
+                        <span class="step-label">Quantite</span>
                     </div>
                     <div class="step" data-step="5">
                         <div class="step-icon"><i class="fas fa-link"></i></div>
@@ -644,12 +645,12 @@
                 <div id="step3" class="hidden">
                     <div class="quality-container">
                         <div class="quality-header">
-                            <h3>Choisir la qualité</h3>
-                            <p>Prix affichés pour 1000 unités</p>
+                            <h3>Choisir la qualite</h3>
+                            <p>Prix affiches pour 1000 unites</p>
                         </div>
                         <div class="quality-options" id="qualityOptions"></div>
                         <div style="text-align: center; font-size: 1rem; color: var(--text-light); margin-top: 20px;">
-                            * La haute qualité = Livraison plus rapide, meilleure rétention
+                            * La haute qualite = Livraison plus rapide, meilleure retention
                         </div>
                     </div>
                     <div class="flow-navigation">
@@ -661,7 +662,7 @@
                 <div id="step4" class="hidden">
                     <div class="quantity-container">
                         <div class="quantity-header">
-                            <h3>Choisir la quantité</h3>
+                            <h3>Choisir la quantite</h3>
                             <span>Prix/1000: <strong id="unitPrice">0 XAF</strong></span>
                         </div>
                         <div class="quantity-input">
@@ -671,7 +672,7 @@
                             </div>
                             <button class="quantity-btn" id="increaseQty">+</button>
                         </div>
-                        <div class="quantity-unit" id="quantityUnit">unité(s)</div>
+                        <div class="quantity-unit" id="quantityUnit">unite(s)</div>
                         <div style="text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);">
                             Total: <span id="totalPreview">0 XAF</span>
                         </div>
@@ -690,8 +691,8 @@
                         </div>
                         <div class="form-group">
                             <label for="orderRemarks">Remarques (optionnel)</label>
-                            <textarea id="orderRemarks" class="form-control" placeholder="Instructions spéciales..."></textarea>
-                            <small style="color: var(--text-light); font-size: 0.85rem;">Pour les abonnés: veuillez fournir un lien de profil public. Pour les likes/commentaires: lien direct du post.</small>
+                            <textarea id="orderRemarks" class="form-control" placeholder="Instructions speciales..."></textarea>
+                            <small style="color: var(--text-light); font-size: 0.85rem;">Pour les abonnes: veuillez fournir un lien de profil public. Pour les likes/commentaires: lien direct du post.</small>
                         </div>
                     </div>
                     <div class="flow-navigation">
@@ -710,8 +711,9 @@
 
                 <div id="orderSuccess" class="order-success">
                     <i class="fas fa-check-circle"></i>
-                    <h2>Commande confirmée!</h2>
-                    <p>Votre commande a été passée avec succès. Vous recevrez une notification une fois le traitement commencé.</p>
+                    <h2>Commande confirmee!</h2>
+                    <p>Votre commande a ete passee avec succes et envoyee a notre fournisseur.</p>
+                    <p class="exo-order-id" id="exoOrderId"></p>
                     <button class="btn btn-primary" id="newOrderBtn">Nouvelle commande</button>
                 </div>
             </section>
@@ -734,7 +736,7 @@
             app = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
-            console.log("Firebase initialisé");
+            console.log("Firebase initialise");
         } catch (error) {
             console.error("Erreur Firebase:", error);
         }
@@ -744,8 +746,31 @@
         let currentPlatform = null;
         let currentService = null;
         let currentQuality = null;
-        let currentQuantity = 1000; // Commence à 1000 par défaut
+        let currentQuantity = 1000;
         let currentLink = '';
+        let exoServices = [];
+
+        // Mapping des services locaux vers les IDs ExoSupplier (IDs reels de l'API)
+        const serviceMapping = {
+            // Instagram
+            'ig_comments': { standard: 3014, premium: 3015 },
+            'ig_likes': { standard: 2997, premium: 2998 },
+            'ig_views': { standard: 3108, premium: 3109 },
+            'ig_followers': { standard: 3106, premium: 3107 },
+            // YouTube - IDs a verifier selon les services disponibles
+            'yt_views': { standard: 3128, premium: 3129 },
+            'yt_subs': { standard: 3130, premium: 3131 },
+            'yt_likes': { standard: 3132, premium: 3133 },
+            // Facebook
+            'fb_views': { standard: 3125, premium: 3126 },
+            'fb_likes': { standard: 3127, premium: 3127 },
+            'fb_page_followers': { standard: 3123, premium: 3124 },
+            // TikTok
+            'tt_views': { standard: 3047, premium: 3043 },
+            'tt_likes': { standard: 3048, premium: 3049 },
+            'tt_comments': { standard: 3154, premium: 3101 },
+            'tt_followers': { standard: 3036, premium: 3037 }
+        };
 
         const servicesData = [
             {
@@ -756,23 +781,13 @@
                 services: [
                     { 
                         id: 'ig_comments', 
-                        name: 'Commentaires Personnalisés', 
-                        description: 'Commentaires de qualité sur vos posts', 
+                        name: 'Commentaires Personnalises', 
+                        description: 'Commentaires de qualite sur vos posts', 
                         unit: 'commentaires',
-                        referenceUnit: 10, // Prix pour 10 commentaires
+                        referenceUnit: 10,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 81.6, 
-                                description: 'Livraison: 4h'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 163.2, 
-                                description: 'Livraison: 2h'
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 81.6, description: 'Livraison: 4h' },
+                            { id: 'premium', name: 'Haute Qualite', price: 163.2, description: 'Livraison: 2h' }
                         ]
                     },
                     { 
@@ -780,41 +795,32 @@
                         name: 'J\'aime', 
                         description: 'Boostez vos likes sur vos posts', 
                         unit: 'j\'aime',
-                        referenceUnit: 1000, // Prix pour 1000 likes
+                        referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 367.2, 
-                                description: 'Livraison: 1h'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 544, 
-                                description: 'Livraison: 30 min'
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 367.2, description: 'Livraison: 1h' },
+                            { id: 'premium', name: 'Haute Qualite', price: 544, description: 'Livraison: 30 min' }
                         ]
                     },
                     { 
                         id: 'ig_views', 
-                        name: 'Vues Vidéo/Reel', 
-                        description: 'Augmentez vos vues vidéo/Reel', 
+                        name: 'Vues Video/Reel', 
+                        description: 'Augmentez vos vues video/Reel', 
                         unit: 'vues',
-                        referenceUnit: 1000, // Prix pour 1000 vues
+                        referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 5.44, 
-                                description: 'Livraison: 30 min'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 20.4, 
-                                description: 'Livraison: 10 min'
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 5.44, description: 'Livraison: 30 min' },
+                            { id: 'premium', name: 'Haute Qualite', price: 20.4, description: 'Livraison: 10 min' }
+                        ]
+                    },
+                    { 
+                        id: 'ig_followers', 
+                        name: 'Abonnes Instagram', 
+                        description: 'Augmentez vos abonnes', 
+                        unit: 'abonnes',
+                        referenceUnit: 1000,
+                        qualities: [
+                            { id: 'standard', name: 'Qualite Moyenne', price: 500, description: 'Livraison: 24h' },
+                            { id: 'premium', name: 'Haute Qualite', price: 800, description: 'Livraison: 12h' }
                         ]
                     }
                 ]
@@ -828,135 +834,34 @@
                     { 
                         id: 'yt_views', 
                         name: 'Vues YouTube', 
-                        description: 'Augmentez vos vues vidéo', 
+                        description: 'Augmentez vos vues video', 
                         unit: 'vues',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 1360, 
-                                description: 'Livraison: 5h'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 1904, 
-                                description: 'Livraison: 7h'
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 1360, description: 'Livraison: 5h' },
+                            { id: 'premium', name: 'Haute Qualite', price: 1904, description: 'Livraison: 7h' }
                         ]
                     },
                     { 
                         id: 'yt_subs', 
-                        name: 'Abonnés YouTube', 
-                        description: 'Plus d\'abonnés sur votre chaîne', 
-                        unit: 'abonnés',
+                        name: 'Abonnes YouTube', 
+                        description: 'Plus d\'abonnes sur votre chaine', 
+                        unit: 'abonnes',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 31280, 
-                                description: 'Livraison: 24h'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 35360, 
-                                description: 'Livraison: 20h'
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 31280, description: 'Livraison: 24h' },
+                            { id: 'premium', name: 'Haute Qualite', price: 35360, description: 'Livraison: 20h' }
                         ]
                     },
                     { 
                         id: 'yt_likes', 
                         name: 'J\'aime YouTube', 
-                        description: 'Likes sur vos vidéos', 
+                        description: 'Likes sur vos videos', 
                         unit: 'j\'aime',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 367.2, 
-                                description: 'Livraison: 2h'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 1781.6, 
-                                description: 'Livraison: 1h'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'whatsapp_telegram', 
-                name: 'WhatsApp & Telegram', 
-                icon: 'fab fa-whatsapp', 
-                color: '#25D366',
-                services: [
-                    { 
-                        id: 'wa_followers', 
-                        name: 'Abonnés WhatsApp', 
-                        description: 'Abonnés pour votre chaîne', 
-                        unit: 'abonnés',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { 
-                                id: 'international', 
-                                name: 'Internationaux', 
-                                price: 3400, 
-                                description: 'Livraison: 3h'
-                            },
-                            { 
-                                id: 'american', 
-                                name: 'Américains', 
-                                price: 6120, 
-                                description: 'Livraison: 3h'
-                            },
-                            { 
-                                id: 'indian', 
-                                name: 'Indiens', 
-                                price: 6120, 
-                                description: 'Livraison: 3h'
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'wa_reactions', 
-                        name: 'Réactions Emoji WhatsApp', 
-                        description: 'Réactions pour votre chaîne', 
-                        unit: 'réactions',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { 
-                                id: 'all', 
-                                name: 'Toutes Réactions', 
-                                price: 1632, 
-                                description: 'Livraison: 5h'
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'tg_members', 
-                        name: 'Membres Telegram', 
-                        description: 'Membres pour groupe/canal', 
-                        unit: 'membres',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 1904, 
-                                description: 'Livraison: 2h'
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 2720, 
-                                description: 'Livraison: 1h'
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 367.2, description: 'Livraison: 2h' },
+                            { id: 'premium', name: 'Haute Qualite', price: 1781.6, description: 'Livraison: 1h' }
                         ]
                     }
                 ]
@@ -969,80 +874,13 @@
                 services: [
                     { 
                         id: 'fb_views', 
-                        name: 'Vues Vidéo/Reel', 
-                        description: 'Vues pour vos vidéos Facebook', 
+                        name: 'Vues Video/Reel', 
+                        description: 'Vues pour vos videos Facebook', 
                         unit: 'vues',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 122.4, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 204, 
-                                description: ''
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'fb_comments', 
-                        name: 'Commentaires Personnalisés', 
-                        description: 'Commentaires sur vos posts', 
-                        unit: 'commentaires',
-                        referenceUnit: 10,
-                        qualities: [
-                            { 
-                                id: 'male', 
-                                name: 'Masculins (🇺🇸)', 
-                                price: 1237.6, 
-                                description: ''
-                            },
-                            { 
-                                id: 'female', 
-                                name: 'Féminins (🇺🇸)', 
-                                price: 1414.4, 
-                                description: ''
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'fb_reactions', 
-                        name: 'Réactions Emoji', 
-                        description: 'Réactions pour vos publications', 
-                        unit: 'réactions',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { 
-                                id: 'all', 
-                                name: 'Tous Types', 
-                                price: 571.2, 
-                                description: ''
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'fb_profile_followers', 
-                        name: 'Abonnés Profil', 
-                        description: 'Abonnés pour votre profil', 
-                        unit: 'abonnés',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 843.2, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 1360, 
-                                description: ''
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 122.4, description: '' },
+                            { id: 'premium', name: 'Haute Qualite', price: 204, description: '' }
                         ]
                     },
                     { 
@@ -1052,60 +890,19 @@
                         unit: 'j\'aime',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 272, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 544, 
-                                description: ''
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 272, description: '' },
+                            { id: 'premium', name: 'Haute Qualite', price: 544, description: '' }
                         ]
                     },
                     { 
                         id: 'fb_page_followers', 
-                        name: 'Abonnés Page', 
-                        description: 'Abonnés pour votre page', 
-                        unit: 'abonnés',
+                        name: 'Abonnes Page', 
+                        description: 'Abonnes pour votre page', 
+                        unit: 'abonnes',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 843.2, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 1360, 
-                                description: ''
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'fb_group_members', 
-                        name: 'Membres Groupe', 
-                        description: 'Membres pour votre groupe', 
-                        unit: 'membres',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 843.2, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 1360, 
-                                description: ''
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 843.2, description: '' },
+                            { id: 'premium', name: 'Haute Qualite', price: 1360, description: '' }
                         ]
                     }
                 ]
@@ -1119,64 +916,23 @@
                     { 
                         id: 'tt_views', 
                         name: 'Vues TikTok', 
-                        description: 'Vues pour vos vidéos TikTok', 
+                        description: 'Vues pour vos videos TikTok', 
                         unit: 'vues',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 13.6, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 23.12, 
-                                description: ''
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 13.6, description: '' },
+                            { id: 'premium', name: 'Haute Qualite', price: 23.12, description: '' }
                         ]
                     },
                     { 
                         id: 'tt_likes', 
                         name: 'J\'aime TikTok', 
-                        description: 'Likes pour vos vidéos', 
+                        description: 'Likes pour vos videos', 
                         unit: 'j\'aime',
                         referenceUnit: 1000,
                         qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 167.28, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 326.4, 
-                                description: ''
-                            }
-                        ]
-                    },
-                    { 
-                        id: 'tt_comments', 
-                        name: 'Commentaires Personnalisés', 
-                        description: 'Commentaires sur vos vidéos', 
-                        unit: 'commentaires',
-                        referenceUnit: 10,
-                        qualities: [
-                            { 
-                                id: 'standard', 
-                                name: 'Qualité Moyenne', 
-                                price: 20.4, 
-                                description: ''
-                            },
-                            { 
-                                id: 'premium', 
-                                name: 'Haute Qualité', 
-                                price: 40.8, 
-                                description: ''
-                            }
+                            { id: 'standard', name: 'Qualite Moyenne', price: 167.28, description: '' },
+                            { id: 'premium', name: 'Haute Qualite', price: 326.4, description: '' }
                         ]
                     }
                 ]
@@ -1228,15 +984,52 @@
             document.getElementById('loadingOverlay').classList.remove('hidden');
         }
 
+        // Charger les services ExoSupplier
+        async function loadExoServices() {
+            try {
+                const response = await fetch('/api/exo/services');
+                if (response.ok) {
+                    exoServices = await response.json();
+                    console.log('ExoSupplier services loaded:', exoServices.length);
+                }
+            } catch (error) {
+                console.error('Error loading ExoSupplier services:', error);
+            }
+        }
+
+        // Envoyer commande a ExoSupplier
+        async function sendOrderToExoSupplier(serviceId, link, quantity) {
+            try {
+                const response = await fetch('/api/exo/order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        service: serviceId,
+                        link: link,
+                        quantity: quantity
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('ExoSupplier order response:', data);
+                return data;
+            } catch (error) {
+                console.error('Error sending order to ExoSupplier:', error);
+                throw error;
+            }
+        }
+
         async function getOrCreateUserData(user) {
-            console.log("Récupération/création données pour:", user.uid);
+            console.log("Recuperation/creation donnees pour:", user.uid);
             
             try {
                 const userRef = db.collection('users').doc(user.uid);
                 const userDoc = await userRef.get();
                 
                 if (userDoc.exists) {
-                    console.log("Document utilisateur trouvé");
+                    console.log("Document utilisateur trouve");
                     const data = userDoc.data();
                     
                     const updates = {};
@@ -1248,12 +1041,11 @@
                     if (Object.keys(updates).length > 0) {
                         updates.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                         await userRef.update(updates);
-                        console.log("Champs manquants ajoutés:", updates);
                     }
                     
                     return { ...data, ...updates };
                 } else {
-                    console.log("Création du document utilisateur...");
+                    console.log("Creation du document utilisateur...");
                     
                     const storedName = localStorage.getItem('userName');
                     const username = storedName || user.displayName || user.email.split('@')[0];
@@ -1273,13 +1065,10 @@
                     };
                     
                     await userRef.set(newUserData);
-                    console.log("Document créé avec succès");
                     return newUserData;
                 }
             } catch (error) {
                 console.error("Erreur getOrCreateUserData:", error);
-                console.error("Code:", error.code);
-                console.error("Message:", error.message);
                 
                 const fallbackName = localStorage.getItem('userName') || user.email.split('@')[0];
                 return {
@@ -1349,7 +1138,6 @@
                 const item = document.createElement('div');
                 item.className = 'service-item';
                 
-                // Trouver le prix minimum pour afficher
                 let minPrice = service.qualities[0].price;
                 service.qualities.forEach(q => {
                     if (q.price < minPrice) minPrice = q.price;
@@ -1359,7 +1147,7 @@
                     <div class="service-name">${service.name}</div>
                     <div class="service-desc">${service.description}</div>
                     <div style="font-size: 0.9rem; color: var(--primary-blue); margin-top: 5px;">
-                        À partir de ${formatNumber(minPrice)} XAF/${service.referenceUnit === 10 ? '10' : '1K'} ${service.unit}
+                        A partir de ${formatNumber(minPrice)} XAF/${service.referenceUnit === 10 ? '10' : '1K'} ${service.unit}
                     </div>
                 `;
                 
@@ -1392,7 +1180,7 @@
                 option.innerHTML = `
                     <div class="quality-name">${quality.name}</div>
                     <div class="quality-price">${formatNumber(quality.price)} XAF/${unitText}</div>
-                    <div class="quality-desc">${quality.description || 'Sans délai spécifié'}</div>
+                    <div class="quality-desc">${quality.description || 'Sans delai specifie'}</div>
                 `;
                 
                 option.addEventListener('click', () => {
@@ -1429,13 +1217,10 @@
 
         function updateTotal() {
             if (currentQuality && currentService) {
-                // Calcul du prix unitaire
                 let unitPrice;
                 if (currentService.referenceUnit === 10) {
-                    // Pour les commentaires (prix pour 10)
                     unitPrice = currentQuality.price / 10;
                 } else {
-                    // Pour les autres services (prix pour 1000)
                     unitPrice = currentQuality.price / 1000;
                 }
                 
@@ -1463,7 +1248,6 @@
         function generateSummary() {
             if (!currentPlatform || !currentService || !currentQuality) return;
             
-            // Calcul du prix unitaire
             let unitPrice;
             if (currentService.referenceUnit === 10) {
                 unitPrice = currentQuality.price / 10;
@@ -1476,7 +1260,7 @@
             const link = document.getElementById('orderLink').value;
             
             document.getElementById('orderSummary').innerHTML = `
-                <div class="summary-header"><h3>Récapitulatif</h3></div>
+                <div class="summary-header"><h3>Recapitulatif</h3></div>
                 <div class="summary-item">
                     <span class="summary-label">Plateforme:</span>
                     <span class="summary-value">${currentPlatform.name}</span>
@@ -1486,20 +1270,16 @@
                     <span class="summary-value">${currentService.name}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Qualité:</span>
+                    <span class="summary-label">Qualite:</span>
                     <span class="summary-value">${currentQuality.name}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Quantité:</span>
+                    <span class="summary-label">Quantite:</span>
                     <span class="summary-value">${formatNumber(currentQuantity)} ${currentService.unit}</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Prix/${currentService.referenceUnit === 10 ? '10' : '1K'}:</span>
                     <span class="summary-value">${formatNumber(currentQuality.price)} XAF</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">Temps de réalisation:</span>
-                    <span class="summary-value">${currentQuality.description || 'À déterminer'}</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Lien:</span>
@@ -1520,11 +1300,10 @@
 
         async function confirmOrder() {
             if (!currentUser || !userData || !currentPlatform || !currentService || !currentQuality || !currentLink) {
-                showNotification('error', 'Erreur', 'Informations incomplètes');
+                showNotification('error', 'Erreur', 'Informations incompletes');
                 return;
             }
             
-            // Calcul du prix unitaire
             let unitPrice;
             if (currentService.referenceUnit === 10) {
                 unitPrice = currentQuality.price / 10;
@@ -1535,33 +1314,64 @@
             const total = unitPrice * currentQuantity;
             
             if (userData.balance < total) {
-                showNotification('error', 'Solde insuffisant', 'Veuillez effectuer un dépôt');
+                showNotification('error', 'Solde insuffisant', 'Veuillez effectuer un depot pour continuer');
                 return;
             }
             
             try {
                 showLoading();
                 
-                await db.collection('orders').add({
+                // Trouver l'ID du service ExoSupplier
+                const serviceId = serviceMapping[currentService.id]?.[currentQuality.id];
+                let exoOrderId = null;
+                let exoOrderError = null;
+                
+                if (serviceId) {
+                    // Envoyer la commande a ExoSupplier
+                    try {
+                        const exoResult = await sendOrderToExoSupplier(serviceId, currentLink, currentQuantity);
+                        
+                        if (exoResult.order) {
+                            exoOrderId = exoResult.order;
+                            console.log('ExoSupplier order created:', exoOrderId);
+                        } else if (exoResult.error) {
+                            exoOrderError = exoResult.error;
+                            console.error('ExoSupplier error:', exoOrderError);
+                        }
+                    } catch (exoError) {
+                        console.error('Error calling ExoSupplier:', exoError);
+                        exoOrderError = exoError.message;
+                    }
+                } else {
+                    console.warn('No ExoSupplier mapping for service:', currentService.id, currentQuality.id);
+                }
+                
+                // Sauvegarder la commande dans Firestore
+                const orderData = {
                     userId: currentUser.uid,
                     userEmail: currentUser.email,
                     userName: userData.username,
                     platform: currentPlatform.name,
+                    platformId: currentPlatform.id,
                     service: currentService.name,
+                    serviceId: currentService.id,
                     quality: currentQuality.name,
+                    qualityId: currentQuality.id,
                     quantity: currentQuantity,
                     unit: currentService.unit,
                     unitPrice: unitPrice,
-                    pricePerReference: currentQuality.price,
-                    referenceUnit: currentService.referenceUnit,
                     total: total,
-                    deliveryTime: currentQuality.description,
                     link: currentLink,
                     remarks: document.getElementById('orderRemarks').value,
-                    status: 'pending',
+                    exoOrderId: exoOrderId,
+                    exoOrderError: exoOrderError,
+                    status: exoOrderId ? 'processing' : (exoOrderError ? 'error' : 'pending'),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                };
                 
+                await db.collection('orders').add(orderData);
+                
+                // Mettre a jour le solde utilisateur
                 const newBalance = userData.balance - total;
                 await db.collection('users').doc(currentUser.uid).update({
                     balance: newBalance,
@@ -1578,10 +1388,21 @@
                 updateUserInfo();
                 hideLoading();
                 
+                // Afficher succes
                 document.getElementById('step6').classList.add('hidden');
-                document.getElementById('orderSuccess').style.display = 'block';
+                const successDiv = document.getElementById('orderSuccess');
+                successDiv.style.display = 'block';
                 
-                showNotification('success', 'Commande confirmée!', 'Votre commande a été passée');
+                if (exoOrderId) {
+                    document.getElementById('exoOrderId').textContent = `ID Commande: #${exoOrderId}`;
+                    showNotification('success', 'Commande envoyee!', `Votre commande #${exoOrderId} a ete envoyee au fournisseur`);
+                } else if (exoOrderError) {
+                    document.getElementById('exoOrderId').textContent = `Erreur: ${exoOrderError}`;
+                    showNotification('warning', 'Commande en attente', 'La commande sera traitee manuellement');
+                } else {
+                    document.getElementById('exoOrderId').textContent = '';
+                    showNotification('success', 'Commande enregistree!', 'Votre commande a ete passee avec succes');
+                }
                 
             } catch (error) {
                 hideLoading();
@@ -1594,13 +1415,14 @@
             currentPlatform = null;
             currentService = null;
             currentQuality = null;
-            currentQuantity = 1000; // Réinitialiser à 1000
+            currentQuantity = 1000;
             currentLink = '';
             
             document.getElementById('quantityInput').value = '1000';
             document.getElementById('orderLink').value = '';
             document.getElementById('orderRemarks').value = '';
             document.getElementById('orderSuccess').style.display = 'none';
+            document.getElementById('exoOrderId').textContent = '';
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
             document.getElementById('nextToStep4').disabled = true;
@@ -1616,17 +1438,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("Dashboard chargé, vérification auth...");
+            console.log("Dashboard charge, verification auth...");
+            
+            // Charger les services ExoSupplier
+            loadExoServices();
             
             auth.onAuthStateChanged(async user => {
                 if (user) {
-                    console.log("Utilisateur connecté:", user.uid);
+                    console.log("Utilisateur connecte:", user.uid);
                     currentUser = user;
                     
                     try {
                         userData = await getOrCreateUserData(user);
-                        console.log("Données utilisateur:", userData);
-                        
                         updateUserInfo();
                         loadPlatforms();
                         hideLoading();
@@ -1634,7 +1457,7 @@
                         showNotification('success', 'Bienvenue!', `Bon retour ${userData.username || 'utilisateur'}!`);
                         
                     } catch (error) {
-                        console.error("Erreur chargement données:", error);
+                        console.error("Erreur chargement donnees:", error);
                         hideLoading();
                         
                         userData = {
@@ -1648,11 +1471,9 @@
                         
                         updateUserInfo();
                         loadPlatforms();
-                        
-                        showNotification('warning', 'Attention', 'Connexion à la base de données limitée');
                     }
                 } else {
-                    console.log("Non connecté, redirection...");
+                    console.log("Non connecte, redirection...");
                     window.location.href = 'connexion.html';
                 }
             });
@@ -1665,7 +1486,7 @@
             document.getElementById('menuClose').addEventListener('click', closeMobileMenu);
             document.getElementById('menuOverlay').addEventListener('click', closeMobileMenu);
             
-            // Déconnexion
+            // Deconnexion
             document.getElementById('logoutBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
                 try {
@@ -1673,11 +1494,11 @@
                     localStorage.clear();
                     window.location.href = 'connexion.html';
                 } catch (error) {
-                    console.error("Erreur déconnexion:", error);
+                    console.error("Erreur deconnexion:", error);
                 }
             });
             
-            // Navigation steps - CORRIGÉ
+            // Navigation
             document.getElementById('nextToStep2').addEventListener('click', () => {
                 if (currentPlatform) {
                     loadServices(currentPlatform.id);
@@ -1694,70 +1515,50 @@
             document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
             
             document.getElementById('nextToStep4').addEventListener('click', () => {
-                // Pas de vérification de lien ici - on passe directement à l'étape lien
-                showStep(5); // CORRECTION: Étape 4 (quantité) -> Étape 5 (lien)
+                if (currentQuality) showStep(4);
             });
             
             document.getElementById('backToStep3').addEventListener('click', () => showStep(3));
             
-            document.getElementById('nextToStep5').addEventListener('click', () => {
-                currentLink = document.getElementById('orderLink').value.trim();
-                if (!currentLink) {
-                    showNotification('warning', 'Lien requis', 'Veuillez entrer le lien');
-                    return;
-                }
-                showStep(6); // Étape 5 (lien) -> Étape 6 (récapitulatif)
-            });
-            
+            document.getElementById('nextToStep5').addEventListener('click', () => showStep(5));
             document.getElementById('backToStep4').addEventListener('click', () => showStep(4));
             
             document.getElementById('nextToStep6').addEventListener('click', () => {
-                // CORRECTION: On vérifie le lien ici
                 currentLink = document.getElementById('orderLink').value.trim();
                 if (!currentLink) {
                     showNotification('warning', 'Lien requis', 'Veuillez entrer le lien');
                     return;
                 }
                 generateSummary();
-                showStep(6); // CORRECTION: On reste à l'étape 6
+                showStep(6);
             });
             
             document.getElementById('backToStep5').addEventListener('click', () => showStep(5));
             document.getElementById('confirmOrder').addEventListener('click', confirmOrder);
             document.getElementById('newOrderBtn').addEventListener('click', resetOrder);
             
-            // Gestion de la quantité
+            // Quantite
             const quantityInput = document.getElementById('quantityInput');
             
-            quantityInput.addEventListener('input', () => {
-                let value = parseInt(quantityInput.value);
-                if (isNaN(value) || value < 1) {
-                    value = 1;
-                    quantityInput.value = 1;
-                }
-                currentQuantity = value;
-                updateTotal();
-            });
-            
-            quantityInput.addEventListener('blur', () => {
-                if (quantityInput.value === '') {
-                    quantityInput.value = 1000; // Valeur par défaut
-                    currentQuantity = 1000;
-                    updateTotal();
-                }
-            });
-            
             document.getElementById('decreaseQty').addEventListener('click', () => {
-                if (currentQuantity > 1) {
-                    currentQuantity--;
+                const step = currentService?.referenceUnit === 10 ? 10 : 100;
+                if (currentQuantity > step) {
+                    currentQuantity -= step;
                     quantityInput.value = currentQuantity;
                     updateTotal();
                 }
             });
             
             document.getElementById('increaseQty').addEventListener('click', () => {
-                currentQuantity++;
+                const step = currentService?.referenceUnit === 10 ? 10 : 100;
+                currentQuantity += step;
                 quantityInput.value = currentQuantity;
+                updateTotal();
+            });
+            
+            quantityInput.addEventListener('input', function() {
+                const val = parseInt(this.value) || 1;
+                currentQuantity = Math.max(1, val);
                 updateTotal();
             });
         });
