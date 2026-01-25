@@ -1167,9 +1167,9 @@
         </div>
         
         <div class="menu-footer">
-            <button class="btn btn-secondary" id="depositMenuBtn" style="width: 100%; margin-bottom: 15px;">
+            <a href="depot.html" class="btn btn-secondary" style="width: 100%; margin-bottom: 15px; text-decoration: none;">
                 <i class="fas fa-money-bill-wave"></i> Déposer des fonds
-            </button>
+            </a>
             <button class="btn btn-primary" id="logoutBtn" style="width: 100%;">
                 <i class="fas fa-sign-out-alt"></i> Déconnexion
             </button>
@@ -1380,9 +1380,9 @@
 
             <!-- Deposit Section -->
             <section class="deposit-btn-container">
-                <button class="btn btn-primary deposit-btn" id="depositBtn">
+                <a href="depot.html" class="btn btn-primary deposit-btn">
                     <i class="fas fa-money-bill-wave"></i> Déposer des fonds
-                </button>
+                </a>
             </section>
         </div>
     </main>
@@ -1421,44 +1421,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Deposit Modal -->
-    <div class="modal" id="depositModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 20px;">
-        <div class="modal-content" style="background-color: var(--white); border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; animation: fadeIn 0.3s ease;">
-            <div class="modal-header" style="padding: 25px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-size: 1.5rem; color: var(--dark-blue);">Déposer des fonds</h3>
-                <button class="modal-close" id="closeDepositModal" style="background: none; border: none; font-size: 1.5rem; color: var(--text-light); cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" style="padding: 25px;">
-                <form id="depositForm">
-                    <div class="form-group">
-                        <label for="depositAmount">Montant à déposer (XAF)</label>
-                        <input type="number" id="depositAmount" class="form-control" min="1000" step="100" placeholder="Ex: 10000" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="paymentMethod">Méthode de paiement</label>
-                        <select id="paymentMethod" class="form-control" required>
-                            <option value="" disabled selected>Sélectionnez une méthode</option>
-                            <option value="mobile_money">Mobile Money (Orange Money, MTN Mobile Money)</option>
-                            <option value="wave">Wave</option>
-                            <option value="carte_bancaire">Carte Bancaire</option>
-                            <option value="paypal">PayPal</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNumber">Numéro de téléphone (pour Mobile Money/Wave)</label>
-                        <input type="tel" id="phoneNumber" class="form-control" placeholder="+237 6XX XX XX XX">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer" style="padding: 20px 25px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 15px;">
-                <button class="btn btn-secondary" id="cancelDeposit">Annuler</button>
-                <button class="btn btn-primary" id="confirmDeposit">Déposer</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
@@ -1570,6 +1532,46 @@
                                 duration: "1-2 heures"
                             }
                         ]
+                    },
+                    {
+                        id: "fb_likes",
+                        name: "J'aime Publication",
+                        description: "J'aime pour vos publications Facebook",
+                        unit: "1K j'aime",
+                        options: [
+                            {
+                                id: "fb_likes_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(272 * 1.7),
+                                duration: "1-2 heures"
+                            },
+                            {
+                                id: "fb_likes_high",
+                                name: "Haute qualité",
+                                price: Math.round(544 * 1.7),
+                                duration: "30 min - 1 heure"
+                            }
+                        ]
+                    },
+                    {
+                        id: "fb_page_followers",
+                        name: "Abonnés Page",
+                        description: "Abonnés pour votre page Facebook",
+                        unit: "1K abonnés",
+                        options: [
+                            {
+                                id: "fb_page_followers_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(843.2 * 1.7),
+                                duration: "3-5 heures"
+                            },
+                            {
+                                id: "fb_page_followers_high",
+                                name: "Haute qualité",
+                                price: Math.round(1360 * 1.7),
+                                duration: "1-2 heures"
+                            }
+                        ]
                     }
                 ]
             },
@@ -1616,6 +1618,26 @@
                                 name: "Haute qualité",
                                 price: Math.round(326.4 * 1.7),
                                 duration: "30 min - 1 heure"
+                            }
+                        ]
+                    },
+                    {
+                        id: "tiktok_comments",
+                        name: "Commentaires",
+                        description: "Commentaires personnalisés TikTok",
+                        unit: "10 commentaires",
+                        options: [
+                            {
+                                id: "tiktok_comments_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(20.4 * 1.7),
+                                duration: "2-3 heures"
+                            },
+                            {
+                                id: "tiktok_comments_high",
+                                name: "Haute qualité",
+                                price: Math.round(40.8 * 1.7),
+                                duration: "1-2 heures"
                             }
                         ]
                     }
@@ -1666,6 +1688,26 @@
                                 duration: "30 minutes"
                             }
                         ]
+                    },
+                    {
+                        id: "instagram_views",
+                        name: "Vues Vidéo/Reel",
+                        description: "Vues pour vos vidéos Instagram",
+                        unit: "1K vues",
+                        options: [
+                            {
+                                id: "instagram_views_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(5.44 * 1.7),
+                                duration: "30 minutes"
+                            },
+                            {
+                                id: "instagram_views_high",
+                                name: "Haute qualité",
+                                price: Math.round(20.4 * 1.7),
+                                duration: "10 minutes"
+                            }
+                        ]
                     }
                 ]
             },
@@ -1714,6 +1756,26 @@
                                 duration: "20 heures"
                             }
                         ]
+                    },
+                    {
+                        id: "youtube_likes",
+                        name: "J'aime",
+                        description: "J'aime pour vos vidéos YouTube",
+                        unit: "1K j'aime",
+                        options: [
+                            {
+                                id: "youtube_likes_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(367.2 * 1.7),
+                                duration: "2 heures"
+                            },
+                            {
+                                id: "youtube_likes_high",
+                                name: "Haute qualité",
+                                price: Math.round(1781.6 * 1.7),
+                                duration: "1 heure"
+                            }
+                        ]
                     }
                 ]
             },
@@ -1725,7 +1787,7 @@
                 services: [
                     {
                         id: "whatsapp_followers",
-                        name: "Abonnés",
+                        name: "Abonnés Chaîne",
                         description: "Abonnés pour votre chaîne WhatsApp",
                         unit: "1K followers",
                         options: [
@@ -1740,6 +1802,26 @@
                                 name: "Américains",
                                 price: Math.round(6120 * 1.7),
                                 duration: "3 heures"
+                            },
+                            {
+                                id: "whatsapp_followers_in",
+                                name: "Indiens",
+                                price: Math.round(6120 * 1.7),
+                                duration: "3 heures"
+                            }
+                        ]
+                    },
+                    {
+                        id: "whatsapp_reactions",
+                        name: "Réactions",
+                        description: "Réactions pour votre chaîne WhatsApp",
+                        unit: "1K réactions",
+                        options: [
+                            {
+                                id: "whatsapp_reactions_all",
+                                name: "Toutes réactions",
+                                price: Math.round(1632 * 1.7),
+                                duration: "5 heures"
                             }
                         ]
                     }
@@ -1753,7 +1835,7 @@
                 services: [
                     {
                         id: "telegram_members",
-                        name: "Membres",
+                        name: "Membres Groupe/Canal",
                         description: "Membres pour votre groupe/canal Telegram",
                         unit: "1K membres",
                         options: [
@@ -1899,11 +1981,6 @@
                     
                     // Activer le bouton suivant
                     document.getElementById('nextToStep2').disabled = false;
-                    
-                    // Préparer l'étape 2
-                    setTimeout(() => {
-                        loadServices(platform.id);
-                    }, 100);
                 });
                 
                 container.appendChild(platformCard);
@@ -2077,6 +2154,117 @@
             document.getElementById('orderSummary').innerHTML = summaryHTML;
         }
 
+        // Fonction pour vérifier et créer les champs utilisateur manquants
+        async function checkAndCreateUserFields(userId) {
+            try {
+                const userRef = db.collection('users').doc(userId);
+                const userDoc = await userRef.get();
+                
+                if (!userDoc.exists) {
+                    // Créer un nouvel utilisateur avec tous les champs nécessaires
+                    const newUserData = {
+                        username: currentUser.displayName || currentUser.email.split('@')[0],
+                        email: currentUser.email,
+                        balance: 0,
+                        totalOrders: 0,
+                        activeOrders: 0,
+                        totalSpent: 0,
+                        country: '',
+                        phone: '',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await userRef.set(newUserData);
+                    return newUserData;
+                } else {
+                    // Vérifier et ajouter les champs manquants
+                    const userData = userDoc.data();
+                    const updates = {};
+                    
+                    // Liste des champs obligatoires
+                    const requiredFields = {
+                        'balance': 0,
+                        'totalOrders': 0,
+                        'activeOrders': 0,
+                        'totalSpent': 0,
+                        'username': currentUser.displayName || currentUser.email.split('@')[0]
+                    };
+                    
+                    // Vérifier chaque champ
+                    Object.keys(requiredFields).forEach(field => {
+                        if (userData[field] === undefined) {
+                            updates[field] = requiredFields[field];
+                        }
+                    });
+                    
+                    // Ajouter les champs manquants
+                    if (Object.keys(updates).length > 0) {
+                        updates.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await userRef.update(updates);
+                        
+                        // Retourner les données mises à jour
+                        return { ...userData, ...updates };
+                    }
+                    
+                    return userData;
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification des champs utilisateur:', error);
+                throw error;
+            }
+        }
+
+        // Fonction pour charger les statistiques utilisateur
+        async function loadUserStats() {
+            if (!currentUser) return;
+            
+            try {
+                // Récupérer les commandes de l'utilisateur
+                const ordersQuery = await db.collection('orders')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+                
+                const totalOrders = ordersQuery.size;
+                
+                // Calculer les commandes actives
+                const activeOrders = ordersQuery.docs.filter(doc => {
+                    const data = doc.data();
+                    return data.status === 'pending' || data.status === 'processing';
+                }).length;
+                
+                // Calculer le total dépensé
+                let totalSpent = 0;
+                ordersQuery.forEach(doc => {
+                    const data = doc.data();
+                    totalSpent += data.total || 0;
+                });
+                
+                // Mettre à jour l'interface
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('activeOrders').textContent = activeOrders;
+                document.getElementById('totalSpent').textContent = `${formatNumber(totalSpent)} XAF`;
+                
+                // Mettre à jour les données dans Firestore
+                await db.collection('users').doc(currentUser.uid).update({
+                    totalOrders: totalOrders,
+                    activeOrders: activeOrders,
+                    totalSpent: totalSpent,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Mettre à jour les données locales
+                if (userData) {
+                    userData.totalOrders = totalOrders;
+                    userData.activeOrders = activeOrders;
+                    userData.totalSpent = totalSpent;
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+            }
+        }
+
         // Fonction pour confirmer la commande
         async function confirmOrder() {
             if (!currentUser || !userData || !currentPlatform || !currentService || !currentOption) {
@@ -2105,7 +2293,7 @@
                 const orderRef = await db.collection('orders').add({
                     userId: currentUser.uid,
                     userEmail: currentUser.email,
-                    userName: userData.username || currentUser.displayName || currentUser.email.split('@')[0],
+                    userName: userData.username,
                     platform: currentPlatform.name,
                     platformId: currentPlatform.id,
                     service: currentService.name,
@@ -2134,7 +2322,9 @@
                 // Mettre à jour les données locales
                 userData.balance = newBalance;
                 updateUserInfo();
-                loadUserStats();
+                
+                // Recharger les statistiques
+                await loadUserStats();
                 
                 // Enregistrer la transaction
                 await db.collection('transactions').add({
@@ -2161,49 +2351,6 @@
             }
         }
 
-        // Fonction pour déposer des fonds
-        async function depositFunds(amount, paymentMethod, phoneNumber = '') {
-            if (!currentUser || !userData) return;
-            
-            try {
-                const amountNum = parseInt(amount);
-                const newBalance = (userData.balance || 0) + amountNum;
-                
-                // Mettre à jour le solde
-                await db.collection('users').doc(currentUser.uid).update({
-                    balance: newBalance,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Mettre à jour les données locales
-                userData.balance = newBalance;
-                updateUserInfo();
-                loadUserStats();
-                
-                // Enregistrer la transaction
-                await db.collection('transactions').add({
-                    userId: currentUser.uid,
-                    type: 'deposit',
-                    amount: amountNum,
-                    description: 'Dépôt de fonds',
-                    method: paymentMethod,
-                    phone: phoneNumber,
-                    balanceBefore: newBalance - amountNum,
-                    balanceAfter: newBalance,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showNotification('success', 'Dépôt réussi', `${formatNumber(amountNum)} XAF ont été crédités sur votre compte`);
-                
-                // Fermer la modal
-                closeDepositModal();
-                
-            } catch (error) {
-                console.error('Erreur lors du dépôt:', error);
-                showNotification('error', 'Erreur', 'Une erreur est survenue lors du dépôt');
-            }
-        }
-
         // Fonction pour mettre à jour les infos utilisateur
         function updateUserInfo() {
             if (currentUser && userData) {
@@ -2216,52 +2363,14 @@
                 document.getElementById('userName').textContent = userName;
                 document.getElementById('userEmail').textContent = currentUser.email;
                 
-                // Message de bienvenue
-                document.getElementById('welcomeMessage').textContent = `Bienvenue ${userName}!`;
+                // Message de bienvenue avec le nom
+                document.getElementById('welcomeMessage').textContent = `Bienvenue ${userName} sur Likéo Boost!`;
                 
                 // Solde
                 const balance = userData.balance || 0;
                 document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
                 document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
             }
-        }
-
-        // Fonction pour charger les statistiques
-        async function loadUserStats() {
-            if (!currentUser) return;
-            
-            try {
-                const ordersQuery = await db.collection('orders')
-                    .where('userId', '==', currentUser.uid)
-                    .get();
-                
-                const totalOrders = ordersQuery.size;
-                const activeOrders = ordersQuery.docs.filter(doc => 
-                    doc.data().status === 'pending' || doc.data().status === 'processing'
-                ).length;
-                
-                let totalSpent = 0;
-                ordersQuery.forEach(doc => {
-                    totalSpent += doc.data().total || 0;
-                });
-                
-                document.getElementById('totalOrders').textContent = totalOrders;
-                document.getElementById('activeOrders').textContent = activeOrders;
-                document.getElementById('totalSpent').textContent = `${formatNumber(totalSpent)} XAF`;
-                
-            } catch (error) {
-                console.error('Erreur lors du chargement des statistiques:', error);
-            }
-        }
-
-        // Fonctions pour les modals
-        function openDepositModal() {
-            document.getElementById('depositModal').style.display = 'flex';
-        }
-
-        function closeDepositModal() {
-            document.getElementById('depositModal').style.display = 'none';
-            document.getElementById('depositForm').reset();
         }
 
         // Initialisation
@@ -2272,30 +2381,23 @@
                     currentUser = user;
                     
                     try {
-                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        // Vérifier et créer les champs nécessaires
+                        userData = await checkAndCreateUserFields(user.uid);
                         
-                        if (userDoc.exists) {
-                            userData = userDoc.data();
-                        } else {
-                            userData = {
-                                username: user.displayName || user.email.split('@')[0],
-                                email: user.email,
-                                balance: 0,
-                                country: '',
-                                phone: '',
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            };
-                            
-                            await db.collection('users').doc(user.uid).set(userData);
-                        }
-                        
+                        // Mettre à jour l'interface
                         updateUserInfo();
-                        loadUserStats();
+                        
+                        // Charger les statistiques
+                        await loadUserStats();
+                        
+                        // Charger les plateformes
                         loadPlatforms();
                         
+                        showNotification('success', 'Connexion réussie', `Bon retour ${userData.username || 'Utilisateur'}!`);
+                        
                     } catch (error) {
-                        console.error('Erreur:', error);
-                        showNotification('error', 'Erreur', 'Impossible de charger vos données');
+                        console.error('Erreur lors du chargement des données utilisateur:', error);
+                        showNotification('error', 'Erreur', 'Impossible de charger vos données. Veuillez rafraîchir la page.');
                     }
                     
                 } else {
@@ -2318,11 +2420,25 @@
             }
             
             // Navigation entre les étapes
-            document.getElementById('nextToStep2').addEventListener('click', () => showStep(2));
-            document.getElementById('nextToStep3').addEventListener('click', () => showStep(3));
+            document.getElementById('nextToStep2').addEventListener('click', () => {
+                if (currentPlatform) {
+                    // Charger les services pour la plateforme sélectionnée
+                    loadServices(currentPlatform.id);
+                    showStep(2);
+                }
+            });
+            
+            document.getElementById('nextToStep3').addEventListener('click', () => {
+                if (currentPlatform && currentService && currentOption) {
+                    showStep(3);
+                }
+            });
+            
             document.getElementById('nextToStep4').addEventListener('click', () => {
-                generateOrderSummary();
-                showStep(4);
+                if (currentPlatform && currentService && currentOption) {
+                    generateOrderSummary();
+                    showStep(4);
+                }
             });
             
             document.getElementById('backToStep1').addEventListener('click', () => showStep(1));
@@ -2373,38 +2489,13 @@
                 document.getElementById('nextToStep3').disabled = true;
                 document.getElementById('nextToStep4').disabled = true;
                 
+                // Recharger les plateformes
+                loadPlatforms();
+                
                 // Revenir à l'étape 1
                 document.getElementById('step4').style.display = 'block';
                 document.getElementById('orderSuccess').style.display = 'none';
                 showStep(1);
-            });
-            
-            // Gérer les dépôts
-            document.getElementById('depositBtn').addEventListener('click', openDepositModal);
-            document.getElementById('depositMenuBtn').addEventListener('click', function() {
-                closeMobileMenu();
-                setTimeout(openDepositModal, 300);
-            });
-            
-            document.getElementById('closeDepositModal').addEventListener('click', closeDepositModal);
-            document.getElementById('cancelDeposit').addEventListener('click', closeDepositModal);
-            
-            document.getElementById('confirmDeposit').addEventListener('click', function() {
-                const amount = document.getElementById('depositAmount').value;
-                const paymentMethod = document.getElementById('paymentMethod').value;
-                const phoneNumber = document.getElementById('phoneNumber').value;
-                
-                if (!amount || amount < 1000) {
-                    showNotification('error', 'Erreur', 'Le montant minimum est de 1 000 XAF');
-                    return;
-                }
-                
-                if (!paymentMethod) {
-                    showNotification('error', 'Erreur', 'Sélectionnez une méthode de paiement');
-                    return;
-                }
-                
-                depositFunds(amount, paymentMethod, phoneNumber);
             });
             
             // Déconnexion
