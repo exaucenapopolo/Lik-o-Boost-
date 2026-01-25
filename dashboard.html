@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -76,6 +77,17 @@
 
         .btn-success { background-color: var(--success-green); color: var(--white); }
         .btn-success:hover { background-color: #3d8b40; }
+
+        .btn-yellow {
+            background-color: var(--primary-yellow);
+            color: var(--dark-blue);
+            font-weight: 700;
+        }
+        .btn-yellow:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 215, 0, 0.3);
+        }
 
         .mobile-header {
             background-color: var(--white); padding: 15px 0;
@@ -207,6 +219,21 @@
 
         .welcome-text p { opacity: 0.9; position: relative; z-index: 1; }
 
+        .welcome-user {
+            font-family: 'Dancing Script', cursive;
+            color: var(--primary-yellow);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+
+        .deposit-btn-container {
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
         .stats-section {
             display: grid; grid-template-columns: 1fr 1fr;
             gap: 15px; margin-bottom: 25px;
@@ -270,16 +297,16 @@
 
         .platforms-container {
             display: flex; overflow-x: auto;
-            gap: 15px; padding: 10px 0 20px;
+            gap: 10px; padding: 10px 0 20px;
             margin-bottom: 20px; scrollbar-width: none;
         }
         .platforms-container::-webkit-scrollbar { display: none; }
 
         .platform-card {
-            flex: 0 0 auto; width: 120px;
+            flex: 0 0 auto; width: 100px;
             background-color: var(--white);
             border: 2px solid #e0e0e0; border-radius: 15px;
-            padding: 20px 15px; text-align: center;
+            padding: 15px 10px; text-align: center;
             cursor: pointer; transition: var(--transition);
         }
         .platform-card:hover { border-color: var(--primary-blue); transform: translateY(-5px); }
@@ -290,12 +317,12 @@
         }
 
         .platform-icon {
-            width: 60px; height: 60px; border-radius: 50%;
+            width: 50px; height: 50px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 15px; font-size: 1.8rem; color: var(--white);
+            margin: 0 auto 10px; font-size: 1.5rem; color: var(--white);
         }
 
-        .platform-name { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; }
+        .platform-name { font-weight: 600; color: var(--text-dark); font-size: 0.85rem; }
 
         .services-container { max-height: 300px; overflow-y: auto; margin-bottom: 20px; }
 
@@ -310,18 +337,34 @@
         .service-name { font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: var(--text-dark); }
         .service-desc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px; }
 
-        .service-prices { display: flex; gap: 15px; margin-top: 10px; }
-
-        .price-option {
-            flex: 1; padding: 8px 12px; border-radius: 8px;
-            background-color: var(--white); border: 2px solid #e0e0e0;
-            text-align: center; cursor: pointer; transition: var(--transition);
+        .quality-container {
+            background-color: #f9f9f9; border-radius: 12px;
+            padding: 20px; margin-bottom: 20px;
         }
-        .price-option:hover { border-color: var(--primary-blue); }
-        .price-option.selected { border-color: var(--primary-blue); background-color: rgba(42, 94, 232, 0.05); }
 
-        .price-label { font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px; }
-        .price-amount { font-weight: 700; color: var(--primary-blue); font-size: 1rem; }
+        .quality-header { text-align: center; margin-bottom: 20px; }
+        .quality-header h3 { font-size: 1.1rem; color: var(--text-dark); }
+
+        .quality-options {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-bottom: 20px;
+        }
+
+        .quality-option {
+            background-color: var(--white); border: 2px solid #e0e0e0;
+            border-radius: 12px; padding: 15px; text-align: center;
+            cursor: pointer; transition: var(--transition);
+        }
+        .quality-option:hover { border-color: var(--primary-blue); }
+        .quality-option.selected {
+            border-color: var(--primary-blue);
+            background-color: rgba(42, 94, 232, 0.05);
+            box-shadow: 0 8px 15px rgba(42, 94, 232, 0.1);
+        }
+
+        .quality-name { font-weight: 600; font-size: 1rem; margin-bottom: 5px; color: var(--text-dark); }
+        .quality-price { font-size: 0.9rem; color: var(--primary-blue); margin-bottom: 5px; }
+        .quality-desc { font-size: 0.8rem; color: var(--text-light); }
 
         .quantity-container {
             background-color: #f9f9f9; border-radius: 12px;
@@ -343,11 +386,19 @@
         .quantity-btn:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
 
         .quantity-display {
-            width: 100px; height: 50px; border: 2px solid #e0e0e0;
+            width: 120px; height: 50px; border: 2px solid #e0e0e0;
             border-radius: 12px; margin: 0 15px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem; font-weight: 700; color: var(--text-dark);
+            background-color: var(--white);
         }
+        .quantity-display input {
+            width: 100%; height: 100%;
+            border: none; background: transparent;
+            text-align: center; font-size: 1.5rem; font-weight: 700;
+            color: var(--text-dark); font-family: 'Poppins', sans-serif;
+        }
+        .quantity-display input:focus { outline: none; }
 
         .quantity-unit { text-align: center; font-size: 0.9rem; color: var(--text-light); margin-bottom: 20px; }
 
@@ -447,8 +498,9 @@
 
         @media (max-width: 768px) {
             .stats-section { grid-template-columns: 1fr 1fr; }
-            .platform-card { width: 100px; }
+            .platform-card { width: 90px; }
             .notification-container { left: 15px; right: 15px; max-width: none; }
+            .quality-options { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -480,7 +532,7 @@
         <nav class="menu-nav">
             <a href="#" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
             <a href="#" class="menu-item"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
-            <a href="#" class="menu-item"><i class="fas fa-wallet"></i>Dépôt</a>
+            <a href="depot.html" class="menu-item"><i class="fas fa-wallet"></i>Dépôt</a>
             <a href="#" class="menu-item"><i class="fas fa-history"></i>Historique</a>
             <a href="#" class="menu-item"><i class="fas fa-user"></i>Mon profil</a>
             <a href="#" class="menu-item"><i class="fas fa-headset"></i>Support</a>
@@ -501,8 +553,11 @@
         <div class="container">
             <section class="welcome-section">
                 <div class="welcome-text">
-                    <h1 id="welcomeMessage">Bienvenue sur Likéo Boost!</h1>
+                    <h1>Bienvenue <span class="welcome-user" id="welcomeUserName">Utilisateur</span> sur Likéo Boost!</h1>
                     <p>Boostez votre présence en ligne avec nos services de qualité</p>
+                </div>
+                <div class="deposit-btn-container">
+                    <a href="depot.html" class="btn btn-yellow"><i class="fas fa-wallet"></i> Déposer</a>
                 </div>
             </section>
 
@@ -553,14 +608,18 @@
                         <span class="step-label">Service</span>
                     </div>
                     <div class="step" data-step="3">
+                        <div class="step-icon"><i class="fas fa-gem"></i></div>
+                        <span class="step-label">Qualité</span>
+                    </div>
+                    <div class="step" data-step="4">
                         <div class="step-icon"><i class="fas fa-sort-numeric-up"></i></div>
                         <span class="step-label">Quantité</span>
                     </div>
-                    <div class="step" data-step="4">
+                    <div class="step" data-step="5">
                         <div class="step-icon"><i class="fas fa-link"></i></div>
                         <span class="step-label">Lien</span>
                     </div>
-                    <div class="step" data-step="5">
+                    <div class="step" data-step="6">
                         <div class="step-icon"><i class="fas fa-check"></i></div>
                         <span class="step-label">Confirmer</span>
                     </div>
@@ -583,36 +642,38 @@
                 </div>
 
                 <div id="step3" class="hidden">
+                    <div class="quality-container">
+                        <div class="quality-header">
+                            <h3>Choisir la qualité</h3>
+                            <p>Prix affichés pour 1000 unités</p>
+                        </div>
+                        <div class="quality-options" id="qualityOptions"></div>
+                        <div style="text-align: center; font-size: 1rem; color: var(--text-light; margin-top: 20px;">
+                            * La haute qualité = Livraison plus rapide, meilleure rétention
+                        </div>
+                    </div>
+                    <div class="flow-navigation">
+                        <button class="btn btn-secondary" id="backToStep2"><i class="fas fa-arrow-left"></i> Retour</button>
+                        <button class="btn btn-primary" id="nextToStep4" disabled>Suivant <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div id="step4" class="hidden">
                     <div class="quantity-container">
                         <div class="quantity-header">
                             <h3>Choisir la quantité</h3>
-                            <span>Prix: <strong id="unitPrice">0 XAF</strong></span>
+                            <span>Prix/1000: <strong id="unitPrice">0 XAF</strong></span>
                         </div>
                         <div class="quantity-input">
                             <button class="quantity-btn" id="decreaseQty">-</button>
-                            <div class="quantity-display" id="quantityDisplay">1</div>
+                            <div class="quantity-display">
+                                <input type="number" id="quantityInput" min="1" value="1">
+                            </div>
                             <button class="quantity-btn" id="increaseQty">+</button>
                         </div>
                         <div class="quantity-unit" id="quantityUnit">unité(s)</div>
                         <div style="text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);">
                             Total: <span id="totalPreview">0 XAF</span>
-                        </div>
-                    </div>
-                    <div class="flow-navigation">
-                        <button class="btn btn-secondary" id="backToStep2"><i class="fas fa-arrow-left"></i> Retour</button>
-                        <button class="btn btn-primary" id="nextToStep4">Suivant <i class="fas fa-arrow-right"></i></button>
-                    </div>
-                </div>
-
-                <div id="step4" class="hidden">
-                    <div class="order-form">
-                        <div class="form-group">
-                            <label for="orderLink">Lien de votre publication/profil *</label>
-                            <input type="url" id="orderLink" class="form-control" placeholder="https://..." required>
-                        </div>
-                        <div class="form-group">
-                            <label for="orderNotes">Notes (optionnel)</label>
-                            <textarea id="orderNotes" class="form-control" placeholder="Instructions spéciales..."></textarea>
                         </div>
                     </div>
                     <div class="flow-navigation">
@@ -622,9 +683,27 @@
                 </div>
 
                 <div id="step5" class="hidden">
-                    <div class="order-summary" id="orderSummary"></div>
+                    <div class="order-form">
+                        <div class="form-group">
+                            <label for="orderLink">Lien de votre publication/profil *</label>
+                            <input type="url" id="orderLink" class="form-control" placeholder="https://..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderRemarks">Remarques (optionnel)</label>
+                            <textarea id="orderRemarks" class="form-control" placeholder="Instructions spéciales..."></textarea>
+                            <small style="color: var(--text-light); font-size: 0.85rem;">Pour les abonnés: veuillez fournir un lien de profil public. Pour les likes/commentaires: lien direct du post.</small>
+                        </div>
+                    </div>
                     <div class="flow-navigation">
                         <button class="btn btn-secondary" id="backToStep4"><i class="fas fa-arrow-left"></i> Retour</button>
+                        <button class="btn btn-primary" id="nextToStep6">Suivant <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div id="step6" class="hidden">
+                    <div class="order-summary" id="orderSummary"></div>
+                    <div class="flow-navigation">
+                        <button class="btn btn-secondary" id="backToStep5"><i class="fas fa-arrow-left"></i> Retour</button>
                         <button class="btn btn-success" id="confirmOrder"><i class="fas fa-check"></i> Confirmer la commande</button>
                     </div>
                 </div>
@@ -664,7 +743,7 @@
         let userData = null;
         let currentPlatform = null;
         let currentService = null;
-        let currentOption = null;
+        let currentQuality = null;
         let currentQuantity = 1;
         let currentLink = '';
 
@@ -672,58 +751,128 @@
             {
                 id: 'instagram', name: 'Instagram', icon: 'fab fa-instagram', color: '#E1306C',
                 services: [
-                    { id: 'ig_followers', name: 'Abonnés Instagram', description: 'Augmentez vos abonnés', unit: 'abonnés',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 500, duration: '24-48h' },
-                        { id: 'premium', name: 'Premium', price: 800, duration: '12-24h' }
-                      ]
+                    { 
+                        id: 'ig_followers', 
+                        name: 'Abonnés Instagram', 
+                        description: 'Augmentez vos abonnés avec des comptes réels', 
+                        unit: 'abonnés',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 5000, description: 'Livraison 24-48h, rétention moyenne' },
+                            { id: 'premium', name: 'Haute Qualité', price: 8000, description: 'Livraison 12-24h, excellente rétention' }
+                        ]
                     },
-                    { id: 'ig_likes', name: 'Likes Instagram', description: 'Boostez vos likes', unit: 'likes',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 300, duration: '1-6h' },
-                        { id: 'premium', name: 'Premium', price: 500, duration: '0-1h' }
-                      ]
+                    { 
+                        id: 'ig_likes', 
+                        name: 'Likes Instagram', 
+                        description: 'Boostez vos likes sur vos posts', 
+                        unit: 'likes',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 3000, description: 'Livraison 1-6h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 5000, description: 'Livraison 0-1h, likes réels' }
+                        ]
+                    },
+                    { 
+                        id: 'ig_comments', 
+                        name: 'Commentaires Instagram', 
+                        description: 'Commentaires pertinents sur vos posts', 
+                        unit: 'commentaires',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 4000, description: 'Livraison 6-12h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 7000, description: 'Livraison 1-3h, commentaires personnalisés' }
+                        ]
                     }
                 ]
             },
             {
                 id: 'tiktok', name: 'TikTok', icon: 'fab fa-tiktok', color: '#000000',
                 services: [
-                    { id: 'tt_followers', name: 'Abonnés TikTok', description: 'Gagnez des abonnés', unit: 'abonnés',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 600, duration: '24-48h' },
-                        { id: 'premium', name: 'Premium', price: 900, duration: '12-24h' }
-                      ]
+                    { 
+                        id: 'tt_followers', 
+                        name: 'Abonnés TikTok', 
+                        description: 'Gagnez des abonnés actifs', 
+                        unit: 'abonnés',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 6000, description: 'Livraison 24-48h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 9000, description: 'Livraison 12-24h, comptes vérifiés' }
+                        ]
                     },
-                    { id: 'tt_likes', name: 'Likes TikTok', description: 'Plus de likes', unit: 'likes',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 400, duration: '1-12h' }
-                      ]
+                    { 
+                        id: 'tt_likes', 
+                        name: 'Likes TikTok', 
+                        description: 'Plus de likes sur vos vidéos', 
+                        unit: 'likes',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 4000, description: 'Livraison 1-12h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 6500, description: 'Livraison 0-3h' }
+                        ]
+                    },
+                    { 
+                        id: 'tt_views', 
+                        name: 'Vues TikTok', 
+                        description: 'Augmentez le nombre de vues', 
+                        unit: 'vues',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 2000, description: 'Livraison 1-6h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 3500, description: 'Livraison 0-1h' }
+                        ]
                     }
                 ]
             },
             {
                 id: 'facebook', name: 'Facebook', icon: 'fab fa-facebook-f', color: '#1877F2',
                 services: [
-                    { id: 'fb_likes', name: 'Likes Page', description: 'Likes pour votre page', unit: 'likes',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 500, duration: '24-72h' }
-                      ]
+                    { 
+                        id: 'fb_likes', 
+                        name: 'Likes Page Facebook', 
+                        description: 'Likes pour votre page Facebook', 
+                        unit: 'likes',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 5000, description: 'Livraison 24-72h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 7500, description: 'Livraison 12-24h' }
+                        ]
+                    },
+                    { 
+                        id: 'fb_followers', 
+                        name: 'Abonnés Page Facebook', 
+                        description: 'Abonnés pour votre page', 
+                        unit: 'abonnés',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 5500, description: 'Livraison 48-72h' }
+                        ]
                     }
                 ]
             },
             {
                 id: 'youtube', name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000',
                 services: [
-                    { id: 'yt_subs', name: 'Abonnés YouTube', description: 'Plus d\'abonnés', unit: 'abonnés',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 1000, duration: '48-72h' }
-                      ]
+                    { 
+                        id: 'yt_subs', 
+                        name: 'Abonnés YouTube', 
+                        description: 'Plus d\'abonnés sur votre chaîne', 
+                        unit: 'abonnés',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 10000, description: 'Livraison 48-72h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 15000, description: 'Livraison 24-48h' }
+                        ]
                     },
-                    { id: 'yt_views', name: 'Vues YouTube', description: 'Augmentez vos vues', unit: 'vues',
-                      options: [
-                        { id: 'standard', name: 'Standard', price: 200, duration: '24-48h' }
-                      ]
+                    { 
+                        id: 'yt_views', 
+                        name: 'Vues YouTube', 
+                        description: 'Augmentez vos vues', 
+                        unit: 'vues',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 2000, description: 'Livraison 24-48h' },
+                            { id: 'premium', name: 'Haute Qualité', price: 3500, description: 'Livraison 12-24h' }
+                        ]
+                    },
+                    { 
+                        id: 'yt_likes', 
+                        name: 'Likes YouTube', 
+                        description: 'Likes sur vos vidéos', 
+                        unit: 'likes',
+                        qualities: [
+                            { id: 'standard', name: 'Qualité Standard', price: 3000, description: 'Livraison 24-48h' }
+                        ]
                     }
                 ]
             }
@@ -771,7 +920,6 @@
             document.getElementById('loadingOverlay').classList.remove('hidden');
         }
 
-        // FONCTION CORRIGÉE - Création/récupération des données utilisateur
         async function getOrCreateUserData(user) {
             console.log("Récupération/création données pour:", user.uid);
             
@@ -783,7 +931,6 @@
                     console.log("Document utilisateur trouvé");
                     const data = userDoc.data();
                     
-                    // S'assurer que tous les champs existent
                     const updates = {};
                     if (data.balance === undefined) updates.balance = 0;
                     if (data.totalOrders === undefined) updates.totalOrders = 0;
@@ -800,7 +947,6 @@
                 } else {
                     console.log("Création du document utilisateur...");
                     
-                    // Récupérer le nom depuis localStorage ou email
                     const storedName = localStorage.getItem('userName');
                     const username = storedName || user.displayName || user.email.split('@')[0];
                     
@@ -827,7 +973,6 @@
                 console.error("Code:", error.code);
                 console.error("Message:", error.message);
                 
-                // Retourner des données par défaut en cas d'erreur
                 const fallbackName = localStorage.getItem('userName') || user.email.split('@')[0];
                 return {
                     uid: user.uid,
@@ -850,7 +995,7 @@
             document.getElementById('userAvatar').textContent = initial;
             document.getElementById('userName').textContent = userName;
             document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('welcomeMessage').textContent = `Bienvenue ${userName} sur Likéo Boost!`;
+            document.getElementById('welcomeUserName').textContent = userName;
             
             const balance = userData.balance || 0;
             document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
@@ -896,75 +1041,85 @@
                 const item = document.createElement('div');
                 item.className = 'service-item';
                 
-                let pricesHTML = service.options.map((opt, i) => `
-                    <div class="price-option ${i === 0 ? 'selected' : ''}" 
-                         data-price="${opt.price}" data-duration="${opt.duration}" data-name="${opt.name}">
-                        <div class="price-label">${opt.name}</div>
-                        <div class="price-amount">${formatNumber(opt.price)} XAF</div>
-                    </div>
-                `).join('');
-                
                 item.innerHTML = `
                     <div class="service-name">${service.name}</div>
                     <div class="service-desc">${service.description}</div>
-                    <div class="service-prices">${pricesHTML}</div>
+                    <div style="font-size: 0.9rem; color: var(--primary-blue); margin-top: 5px;">
+                        Prix à partir de ${formatNumber(service.qualities[0].price)} XAF/1000
+                    </div>
                 `;
                 
-                item.addEventListener('click', (e) => {
-                    if (e.target.closest('.price-option')) return;
-                    
+                item.addEventListener('click', () => {
                     document.querySelectorAll('.service-item').forEach(s => s.classList.remove('selected'));
                     item.classList.add('selected');
                     currentService = service;
-                    
-                    const firstOption = item.querySelector('.price-option');
-                    if (firstOption) selectPriceOption(firstOption, service);
-                    
                     document.getElementById('nextToStep3').disabled = false;
-                });
-                
-                item.querySelectorAll('.price-option').forEach(opt => {
-                    opt.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        item.querySelectorAll('.price-option').forEach(o => o.classList.remove('selected'));
-                        opt.classList.add('selected');
-                        
-                        if (!item.classList.contains('selected')) {
-                            item.classList.add('selected');
-                            currentService = service;
-                            document.getElementById('nextToStep3').disabled = false;
-                        }
-                        
-                        selectPriceOption(opt, service);
-                    });
+                    
+                    loadQualities(service.qualities);
                 });
                 
                 container.appendChild(item);
             });
         }
 
-        function selectPriceOption(optEl, service) {
-            currentOption = {
-                name: optEl.dataset.name,
-                price: parseInt(optEl.dataset.price),
-                duration: optEl.dataset.duration,
-                unit: service.unit
-            };
+        function loadQualities(qualities) {
+            const container = document.getElementById('qualityOptions');
+            container.innerHTML = '';
             
-            document.getElementById('unitPrice').textContent = `${formatNumber(currentOption.price)} XAF`;
-            document.getElementById('quantityUnit').textContent = service.unit;
-            updateTotal();
+            qualities.forEach(quality => {
+                const option = document.createElement('div');
+                option.className = 'quality-option';
+                option.dataset.id = quality.id;
+                option.dataset.price = quality.price;
+                
+                option.innerHTML = `
+                    <div class="quality-name">${quality.name}</div>
+                    <div class="quality-price">${formatNumber(quality.price)} XAF/1000</div>
+                    <div class="quality-desc">${quality.description}</div>
+                `;
+                
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.quality-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    currentQuality = {
+                        id: quality.id,
+                        name: quality.name,
+                        price: quality.price,
+                        description: quality.description
+                    };
+                    
+                    document.getElementById('nextToStep4').disabled = false;
+                    updatePriceDisplay();
+                });
+                
+                container.appendChild(option);
+            });
+            
+            if (qualities.length > 0) {
+                container.querySelector('.quality-option').click();
+            }
+        }
+
+        function updatePriceDisplay() {
+            if (currentQuality && currentService) {
+                document.getElementById('unitPrice').textContent = `${formatNumber(currentQuality.price)} XAF`;
+                document.getElementById('quantityUnit').textContent = currentService.unit;
+                updateTotal();
+            }
         }
 
         function updateTotal() {
-            if (currentOption) {
-                const total = currentOption.price * currentQuantity;
-                document.getElementById('totalPreview').textContent = `${formatNumber(total)} XAF`;
+            if (currentQuality && currentService) {
+                // Prix pour 1000 unités, donc on divise par 1000 pour avoir le prix unitaire
+                const unitPrice = currentQuality.price / 1000;
+                const total = unitPrice * currentQuantity;
+                document.getElementById('totalPreview').textContent = `${formatNumber(Math.round(total))} XAF`;
             }
         }
 
         function showStep(stepNum) {
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const stepEl = document.getElementById(`step${i}`);
                 if (stepEl) stepEl.classList.add('hidden');
             }
@@ -980,9 +1135,11 @@
         }
 
         function generateSummary() {
-            if (!currentPlatform || !currentService || !currentOption) return;
+            if (!currentPlatform || !currentService || !currentQuality) return;
             
-            const total = currentOption.price * currentQuantity;
+            const unitPrice = currentQuality.price / 1000;
+            const total = unitPrice * currentQuantity;
+            const remarks = document.getElementById('orderRemarks').value;
             
             document.getElementById('orderSummary').innerHTML = `
                 <div class="summary-header"><h3>Récapitulatif</h3></div>
@@ -996,36 +1153,44 @@
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Qualité:</span>
-                    <span class="summary-value">${currentOption.name}</span>
+                    <span class="summary-value">${currentQuality.name}</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Quantité:</span>
                     <span class="summary-value">${currentQuantity} ${currentService.unit}</span>
                 </div>
                 <div class="summary-item">
+                    <span class="summary-label">Prix/1000:</span>
+                    <span class="summary-value">${formatNumber(currentQuality.price)} XAF</span>
+                </div>
+                <div class="summary-item">
                     <span class="summary-label">Lien:</span>
                     <span class="summary-value" style="word-break:break-all;font-size:0.85rem;">${currentLink}</span>
                 </div>
+                ${remarks ? `
                 <div class="summary-item">
-                    <span class="summary-label">Durée:</span>
-                    <span class="summary-value">${currentOption.duration}</span>
+                    <span class="summary-label">Remarques:</span>
+                    <span class="summary-value" style="font-size:0.85rem;">${remarks}</span>
                 </div>
+                ` : ''}
                 <div class="summary-item">
                     <span class="summary-label">Total:</span>
-                    <span class="summary-value summary-total">${formatNumber(total)} XAF</span>
+                    <span class="summary-value summary-total">${formatNumber(Math.round(total))} XAF</span>
                 </div>
             `;
         }
 
         async function confirmOrder() {
-            if (!currentUser || !userData || !currentPlatform || !currentService || !currentOption || !currentLink) {
+            if (!currentUser || !userData || !currentPlatform || !currentService || !currentQuality || !currentLink) {
                 showNotification('error', 'Erreur', 'Informations incomplètes');
                 return;
             }
             
-            const total = currentOption.price * currentQuantity;
+            const unitPrice = currentQuality.price / 1000;
+            const total = unitPrice * currentQuantity;
+            const roundedTotal = Math.round(total);
             
-            if (userData.balance < total) {
+            if (userData.balance < roundedTotal) {
                 showNotification('error', 'Solde insuffisant', 'Veuillez effectuer un dépôt');
                 return;
             }
@@ -1039,35 +1204,36 @@
                     userName: userData.username,
                     platform: currentPlatform.name,
                     service: currentService.name,
-                    option: currentOption.name,
+                    quality: currentQuality.name,
                     quantity: currentQuantity,
                     unit: currentService.unit,
-                    unitPrice: currentOption.price,
-                    total: total,
-                    duration: currentOption.duration,
+                    unitPrice: unitPrice,
+                    pricePer1000: currentQuality.price,
+                    total: roundedTotal,
+                    description: currentQuality.description,
                     link: currentLink,
-                    notes: document.getElementById('orderNotes').value,
+                    remarks: document.getElementById('orderRemarks').value,
                     status: 'pending',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                const newBalance = userData.balance - total;
+                const newBalance = userData.balance - roundedTotal;
                 await db.collection('users').doc(currentUser.uid).update({
                     balance: newBalance,
                     totalOrders: firebase.firestore.FieldValue.increment(1),
                     activeOrders: firebase.firestore.FieldValue.increment(1),
-                    totalSpent: firebase.firestore.FieldValue.increment(total)
+                    totalSpent: firebase.firestore.FieldValue.increment(roundedTotal)
                 });
                 
                 userData.balance = newBalance;
                 userData.totalOrders = (userData.totalOrders || 0) + 1;
                 userData.activeOrders = (userData.activeOrders || 0) + 1;
-                userData.totalSpent = (userData.totalSpent || 0) + total;
+                userData.totalSpent = (userData.totalSpent || 0) + roundedTotal;
                 
                 updateUserInfo();
                 hideLoading();
                 
-                document.getElementById('step5').classList.add('hidden');
+                document.getElementById('step6').classList.add('hidden');
                 document.getElementById('orderSuccess').style.display = 'block';
                 
                 showNotification('success', 'Commande confirmée!', 'Votre commande a été passée');
@@ -1082,18 +1248,19 @@
         function resetOrder() {
             currentPlatform = null;
             currentService = null;
-            currentOption = null;
+            currentQuality = null;
             currentQuantity = 1;
             currentLink = '';
             
-            document.getElementById('quantityDisplay').textContent = '1';
+            document.getElementById('quantityInput').value = '1';
             document.getElementById('orderLink').value = '';
-            document.getElementById('orderNotes').value = '';
+            document.getElementById('orderRemarks').value = '';
             document.getElementById('orderSuccess').style.display = 'none';
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
+            document.getElementById('nextToStep4').disabled = true;
             
-            document.querySelectorAll('.platform-card, .service-item').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.platform-card, .service-item, .quality-option').forEach(el => el.classList.remove('selected'));
             
             showStep(1);
         }
@@ -1125,7 +1292,6 @@
                         console.error("Erreur chargement données:", error);
                         hideLoading();
                         
-                        // Utiliser des données de fallback
                         userData = {
                             username: user.email.split('@')[0],
                             email: user.email,
@@ -1177,7 +1343,7 @@
             document.getElementById('backToStep1').addEventListener('click', () => showStep(1));
             
             document.getElementById('nextToStep3').addEventListener('click', () => {
-                if (currentService && currentOption) showStep(3);
+                if (currentService) showStep(3);
             });
             
             document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
@@ -1191,26 +1357,57 @@
                     showNotification('warning', 'Lien requis', 'Veuillez entrer le lien');
                     return;
                 }
-                generateSummary();
                 showStep(5);
             });
             
             document.getElementById('backToStep4').addEventListener('click', () => showStep(4));
+            
+            document.getElementById('nextToStep6').addEventListener('click', () => {
+                currentLink = document.getElementById('orderLink').value.trim();
+                if (!currentLink) {
+                    showNotification('warning', 'Lien requis', 'Veuillez entrer le lien');
+                    return;
+                }
+                generateSummary();
+                showStep(6);
+            });
+            
+            document.getElementById('backToStep5').addEventListener('click', () => showStep(5));
             document.getElementById('confirmOrder').addEventListener('click', confirmOrder);
             document.getElementById('newOrderBtn').addEventListener('click', resetOrder);
             
-            // Quantité
+            // Gestion de la quantité
+            const quantityInput = document.getElementById('quantityInput');
+            
+            quantityInput.addEventListener('input', () => {
+                let value = parseInt(quantityInput.value);
+                if (isNaN(value) || value < 1) {
+                    value = 1;
+                    quantityInput.value = 1;
+                }
+                currentQuantity = value;
+                updateTotal();
+            });
+            
+            quantityInput.addEventListener('blur', () => {
+                if (quantityInput.value === '') {
+                    quantityInput.value = 1;
+                    currentQuantity = 1;
+                    updateTotal();
+                }
+            });
+            
             document.getElementById('decreaseQty').addEventListener('click', () => {
                 if (currentQuantity > 1) {
                     currentQuantity--;
-                    document.getElementById('quantityDisplay').textContent = currentQuantity;
+                    quantityInput.value = currentQuantity;
                     updateTotal();
                 }
             });
             
             document.getElementById('increaseQty').addEventListener('click', () => {
                 currentQuantity++;
-                document.getElementById('quantityDisplay').textContent = currentQuantity;
+                quantityInput.value = currentQuantity;
                 updateTotal();
             });
         });
