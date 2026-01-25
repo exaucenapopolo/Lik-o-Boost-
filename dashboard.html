@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tableau de Bord - Likéo Boost</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +45,7 @@
             line-height: 1.6;
             color: var(--text-dark);
             background-color: #f5f7ff;
+            min-height: 100vh;
         }
 
         h1, h2, h3, h4 {
@@ -56,22 +57,23 @@
 
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
 
         .btn {
             display: inline-block;
-            padding: 12px 28px;
+            padding: 12px 24px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
             cursor: pointer;
             border: none;
             text-align: center;
+            white-space: nowrap;
         }
 
         .btn-primary {
@@ -81,8 +83,8 @@
 
         .btn-primary:hover {
             background-color: var(--primary-orange);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 122, 0, 0.2);
         }
 
         .btn-secondary {
@@ -94,7 +96,7 @@
         .btn-secondary:hover {
             background-color: var(--primary-blue);
             color: var(--white);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .btn-success {
@@ -104,62 +106,132 @@
 
         .btn-success:hover {
             background-color: #3d8b40;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
-        /* Layout Dashboard */
-        .dashboard-container {
+        /* Header Mobile */
+        .mobile-header {
+            background-color: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .mobile-header-content {
             display: flex;
-            min-height: 100vh;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background-color: var(--dark-blue);
-            color: var(--white);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            transition: var(--transition);
-            z-index: 1000;
-            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-logo {
+        .logo {
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
             font-size: 1.5rem;
-            color: var(--white);
+            color: var(--dark-blue);
             text-decoration: none;
             display: flex;
             align-items: center;
         }
 
-        .sidebar-logo span {
+        .logo span {
             color: var(--primary-blue);
         }
 
-        .sidebar-logo .dot {
+        .logo .dot {
             color: var(--primary-orange);
-            font-size: 2rem;
+            font-size: 1.8rem;
             line-height: 1;
         }
 
-        .sidebar-logo .yellow {
+        .logo .yellow {
             color: var(--primary-yellow);
         }
 
-        .sidebar-user {
-            padding: 25px 20px;
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .menu-btn:hover {
+            background-color: rgba(42, 94, 232, 0.1);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100%;
+            background-color: var(--white);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-header {
+            padding: 25px 20px;
+            background-color: var(--dark-blue);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-header .logo {
+            color: var(--white);
+            font-size: 1.3rem;
+        }
+
+        .menu-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .user-info {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .user-avatar {
@@ -170,45 +242,66 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             margin-right: 15px;
+            color: var(--white);
         }
 
-        .user-info h3 {
+        .user-details h3 {
             font-size: 1.1rem;
             margin-bottom: 5px;
         }
 
-        .user-info p {
+        .user-details p {
             font-size: 0.9rem;
-            opacity: 0.8;
+            color: var(--text-light);
         }
 
-        .sidebar-menu {
+        .balance-display {
+            padding: 20px;
+            background-color: var(--light-blue);
+            margin: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .menu-nav {
             padding: 20px 0;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 15px 25px;
-            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            color: var(--text-dark);
             text-decoration: none;
             transition: var(--transition);
             border-left: 3px solid transparent;
         }
 
         .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--white);
+            background-color: rgba(42, 94, 232, 0.05);
             border-left-color: var(--primary-orange);
+            color: var(--primary-blue);
         }
 
         .menu-item.active {
             background-color: rgba(42, 94, 232, 0.1);
-            color: var(--white);
             border-left-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
 
         .menu-item i {
@@ -218,416 +311,444 @@
             text-align: center;
         }
 
-        .menu-item span {
-            font-weight: 500;
-        }
-
-        .sidebar-footer {
+        .menu-footer {
             padding: 20px;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 10px;
-            color: var(--white);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .logout-btn i {
-            margin-right: 10px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: auto;
         }
 
         /* Main Content */
         .main-content {
-            flex: 1;
-            margin-left: 260px;
-            transition: var(--transition);
+            padding: 15px 0 80px;
+            min-height: calc(100vh - 70px);
         }
 
-        /* Topbar */
-        .topbar {
-            background-color: var(--white);
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .page-title h1 {
-            font-size: 1.8rem;
-            color: var(--dark-blue);
-            margin-bottom: 5px;
-        }
-
-        .page-title p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .balance-info {
-            display: flex;
-            align-items: center;
-            background: linear-gradient(135deg, var(--primary-blue), #1A1F3C);
-            padding: 15px 25px;
-            border-radius: 15px;
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1A1F3C 100%);
             color: var(--white);
+            padding: 25px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .balance-amount {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-right: 20px;
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
         }
 
-        .balance-amount span {
-            font-size: 1.2rem;
+        .welcome-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -30%;
+            width: 150px;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
         }
 
-        /* Content Area */
-        .content-area {
-            padding: 30px;
+        .welcome-text h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Dashboard Stats */
-        .stats-grid {
+        .welcome-text p {
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stats Section */
+        .stats-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .stat-card {
             background-color: var(--white);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         .stat-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 20px;
-            font-size: 1.8rem;
-            color: var(--white);
-        }
-
-        .stat-content h3 {
-            font-size: 1.1rem;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .stat-content .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark-blue);
-        }
-
-        /* Services Section */
-        .services-section {
-            margin-bottom: 50px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .section-header h2 {
-            font-size: 2rem;
-            color: var(--dark-blue);
-        }
-
-        .platform-filter {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-
-        .platform-btn {
-            padding: 10px 20px;
-            background-color: var(--white);
-            border: 2px solid #e0e0e0;
-            border-radius: 50px;
-            color: var(--text-dark);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .platform-btn:hover {
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-        }
-
-        .platform-btn.active {
-            background-color: var(--primary-blue);
-            border-color: var(--primary-blue);
-            color: var(--white);
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-        }
-
-        .service-card {
-            background-color: var(--white);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border-top: 5px solid var(--primary-blue);
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .service-header {
-            padding: 25px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .service-icon {
             width: 50px;
             height: 50px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
+            margin: 0 auto 15px;
             font-size: 1.5rem;
             color: var(--white);
         }
 
-        .service-title h3 {
-            font-size: 1.3rem;
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
             margin-bottom: 5px;
         }
 
-        .service-title p {
+        .stat-label {
+            font-size: 0.85rem;
             color: var(--text-light);
-            font-size: 0.9rem;
         }
 
-        .service-body {
-            padding: 25px;
+        /* Service Selection Flow */
+        .service-flow {
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
         }
 
-        .service-option {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed #f0f0f0;
+        .flow-header {
+            text-align: center;
+            margin-bottom: 25px;
         }
 
-        .service-option:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .option-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .flow-header h2 {
+            font-size: 1.5rem;
+            color: var(--dark-blue);
             margin-bottom: 10px;
         }
 
-        .option-name {
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .flow-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background-color: #e0e0e0;
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .step.active .step-icon {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .step.completed .step-icon {
+            background-color: var(--success-green);
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-blue);
             font-weight: 600;
+        }
+
+        /* Platform Selection */
+        .platforms-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0 20px;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+        }
+
+        .platforms-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .platform-card {
+            flex: 0 0 auto;
+            width: 120px;
+            background-color: var(--white);
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .platform-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-5px);
+        }
+
+        .platform-card.selected {
+            border-color: var(--primary-blue);
+            background-color: rgba(42, 94, 232, 0.05);
+            box-shadow: 0 10px 20px rgba(42, 94, 232, 0.1);
+        }
+
+        .platform-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            color: var(--white);
+        }
+
+        .platform-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        /* Services Selection */
+        .services-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .service-item {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .service-item:hover {
+            background-color: #f0f5ff;
+            border-color: rgba(42, 94, 232, 0.3);
+        }
+
+        .service-item.selected {
+            background-color: rgba(42, 94, 232, 0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
             color: var(--text-dark);
         }
 
-        .option-price {
+        .service-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .service-prices {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .price-option {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: var(--white);
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .price-option:hover {
+            border-color: var(--primary-blue);
+        }
+
+        .price-option.selected {
+            border-color: var(--primary-blue);
+            background-color: rgba(42, 94, 232, 0.05);
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .price-amount {
             font-weight: 700;
             color: var(--primary-blue);
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
-        .option-details {
+        /* Quantity Selection */
+        .quantity-container {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quantity-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .option-quantity {
-            display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
 
-        .quantity-label {
-            margin-right: 15px;
-            font-weight: 500;
+        .quantity-header h3 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
         }
 
         .quantity-input {
             display: flex;
             align-items: center;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
         .quantity-btn {
-            width: 40px;
-            height: 40px;
-            background-color: #f8f9fa;
-            border: none;
-            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--white);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            color: var(--text-dark);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
         }
 
         .quantity-btn:hover {
-            background-color: #e9ecef;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
 
-        .quantity-value {
-            width: 80px;
-            height: 40px;
-            border: none;
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .option-total {
+        .quantity-display {
+            width: 100px;
+            height: 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin: 0 15px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .total-label {
-            font-weight: 600;
-        }
-
-        .total-price {
+            justify-content: center;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-orange);
+            color: var(--text-dark);
+        }
+
+        .quantity-unit {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 2px solid var(--primary-blue);
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-header h3 {
+            color: var(--dark-blue);
             font-size: 1.3rem;
         }
 
-        .service-footer {
-            padding: 0 25px 25px;
-        }
-
-        .order-btn {
-            width: 100%;
-            padding: 14px;
-            font-weight: 600;
-            border-radius: 10px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: var(--white);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.4s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            padding: 25px;
-            border-bottom: 1px solid #f0f0f0;
+        .summary-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #f0f0f0;
         }
 
-        .modal-header h3 {
-            font-size: 1.5rem;
-            color: var(--dark-blue);
+        .summary-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
+        .summary-label {
             color: var(--text-light);
-            cursor: pointer;
         }
 
-        .modal-body {
+        .summary-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .summary-total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+
+        /* Order Form */
+        .order-form {
+            background-color: var(--white);
+            border-radius: 15px;
             padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
         }
 
         .form-group {
@@ -638,13 +759,14 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: var(--text-dark);
         }
 
         .form-control {
             width: 100%;
-            padding: 14px 20px;
+            padding: 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             font-family: 'Poppins', sans-serif;
             transition: var(--transition);
@@ -655,21 +777,141 @@
             border-color: var(--primary-blue);
         }
 
-        .modal-footer {
-            padding: 20px 25px;
-            border-top: 1px solid #f0f0f0;
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Flow Navigation */
+        .flow-navigation {
             display: flex;
-            justify-content: flex-end;
-            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .flow-navigation .btn {
+            min-width: 120px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-blue);
+            color: var(--white);
+            padding: 40px 0 20px;
+            position: relative;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .footer-logo span {
+            color: var(--primary-blue);
+        }
+
+        .footer-logo .dot {
+            color: var(--primary-orange);
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+
+        .footer-logo .yellow {
+            color: var(--primary-yellow);
+        }
+
+        .footer-about p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .footer-links h3, .footer-contact h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-links h3:after, .footer-contact h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-orange);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-yellow);
+            padding-left: 5px;
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        .footer-contact i {
+            margin-right: 15px;
+            color: var(--primary-yellow);
+            width: 20px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .footer-bottom a {
+            color: var(--primary-yellow);
+            text-decoration: none;
         }
 
         /* Notification System */
         .notification-container {
             position: fixed;
             top: 100px;
-            right: 20px;
+            right: 15px;
             z-index: 9999;
             max-width: 350px;
+            width: calc(100% - 30px);
         }
 
         .notification {
@@ -743,283 +985,453 @@
         }
 
         /* Responsive */
-        @media (max-width: 1200px) {
-            .services-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-        }
-
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 80px;
+        @media (min-width: 768px) {
+            .container {
+                max-width: 720px;
+                padding: 0 20px;
             }
             
-            .sidebar-header .sidebar-logo span,
-            .sidebar-header .sidebar-logo .yellow,
-            .sidebar-header .sidebar-logo .dot,
-            .user-info,
-            .menu-item span,
-            .logout-btn span {
-                display: none;
+            .stats-section {
+                grid-template-columns: repeat(4, 1fr);
             }
             
-            .sidebar-logo {
+            .platforms-container {
                 justify-content: center;
+                flex-wrap: wrap;
+                overflow-x: visible;
             }
             
-            .sidebar-user {
-                justify-content: center;
+            .platform-card {
+                width: 140px;
             }
             
-            .user-avatar {
-                margin-right: 0;
-            }
-            
-            .menu-item {
-                justify-content: center;
-                padding: 20px;
-            }
-            
-            .menu-item i {
-                margin-right: 0;
-                font-size: 1.5rem;
-            }
-            
-            .logout-btn {
-                justify-content: center;
-                padding: 15px;
-            }
-            
-            .logout-btn i {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: 80px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .topbar {
-                padding: 15px 20px;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .balance-info {
-                width: 100%;
+            .footer-content {
+                flex-direction: row;
                 justify-content: space-between;
             }
             
-            .content-area {
-                padding: 20px;
+            .footer-about {
+                flex: 2;
             }
             
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .platform-filter {
-                width: 100%;
-                overflow-x: auto;
-                padding-bottom: 15px;
+            .footer-links, .footer-contact {
+                flex: 1;
             }
         }
 
-        .mobile-menu-btn {
+        @media (min-width: 992px) {
+            .container {
+                max-width: 960px;
+            }
+            
+            .main-content {
+                padding: 30px 0 100px;
+            }
+            
+            .service-flow {
+                padding: 30px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+
+        /* Hidden Sections */
+        .flow-section {
             display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-            cursor: pointer;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .flow-section.active {
+            display: block;
+        }
+
+        /* Order Success */
+        .order-success {
             background-color: var(--white);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
             box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2.5rem;
+            color: var(--success-green);
         }
 
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: flex;
-            }
+        .success-message h3 {
+            font-size: 1.5rem;
+            color: var(--success-green);
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        /* Deposit Button */
+        .deposit-btn-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .deposit-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            min-width: 200px;
         }
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Dashboard Container -->
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a href="index.html" class="sidebar-logo">
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="container">
+            <div class="mobile-header-content">
+                <a href="index.html" class="logo">
                     Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
                 </a>
-            </div>
-            
-            <div class="sidebar-user">
-                <div class="user-avatar" id="userAvatar">
-                    U
-                </div>
-                <div class="user-info">
-                    <h3 id="userName">Utilisateur</h3>
-                    <p id="userEmail">email@example.com</p>
-                </div>
-            </div>
-            
-            <div class="sidebar-menu">
-                <a href="#dashboard" class="menu-item active" data-section="dashboard">
-                    <i class="fas fa-home"></i>
-                    <span>Tableau de Bord</span>
-                </a>
-                <a href="#services" class="menu-item" data-section="services">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Services</span>
-                </a>
-                <a href="#orders" class="menu-item" data-section="orders">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span>Mes Commandes</span>
-                </a>
-                <a href="#transactions" class="menu-item" data-section="transactions">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Transactions</span>
-                </a>
-                <a href="#profile" class="menu-item" data-section="profile">
-                    <i class="fas fa-user"></i>
-                    <span>Mon Profil</span>
-                </a>
-            </div>
-            
-            <div class="sidebar-footer">
-                <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Déconnexion</span>
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
                 </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="menu-header">
+            <a href="index.html" class="logo">
+                Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
+            </a>
+            <button class="menu-close" id="menuClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">
+                U
+            </div>
+            <div class="user-details">
+                <h3 id="userName">Utilisateur</h3>
+                <p id="userEmail">email@exemple.com</p>
             </div>
         </div>
         
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Topbar -->
-            <div class="topbar">
-                <div class="page-title">
-                    <h1>Bienvenue sur Likéo Boost!</h1>
+        <div class="balance-display">
+            <div class="balance-amount" id="userBalance">0 XAF</div>
+            <div class="balance-label">Solde actuel</div>
+        </div>
+        
+        <div class="menu-nav">
+            <a href="#dashboard" class="menu-item active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                Tableau de Bord
+            </a>
+            <a href="#orders" class="menu-item" data-section="orders">
+                <i class="fas fa-clipboard-list"></i>
+                Mes Commandes
+            </a>
+            <a href="#transactions" class="menu-item" data-section="transactions">
+                <i class="fas fa-exchange-alt"></i>
+                Transactions
+            </a>
+            <a href="#profile" class="menu-item" data-section="profile">
+                <i class="fas fa-user"></i>
+                Mon Profil
+            </a>
+            <a href="#support" class="menu-item" data-section="support">
+                <i class="fas fa-headset"></i>
+                Support
+            </a>
+        </div>
+        
+        <div class="menu-footer">
+            <button class="btn btn-secondary" id="depositMenuBtn" style="width: 100%; margin-bottom: 15px;">
+                <i class="fas fa-money-bill-wave"></i> Déposer des fonds
+            </button>
+            <button class="btn btn-primary" id="logoutBtn" style="width: 100%;">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-text">
+                    <h1 id="welcomeMessage">Bienvenue sur Likéo Boost!</h1>
                     <p>Boostez votre présence en ligne avec nos services professionnels</p>
                 </div>
-                
-                <div class="balance-info">
-                    <div class="balance-amount">
-                        <span id="userBalance">0</span> XAF
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #2A5EE8, #1A1F3C);">
+                        <i class="fas fa-wallet"></i>
                     </div>
-                    <button class="btn btn-primary" id="depositBtn">Déposer des fonds</button>
+                    <div class="stat-value" id="currentBalance">0 XAF</div>
+                    <div class="stat-label">Solde actuel</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-value" id="activeOrders">0</div>
+                    <div class="stat-label">Commandes actives</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FF7A00, #E65100);">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Commandes totales</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #9C27B0, #6A1B9A);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-value" id="totalSpent">0 XAF</div>
+                    <div class="stat-label">Total dépensé</div>
+                </div>
+            </section>
+
+            <!-- Service Selection Flow -->
+            <section class="service-flow">
+                <div class="flow-header">
+                    <h2>Commander un service</h2>
+                    <p>Sélectionnez votre plateforme, service, qualité et quantité</p>
+                </div>
+                
+                <div class="flow-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-icon">1</div>
+                        <div class="step-label">Plateforme</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-icon">2</div>
+                        <div class="step-label">Service</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-icon">3</div>
+                        <div class="step-label">Qualité & Quantité</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-icon">4</div>
+                        <div class="step-label">Commander</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Platform Selection -->
+                <div class="flow-section active" id="step1">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Sélectionnez une plateforme</h3>
+                    
+                    <div class="platforms-container" id="platformsContainer">
+                        <!-- Plateformes chargées dynamiquement -->
+                    </div>
+                    
+                    <div class="flow-navigation">
+                        <div></div> <!-- Espace vide pour aligner -->
+                        <button class="btn btn-primary" id="nextToStep2" disabled>
+                            Suivant <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Service Selection -->
+                <div class="flow-section" id="step2">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Sélectionnez un service</h3>
+                    
+                    <div class="services-container" id="servicesContainer">
+                        <!-- Services chargés dynamiquement -->
+                    </div>
+                    
+                    <div class="flow-navigation">
+                        <button class="btn btn-secondary" id="backToStep1">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <button class="btn btn-primary" id="nextToStep3" disabled>
+                            Suivant <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Quality & Quantity -->
+                <div class="flow-section" id="step3">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Choisissez la qualité et la quantité</h3>
+                    
+                    <!-- Quality Selection -->
+                    <div id="qualitySelection" style="margin-bottom: 25px;">
+                        <!-- Options de qualité chargées dynamiquement -->
+                    </div>
+                    
+                    <!-- Quantity Selection -->
+                    <div class="quantity-container" id="quantityContainer">
+                        <div class="quantity-header">
+                            <h3>Quantité</h3>
+                            <div class="quantity-unit" id="quantityUnit">1K unités</div>
+                        </div>
+                        
+                        <div class="quantity-input">
+                            <button class="quantity-btn" id="decreaseQuantity">-</button>
+                            <div class="quantity-display" id="quantityDisplay">1</div>
+                            <button class="quantity-btn" id="increaseQuantity">+</button>
+                        </div>
+                        
+                        <div style="text-align: center; font-size: 0.9rem; color: var(--text-light);">
+                            Augmentez ou diminuez la quantité selon vos besoins
+                        </div>
+                    </div>
+                    
+                    <!-- Price Preview -->
+                    <div style="background-color: #f0f5ff; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="color: var(--text-dark); font-weight: 600;">Prix unitaire:</div>
+                            <div id="unitPrice" style="color: var(--primary-blue); font-weight: 700;">0 XAF</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="color: var(--text-dark); font-weight: 600;">Total:</div>
+                            <div id="totalPreview" style="color: var(--primary-orange); font-weight: 700; font-size: 1.3rem;">0 XAF</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-navigation">
+                        <button class="btn btn-secondary" id="backToStep2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <button class="btn btn-primary" id="nextToStep4" disabled>
+                            Suivant <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Order Confirmation -->
+                <div class="flow-section" id="step4">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Confirmez votre commande</h3>
+                    
+                    <!-- Order Summary -->
+                    <div class="order-summary" id="orderSummary">
+                        <!-- Récapitulatif chargé dynamiquement -->
+                    </div>
+                    
+                    <!-- Order Form -->
+                    <div class="order-form">
+                        <div class="form-group">
+                            <label for="orderLink">Lien de votre publication/profil *</label>
+                            <input type="url" id="orderLink" class="form-control" placeholder="https://facebook.com/votre-profil" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="orderNotes">Notes supplémentaires (optionnel)</label>
+                            <textarea id="orderNotes" class="form-control" placeholder="Instructions spéciales, commentaires..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-navigation">
+                        <button class="btn btn-secondary" id="backToStep3">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <button class="btn btn-success" id="confirmOrderBtn">
+                            <i class="fas fa-check-circle"></i> Confirmer la commande
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Order Success -->
+                <div class="order-success" id="orderSuccess" style="display: none;">
+                    <div class="success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="success-message">
+                        <h3>Commande confirmée!</h3>
+                        <p>Votre commande a été passée avec succès. Vous pouvez suivre son avancement dans la section "Mes Commandes".</p>
+                        <button class="btn btn-primary" id="newOrderBtn">
+                            <i class="fas fa-plus"></i> Nouvelle commande
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deposit Section -->
+            <section class="deposit-btn-container">
+                <button class="btn btn-primary deposit-btn" id="depositBtn">
+                    <i class="fas fa-money-bill-wave"></i> Déposer des fonds
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="index.html" class="footer-logo">
+                        Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
+                    </a>
+                    <p>Likéo Boost est votre partenaire de confiance pour augmenter votre visibilité sur les réseaux sociaux. Des services professionnels pour des résultats exceptionnels.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Liens Rapides</h3>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#support">Support</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Contactez-Nous</h3>
+                    <p><i class="fab fa-whatsapp"></i> +237 654 49 46 84</p>
+                    <p><i class="fas fa-envelope"></i> contact@likeoboost.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Services disponibles dans le monde entier</p>
                 </div>
             </div>
             
-            <!-- Content Area -->
-            <div class="content-area">
-                <!-- Dashboard Stats -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #2A5EE8, #1A1F3C);">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Solde actuel</h3>
-                            <div class="stat-value" id="currentBalance">0 XAF</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
-                            <i class="fas fa-clipboard-check"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Commandes actives</h3>
-                            <div class="stat-value" id="activeOrders">0</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #FF7A00, #E65100);">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Commandes totales</h3>
-                            <div class="stat-value" id="totalOrders">0</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #9C27B0, #6A1B9A);">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Total dépensé</h3>
-                            <div class="stat-value" id="totalSpent">0 XAF</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Services Section -->
-                <div class="services-section" id="servicesSection">
-                    <div class="section-header">
-                        <h2>Nos Services de Boost</h2>
-                        <div class="platform-filter" id="platformFilter">
-                            <button class="platform-btn active" data-platform="all">Toutes les plateformes</button>
-                            <button class="platform-btn" data-platform="facebook">Facebook</button>
-                            <button class="platform-btn" data-platform="tiktok">TikTok</button>
-                            <button class="platform-btn" data-platform="instagram">Instagram</button>
-                            <button class="platform-btn" data-platform="youtube">YouTube</button>
-                            <button class="platform-btn" data-platform="whatsapp">WhatsApp</button>
-                            <button class="platform-btn" data-platform="telegram">Telegram</button>
-                            <button class="platform-btn" data-platform="spotify">Spotify</button>
-                            <button class="platform-btn" data-platform="twitter">Twitter</button>
-                        </div>
-                    </div>
-                    
-                    <div class="services-grid" id="servicesGrid">
-                        <!-- Les services seront chargés dynamiquement ici -->
-                    </div>
-                </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Likéo Boost. Tous droits réservés. | Site propulsé par <a href="https://socialboosthorizon.com" target="_blank">Social Boost Horizon</a></p>
             </div>
         </div>
-    </div>
-    
+    </footer>
+
     <!-- Deposit Modal -->
-    <div class="modal" id="depositModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Déposer des fonds</h3>
-                <button class="modal-close" id="closeDepositModal">
+    <div class="modal" id="depositModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center; padding: 20px;">
+        <div class="modal-content" style="background-color: var(--white); border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; animation: fadeIn 0.3s ease;">
+            <div class="modal-header" style="padding: 25px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1.5rem; color: var(--dark-blue);">Déposer des fonds</h3>
+                <button class="modal-close" id="closeDepositModal" style="background: none; border: none; font-size: 1.5rem; color: var(--text-light); cursor: pointer;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 25px;">
                 <form id="depositForm">
                     <div class="form-group">
                         <label for="depositAmount">Montant à déposer (XAF)</label>
@@ -1041,42 +1453,13 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="padding: 20px 25px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 15px;">
                 <button class="btn btn-secondary" id="cancelDeposit">Annuler</button>
                 <button class="btn btn-primary" id="confirmDeposit">Déposer</button>
             </div>
         </div>
     </div>
-    
-    <!-- Order Modal -->
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Confirmer la commande</h3>
-                <button class="modal-close" id="closeOrderModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="orderSummary">
-                    <!-- Le résumé de la commande sera inséré ici -->
-                </div>
-                <div class="form-group">
-                    <label for="orderLink">Lien de votre publication/profil</label>
-                    <input type="url" id="orderLink" class="form-control" placeholder="https://facebook.com/votre-profil" required>
-                </div>
-                <div class="form-group">
-                    <label for="orderNotes">Notes supplémentaires (optionnel)</label>
-                    <textarea id="orderNotes" class="form-control" rows="3" placeholder="Instructions spéciales, commentaires..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelOrder">Annuler</button>
-                <button class="btn btn-success" id="confirmOrder">Confirmer la commande</button>
-            </div>
-        </div>
-    </div>
-    
+
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
 
@@ -1100,378 +1483,302 @@
         // Variables globales
         let currentUser = null;
         let userData = null;
-        let servicesData = [];
-        let currentOrder = null;
+        let currentPlatform = null;
+        let currentService = null;
+        let currentOption = null;
+        let currentQuantity = 1;
+        let currentOrderData = null;
 
-        // Fonction pour augmenter le prix de 70%
-        function calculatePrice(basePrice) {
-            return Math.round(basePrice * 1.7);
-        }
-
-        // Services avec prix (après augmentation de 70%)
-        const services = [
-            // Facebook
+        // Données des services (avec prix augmentés de 70%)
+        const servicesData = [
             {
-                id: "fb_views",
-                platform: "facebook",
-                name: "Vues Vidéo/Reel Facebook",
-                description: "Augmentez les vues de vos vidéos Facebook",
-                icon: "fab fa-facebook",
+                id: "facebook",
+                name: "Facebook",
+                icon: "fab fa-facebook-f",
                 color: "#3b5998",
-                options: [
+                services: [
                     {
-                        id: "fb_views_medium",
-                        name: "Vues de qualité moyenne",
-                        basePrice: 122.4,
-                        price: calculatePrice(122.4),
+                        id: "fb_views",
+                        name: "Vues Vidéo/Reel",
+                        description: "Augmentez les vues de vos vidéos Facebook",
                         unit: "1K vues",
-                        duration: "1-2 heures",
-                        quality: "Moyenne"
+                        options: [
+                            {
+                                id: "fb_views_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(122.4 * 1.7),
+                                duration: "1-2 heures"
+                            },
+                            {
+                                id: "fb_views_high",
+                                name: "Haute qualité",
+                                price: Math.round(204 * 1.7),
+                                duration: "30 min - 1 heure"
+                            }
+                        ]
                     },
                     {
-                        id: "fb_views_high",
-                        name: "Vues de haute qualité",
-                        basePrice: 204,
-                        price: calculatePrice(204),
-                        unit: "1K vues",
-                        duration: "30 minutes - 1 heure",
-                        quality: "Haute"
-                    }
-                ]
-            },
-            {
-                id: "fb_comments",
-                platform: "facebook",
-                name: "Commentaires Facebook",
-                description: "Commentaires personnalisés pour vos publications",
-                icon: "fab fa-facebook",
-                color: "#3b5998",
-                options: [
-                    {
-                        id: "fb_comments_male",
-                        name: "Commentaires masculins (🇺🇸)",
-                        basePrice: 1237.6,
-                        price: calculatePrice(1237.6),
+                        id: "fb_comments",
+                        name: "Commentaires",
+                        description: "Commentaires personnalisés pour vos publications",
                         unit: "10 commentaires",
-                        duration: "2-3 heures",
-                        quality: "Personnalisé"
+                        options: [
+                            {
+                                id: "fb_comments_male",
+                                name: "Masculins (🇺🇸)",
+                                price: Math.round(1237.6 * 1.7),
+                                duration: "2-3 heures"
+                            },
+                            {
+                                id: "fb_comments_female",
+                                name: "Féminins (🇺🇸)",
+                                price: Math.round(1414.4 * 1.7),
+                                duration: "2-3 heures"
+                            }
+                        ]
                     },
                     {
-                        id: "fb_comments_female",
-                        name: "Commentaires féminins (🇺🇸)",
-                        basePrice: 1414.4,
-                        price: calculatePrice(1414.4),
-                        unit: "10 commentaires",
-                        duration: "2-3 heures",
-                        quality: "Personnalisé"
-                    }
-                ]
-            },
-            {
-                id: "fb_reactions",
-                platform: "facebook",
-                name: "Réactions Facebook",
-                description: "Réactions emoji pour vos publications",
-                icon: "fab fa-facebook",
-                color: "#3b5998",
-                options: [
-                    {
-                        id: "fb_reactions_all",
-                        name: "Réactions (tous types)",
-                        basePrice: 571.2,
-                        price: calculatePrice(571.2),
+                        id: "fb_reactions",
+                        name: "Réactions",
+                        description: "Réactions emoji pour vos publications",
                         unit: "1K réactions",
-                        duration: "1-2 heures",
-                        quality: "Mixte"
-                    }
-                ]
-            },
-            {
-                id: "fb_followers_profile",
-                platform: "facebook",
-                name: "Abonnés Profil Facebook",
-                description: "Augmentez vos abonnés sur votre profil",
-                icon: "fab fa-facebook",
-                color: "#3b5998",
-                options: [
-                    {
-                        id: "fb_followers_medium",
-                        name: "Abonnés de qualité moyenne",
-                        basePrice: 843.2,
-                        price: calculatePrice(843.2),
-                        unit: "1K abonnés",
-                        duration: "3-5 heures",
-                        quality: "Moyenne"
+                        options: [
+                            {
+                                id: "fb_reactions_all",
+                                name: "Tous types",
+                                price: Math.round(571.2 * 1.7),
+                                duration: "1-2 heures"
+                            }
+                        ]
                     },
                     {
-                        id: "fb_followers_high",
-                        name: "Abonnés de haute qualité",
-                        basePrice: 1360,
-                        price: calculatePrice(1360),
+                        id: "fb_followers",
+                        name: "Abonnés Profil",
+                        description: "Abonnés pour votre profil Facebook",
                         unit: "1K abonnés",
-                        duration: "1-2 heures",
-                        quality: "Haute"
+                        options: [
+                            {
+                                id: "fb_followers_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(843.2 * 1.7),
+                                duration: "3-5 heures"
+                            },
+                            {
+                                id: "fb_followers_high",
+                                name: "Haute qualité",
+                                price: Math.round(1360 * 1.7),
+                                duration: "1-2 heures"
+                            }
+                        ]
                     }
                 ]
             },
             {
-                id: "fb_likes",
-                platform: "facebook",
-                name: "J'aime Facebook",
-                description: "J'aime pour vos publications Facebook",
-                icon: "fab fa-facebook",
-                color: "#3b5998",
-                options: [
-                    {
-                        id: "fb_likes_medium",
-                        name: "J'aime de qualité moyenne",
-                        basePrice: 272,
-                        price: calculatePrice(272),
-                        unit: "1K j'aime",
-                        duration: "1-2 heures",
-                        quality: "Moyenne"
-                    },
-                    {
-                        id: "fb_likes_high",
-                        name: "J'aime de haute qualité",
-                        basePrice: 544,
-                        price: calculatePrice(544),
-                        unit: "1K j'aime",
-                        duration: "30 minutes - 1 heure",
-                        quality: "Haute"
-                    }
-                ]
-            },
-            // TikTok
-            {
-                id: "tiktok_views",
-                platform: "tiktok",
-                name: "Vues TikTok",
-                description: "Augmentez les vues de vos vidéos TikTok",
+                id: "tiktok",
+                name: "TikTok",
                 icon: "fab fa-tiktok",
                 color: "#000000",
-                options: [
+                services: [
                     {
-                        id: "tiktok_views_medium",
-                        name: "Vues de qualité moyenne",
-                        basePrice: 13.6,
-                        price: calculatePrice(13.6),
+                        id: "tiktok_views",
+                        name: "Vues",
+                        description: "Augmentez les vues de vos vidéos TikTok",
                         unit: "1K vues",
-                        duration: "30 minutes - 1 heure",
-                        quality: "Moyenne"
+                        options: [
+                            {
+                                id: "tiktok_views_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(13.6 * 1.7),
+                                duration: "30 min - 1 heure"
+                            },
+                            {
+                                id: "tiktok_views_high",
+                                name: "Haute qualité",
+                                price: Math.round(23.12 * 1.7),
+                                duration: "10-30 minutes"
+                            }
+                        ]
                     },
                     {
-                        id: "tiktok_views_high",
-                        name: "Vues de haute qualité",
-                        basePrice: 23.12,
-                        price: calculatePrice(23.12),
-                        unit: "1K vues",
-                        duration: "10-30 minutes",
-                        quality: "Haute"
+                        id: "tiktok_likes",
+                        name: "J'aime",
+                        description: "J'aime pour vos vidéos TikTok",
+                        unit: "1K j'aime",
+                        options: [
+                            {
+                                id: "tiktok_likes_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(167.28 * 1.7),
+                                duration: "1-2 heures"
+                            },
+                            {
+                                id: "tiktok_likes_high",
+                                name: "Haute qualité",
+                                price: Math.round(326.4 * 1.7),
+                                duration: "30 min - 1 heure"
+                            }
+                        ]
                     }
                 ]
             },
             {
-                id: "tiktok_likes",
-                platform: "tiktok",
-                name: "J'aime TikTok",
-                description: "J'aime pour vos vidéos TikTok",
-                icon: "fab fa-tiktok",
-                color: "#000000",
-                options: [
-                    {
-                        id: "tiktok_likes_medium",
-                        name: "J'aime de qualité moyenne",
-                        basePrice: 167.28,
-                        price: calculatePrice(167.28),
-                        unit: "1K j'aime",
-                        duration: "1-2 heures",
-                        quality: "Moyenne"
-                    },
-                    {
-                        id: "tiktok_likes_high",
-                        name: "J'aime de haute qualité",
-                        basePrice: 326.4,
-                        price: calculatePrice(326.4),
-                        unit: "1K j'aime",
-                        duration: "30 minutes - 1 heure",
-                        quality: "Haute"
-                    }
-                ]
-            },
-            // Instagram
-            {
-                id: "instagram_comments",
-                platform: "instagram",
-                name: "Commentaires Instagram",
-                description: "Commentaires personnalisés pour vos publications",
+                id: "instagram",
+                name: "Instagram",
                 icon: "fab fa-instagram",
                 color: "#e1306c",
-                options: [
+                services: [
                     {
-                        id: "instagram_comments_medium",
-                        name: "Commentaires de qualité moyenne",
-                        basePrice: 81.6,
-                        price: calculatePrice(81.6),
+                        id: "instagram_comments",
+                        name: "Commentaires",
+                        description: "Commentaires personnalisés pour vos publications",
                         unit: "10 commentaires",
-                        duration: "4 heures",
-                        quality: "Moyenne"
+                        options: [
+                            {
+                                id: "instagram_comments_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(81.6 * 1.7),
+                                duration: "4 heures"
+                            },
+                            {
+                                id: "instagram_comments_high",
+                                name: "Haute qualité",
+                                price: Math.round(163.2 * 1.7),
+                                duration: "2 heures"
+                            }
+                        ]
                     },
                     {
-                        id: "instagram_comments_high",
-                        name: "Commentaires de haute qualité",
-                        basePrice: 163.2,
-                        price: calculatePrice(163.2),
-                        unit: "10 commentaires",
-                        duration: "2 heures",
-                        quality: "Haute"
+                        id: "instagram_likes",
+                        name: "J'aime",
+                        description: "J'aime pour vos publications Instagram",
+                        unit: "1K j'aime",
+                        options: [
+                            {
+                                id: "instagram_likes_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(367.2 * 1.7),
+                                duration: "1 heure"
+                            },
+                            {
+                                id: "instagram_likes_high",
+                                name: "Haute qualité",
+                                price: Math.round(544 * 1.7),
+                                duration: "30 minutes"
+                            }
+                        ]
                     }
                 ]
             },
             {
-                id: "instagram_likes",
-                platform: "instagram",
-                name: "J'aime Instagram",
-                description: "J'aime pour vos publications Instagram",
-                icon: "fab fa-instagram",
-                color: "#e1306c",
-                options: [
-                    {
-                        id: "instagram_likes_medium",
-                        name: "J'aime de qualité moyenne",
-                        basePrice: 367.2,
-                        price: calculatePrice(367.2),
-                        unit: "1K j'aime",
-                        duration: "1 heure",
-                        quality: "Moyenne"
-                    },
-                    {
-                        id: "instagram_likes_high",
-                        name: "J'aime de haute qualité",
-                        basePrice: 544,
-                        price: calculatePrice(544),
-                        unit: "1K j'aime",
-                        duration: "30 minutes",
-                        quality: "Haute"
-                    }
-                ]
-            },
-            // YouTube
-            {
-                id: "youtube_views",
-                platform: "youtube",
-                name: "Vues YouTube",
-                description: "Augmentez les vues de vos vidéos YouTube",
+                id: "youtube",
+                name: "YouTube",
                 icon: "fab fa-youtube",
                 color: "#ff0000",
-                options: [
+                services: [
                     {
-                        id: "youtube_views_medium",
-                        name: "Vues de qualité moyenne",
-                        basePrice: 1360,
-                        price: calculatePrice(1360),
+                        id: "youtube_views",
+                        name: "Vues",
+                        description: "Augmentez les vues de vos vidéos YouTube",
                         unit: "1K vues",
-                        duration: "5 heures",
-                        quality: "Moyenne"
+                        options: [
+                            {
+                                id: "youtube_views_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(1360 * 1.7),
+                                duration: "5 heures"
+                            },
+                            {
+                                id: "youtube_views_high",
+                                name: "Haute qualité",
+                                price: Math.round(1904 * 1.7),
+                                duration: "7 heures"
+                            }
+                        ]
                     },
                     {
-                        id: "youtube_views_high",
-                        name: "Vues de haute qualité",
-                        basePrice: 1904,
-                        price: calculatePrice(1904),
-                        unit: "1K vues",
-                        duration: "7 heures",
-                        quality: "Haute"
+                        id: "youtube_subscribers",
+                        name: "Abonnés",
+                        description: "Abonnés pour votre chaîne YouTube",
+                        unit: "1K abonnés",
+                        options: [
+                            {
+                                id: "youtube_subs_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(31280 * 1.7),
+                                duration: "24 heures"
+                            },
+                            {
+                                id: "youtube_subs_high",
+                                name: "Haute qualité",
+                                price: Math.round(35360 * 1.7),
+                                duration: "20 heures"
+                            }
+                        ]
                     }
                 ]
             },
             {
-                id: "youtube_subscribers",
-                platform: "youtube",
-                name: "Abonnés YouTube",
-                description: "Abonnés pour votre chaîne YouTube",
-                icon: "fab fa-youtube",
-                color: "#ff0000",
-                options: [
-                    {
-                        id: "youtube_subs_medium",
-                        name: "Abonnés de qualité moyenne",
-                        basePrice: 31280,
-                        price: calculatePrice(31280),
-                        unit: "1K abonnés",
-                        duration: "24 heures",
-                        quality: "Moyenne"
-                    },
-                    {
-                        id: "youtube_subs_high",
-                        name: "Abonnés de haute qualité",
-                        basePrice: 35360,
-                        price: calculatePrice(35360),
-                        unit: "1K abonnés",
-                        duration: "20 heures",
-                        quality: "Haute"
-                    }
-                ]
-            },
-            // WhatsApp
-            {
-                id: "whatsapp_followers",
-                platform: "whatsapp",
-                name: "Abonnés WhatsApp",
-                description: "Abonnés pour votre chaîne WhatsApp",
+                id: "whatsapp",
+                name: "WhatsApp",
                 icon: "fab fa-whatsapp",
                 color: "#25D366",
-                options: [
+                services: [
                     {
-                        id: "whatsapp_followers_int",
-                        name: "Abonnés internationaux",
-                        basePrice: 3400,
-                        price: calculatePrice(3400),
+                        id: "whatsapp_followers",
+                        name: "Abonnés",
+                        description: "Abonnés pour votre chaîne WhatsApp",
                         unit: "1K followers",
-                        duration: "3 heures",
-                        quality: "International"
-                    },
-                    {
-                        id: "whatsapp_followers_us",
-                        name: "Abonnés américains",
-                        basePrice: 6120,
-                        price: calculatePrice(6120),
-                        unit: "1K followers",
-                        duration: "3 heures",
-                        quality: "Américain"
+                        options: [
+                            {
+                                id: "whatsapp_followers_int",
+                                name: "Internationaux",
+                                price: Math.round(3400 * 1.7),
+                                duration: "3 heures"
+                            },
+                            {
+                                id: "whatsapp_followers_us",
+                                name: "Américains",
+                                price: Math.round(6120 * 1.7),
+                                duration: "3 heures"
+                            }
+                        ]
                     }
                 ]
             },
-            // Telegram
             {
-                id: "telegram_members",
-                platform: "telegram",
-                name: "Membres Telegram",
-                description: "Membres pour votre groupe/canal Telegram",
+                id: "telegram",
+                name: "Telegram",
                 icon: "fab fa-telegram",
                 color: "#0088cc",
-                options: [
+                services: [
                     {
-                        id: "telegram_members_medium",
-                        name: "Membres de qualité moyenne",
-                        basePrice: 1904,
-                        price: calculatePrice(1904),
+                        id: "telegram_members",
+                        name: "Membres",
+                        description: "Membres pour votre groupe/canal Telegram",
                         unit: "1K membres",
-                        duration: "2 heures",
-                        quality: "Moyenne"
-                    },
-                    {
-                        id: "telegram_members_high",
-                        name: "Membres de haute qualité",
-                        basePrice: 2720,
-                        price: calculatePrice(2720),
-                        unit: "1K membres",
-                        duration: "1 heure",
-                        quality: "Haute"
+                        options: [
+                            {
+                                id: "telegram_members_medium",
+                                name: "Qualité moyenne",
+                                price: Math.round(1904 * 1.7),
+                                duration: "2 heures"
+                            },
+                            {
+                                id: "telegram_members_high",
+                                name: "Haute qualité",
+                                price: Math.round(2720 * 1.7),
+                                duration: "1 heure"
+                            }
+                        ]
                     }
                 ]
             }
         ];
+
+        // Fonction pour formater les nombres
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
 
         // Fonction pour afficher les notifications
         function showNotification(type, title, message, duration = 5000) {
@@ -1529,179 +1836,253 @@
             }, 500);
         }
 
-        // Fonction pour formater les nombres avec séparateurs de milliers
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        // Fonction pour mettre à jour les étapes
+        function updateSteps(stepNumber) {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => {
+                step.classList.remove('active', 'completed');
+                const stepNum = parseInt(step.getAttribute('data-step'));
+                if (stepNum < stepNumber) {
+                    step.classList.add('completed');
+                } else if (stepNum === stepNumber) {
+                    step.classList.add('active');
+                }
+            });
         }
 
-        // Fonction pour charger les services
-        function loadServices(platform = 'all') {
-            const servicesGrid = document.getElementById('servicesGrid');
-            servicesGrid.innerHTML = '';
+        // Fonction pour afficher une étape
+        function showStep(stepNumber) {
+            // Masquer toutes les sections
+            const sections = document.querySelectorAll('.flow-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
             
-            const filteredServices = platform === 'all' 
-                ? services 
-                : services.filter(service => service.platform === platform);
-            
-            if (filteredServices.length === 0) {
-                servicesGrid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
-                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                        <h3>Aucun service disponible pour cette plateforme</h3>
-                    </div>
-                `;
-                return;
+            // Afficher la section correspondante
+            const activeSection = document.getElementById(`step${stepNumber}`);
+            if (activeSection) {
+                activeSection.classList.add('active');
             }
             
-            filteredServices.forEach(service => {
-                const serviceCard = document.createElement('div');
-                serviceCard.className = 'service-card';
-                serviceCard.style.borderTopColor = service.color;
+            // Mettre à jour les étapes
+            updateSteps(stepNumber);
+        }
+
+        // Fonction pour charger les plateformes
+        function loadPlatforms() {
+            const container = document.getElementById('platformsContainer');
+            container.innerHTML = '';
+            
+            servicesData.forEach(platform => {
+                const platformCard = document.createElement('div');
+                platformCard.className = 'platform-card';
+                platformCard.setAttribute('data-platform-id', platform.id);
                 
-                let optionsHTML = '';
-                service.options.forEach(option => {
-                    const optionId = `${service.id}_${option.id}`;
-                    optionsHTML += `
-                        <div class="service-option" data-option-id="${optionId}">
-                            <div class="option-header">
-                                <div class="option-name">${option.name}</div>
-                                <div class="option-price">${formatNumber(option.price)} XAF</div>
-                            </div>
-                            <div class="option-details">
-                                <div class="option-quality">Qualité: ${option.quality}</div>
-                                <div class="option-duration">Durée: ${option.duration}</div>
-                            </div>
-                            <div class="option-quantity">
-                                <div class="quantity-label">Quantité (${option.unit}):</div>
-                                <div class="quantity-input">
-                                    <button type="button" class="quantity-btn minus" onclick="updateQuantity('${optionId}', -1)">-</button>
-                                    <input type="number" class="quantity-value" id="quantity_${optionId}" value="1" min="1" onchange="updateTotal('${optionId}')">
-                                    <button type="button" class="quantity-btn plus" onclick="updateQuantity('${optionId}', 1)">+</button>
-                                </div>
-                            </div>
-                            <div class="option-total">
-                                <div class="total-label">Total:</div>
-                                <div class="total-price" id="total_${optionId}">${formatNumber(option.price)} XAF</div>
-                            </div>
+                platformCard.innerHTML = `
+                    <div class="platform-icon" style="background-color: ${platform.color}">
+                        <i class="${platform.icon}"></i>
+                    </div>
+                    <div class="platform-name">${platform.name}</div>
+                `;
+                
+                platformCard.addEventListener('click', () => {
+                    // Désélectionner toutes les cartes
+                    document.querySelectorAll('.platform-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    
+                    // Sélectionner cette carte
+                    platformCard.classList.add('selected');
+                    
+                    // Enregistrer la plateforme sélectionnée
+                    currentPlatform = platform;
+                    
+                    // Activer le bouton suivant
+                    document.getElementById('nextToStep2').disabled = false;
+                    
+                    // Préparer l'étape 2
+                    setTimeout(() => {
+                        loadServices(platform.id);
+                    }, 100);
+                });
+                
+                container.appendChild(platformCard);
+            });
+        }
+
+        // Fonction pour charger les services d'une plateforme
+        function loadServices(platformId) {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = '';
+            
+            const platform = servicesData.find(p => p.id === platformId);
+            if (!platform) return;
+            
+            platform.services.forEach(service => {
+                const serviceItem = document.createElement('div');
+                serviceItem.className = 'service-item';
+                serviceItem.setAttribute('data-service-id', service.id);
+                
+                // Créer les options de prix
+                let priceOptionsHTML = '';
+                service.options.forEach((option, index) => {
+                    const isSelected = index === 0;
+                    priceOptionsHTML += `
+                        <div class="price-option ${isSelected ? 'selected' : ''}" 
+                             data-option-id="${option.id}"
+                             data-price="${option.price}"
+                             data-duration="${option.duration}">
+                            <div class="price-label">${option.name}</div>
+                            <div class="price-amount">${formatNumber(option.price)} XAF</div>
                         </div>
                     `;
                 });
                 
-                serviceCard.innerHTML = `
-                    <div class="service-header">
-                        <div class="service-icon" style="background-color: ${service.color}">
-                            <i class="${service.icon}"></i>
-                        </div>
-                        <div class="service-title">
-                            <h3>${service.name}</h3>
-                            <p>${service.description}</p>
-                        </div>
-                    </div>
-                    <div class="service-body">
-                        ${optionsHTML}
-                    </div>
-                    <div class="service-footer">
-                        <button class="btn btn-primary order-btn" onclick="prepareOrder('${service.id}')">
-                            Commander
-                        </button>
+                serviceItem.innerHTML = `
+                    <div class="service-name">${service.name}</div>
+                    <div class="service-desc">${service.description}</div>
+                    <div class="service-prices">
+                        ${priceOptionsHTML}
                     </div>
                 `;
                 
-                servicesGrid.appendChild(serviceCard);
+                // Gérer le clic sur le service
+                serviceItem.addEventListener('click', (e) => {
+                    // Ne pas déclencher si on clique sur une option de prix
+                    if (e.target.closest('.price-option')) return;
+                    
+                    // Désélectionner tous les services
+                    document.querySelectorAll('.service-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // Sélectionner ce service
+                    serviceItem.classList.add('selected');
+                    
+                    // Enregistrer le service sélectionné
+                    currentService = service;
+                    
+                    // Sélectionner la première option par défaut
+                    const firstOption = serviceItem.querySelector('.price-option');
+                    if (firstOption) {
+                        selectPriceOption(firstOption);
+                    }
+                    
+                    // Activer le bouton suivant
+                    document.getElementById('nextToStep3').disabled = false;
+                });
+                
+                // Gérer le clic sur les options de prix
+                serviceItem.querySelectorAll('.price-option').forEach(optionEl => {
+                    optionEl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        
+                        // Désélectionner toutes les options de ce service
+                        serviceItem.querySelectorAll('.price-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        
+                        // Sélectionner cette option
+                        optionEl.classList.add('selected');
+                        
+                        // Sélectionner le service si ce n'est pas déjà fait
+                        if (!serviceItem.classList.contains('selected')) {
+                            serviceItem.classList.add('selected');
+                            currentService = service;
+                            document.getElementById('nextToStep3').disabled = false;
+                        }
+                        
+                        // Enregistrer l'option sélectionnée
+                        selectPriceOption(optionEl);
+                    });
+                });
+                
+                container.appendChild(serviceItem);
             });
         }
 
-        // Fonctions globales pour les boutons de quantité
-        window.updateQuantity = function(optionId, change) {
-            const input = document.getElementById(`quantity_${optionId}`);
-            let currentValue = parseInt(input.value) || 1;
-            currentValue += change;
+        // Fonction pour sélectionner une option de prix
+        function selectPriceOption(optionEl) {
+            const optionId = optionEl.getAttribute('data-option-id');
+            const price = parseInt(optionEl.getAttribute('data-price'));
+            const duration = optionEl.getAttribute('data-duration');
             
-            if (currentValue < 1) currentValue = 1;
-            input.value = currentValue;
-            
-            updateTotal(optionId);
-        };
+            // Trouver l'option correspondante dans les données
+            const option = currentService.options.find(opt => opt.id === optionId);
+            if (option) {
+                currentOption = {
+                    id: optionId,
+                    name: option.name,
+                    price: price,
+                    duration: duration,
+                    unit: currentService.unit
+                };
+                
+                // Mettre à jour l'affichage
+                document.getElementById('unitPrice').textContent = `${formatNumber(price)} XAF`;
+                document.getElementById('quantityUnit').textContent = currentService.unit;
+                updateTotalPreview();
+            }
+        }
 
-        window.updateTotal = function(optionId) {
-            const input = document.getElementById(`quantity_${optionId}`);
-            const quantity = parseInt(input.value) || 1;
-            
-            // Trouver l'option correspondante
-            let optionPrice = 0;
-            let optionName = '';
-            
-            services.forEach(service => {
-                service.options.forEach(option => {
-                    if (`${service.id}_${option.id}` === optionId) {
-                        optionPrice = option.price;
-                        optionName = option.name;
-                    }
-                });
-            });
-            
-            const total = optionPrice * quantity;
-            document.getElementById(`total_${optionId}`).textContent = `${formatNumber(total)} XAF`;
-        };
+        // Fonction pour mettre à jour l'aperçu du total
+        function updateTotalPreview() {
+            if (currentOption) {
+                const total = currentOption.price * currentQuantity;
+                document.getElementById('totalPreview').textContent = `${formatNumber(total)} XAF`;
+                document.getElementById('nextToStep4').disabled = false;
+            }
+        }
 
-        // Fonction pour préparer une commande
-        window.prepareOrder = function(serviceId) {
-            const service = services.find(s => s.id === serviceId);
-            if (!service) return;
+        // Fonction pour générer le récapitulatif de commande
+        function generateOrderSummary() {
+            if (!currentPlatform || !currentService || !currentOption) return;
             
-            // Trouver l'option sélectionnée (première option par défaut)
-            const option = service.options[0];
-            const optionId = `${service.id}_${option.id}`;
-            const quantity = parseInt(document.getElementById(`quantity_${optionId}`).value) || 1;
-            const total = option.price * quantity;
+            const total = currentOption.price * currentQuantity;
             
-            currentOrder = {
-                serviceId: serviceId,
-                serviceName: service.name,
-                optionId: option.id,
-                optionName: option.name,
-                platform: service.platform,
-                quantity: quantity,
-                unit: option.unit,
-                unitPrice: option.price,
-                total: total,
-                duration: option.duration,
-                quality: option.quality
-            };
-            
-            // Afficher le résumé de la commande
-            const orderSummary = document.getElementById('orderSummary');
-            orderSummary.innerHTML = `
-                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                    <h4 style="margin-bottom: 15px; color: var(--dark-blue);">Résumé de la commande</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div><strong>Service:</strong></div>
-                        <div>${service.name}</div>
-                        <div><strong>Option:</strong></div>
-                        <div>${option.name}</div>
-                        <div><strong>Plateforme:</strong></div>
-                        <div style="text-transform: capitalize;">${service.platform}</div>
-                        <div><strong>Quantité:</strong></div>
-                        <div>${quantity} ${option.unit}</div>
-                        <div><strong>Prix unitaire:</strong></div>
-                        <div>${formatNumber(option.price)} XAF</div>
-                        <div><strong>Durée:</strong></div>
-                        <div>${option.duration}</div>
-                        <div><strong>Total:</strong></div>
-                        <div style="font-weight: 700; color: var(--primary-orange); font-size: 1.2rem;">
-                            ${formatNumber(total)} XAF
-                        </div>
-                    </div>
+            const summaryHTML = `
+                <div class="summary-header">
+                    <h3>Récapitulatif de commande</h3>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Plateforme:</div>
+                    <div class="summary-value">${currentPlatform.name}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Service:</div>
+                    <div class="summary-value">${currentService.name}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Qualité:</div>
+                    <div class="summary-value">${currentOption.name}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Quantité:</div>
+                    <div class="summary-value">${currentQuantity} ${currentService.unit}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Durée:</div>
+                    <div class="summary-value">${currentOption.duration}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Prix unitaire:</div>
+                    <div class="summary-value">${formatNumber(currentOption.price)} XAF</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total:</div>
+                    <div class="summary-value summary-total">${formatNumber(total)} XAF</div>
                 </div>
             `;
             
-            // Ouvrir la modal
-            document.getElementById('orderModal').classList.add('active');
-        };
+            document.getElementById('orderSummary').innerHTML = summaryHTML;
+        }
 
-        // Fonction pour confirmer une commande
+        // Fonction pour confirmer la commande
         async function confirmOrder() {
-            if (!currentOrder || !currentUser) return;
+            if (!currentUser || !userData || !currentPlatform || !currentService || !currentOption) {
+                showNotification('error', 'Erreur', 'Informations de commande incomplètes');
+                return;
+            }
             
             const orderLink = document.getElementById('orderLink').value;
             const orderNotes = document.getElementById('orderNotes').value;
@@ -1711,10 +2092,11 @@
                 return;
             }
             
-            // Vérifier le solde de l'utilisateur
-            if (userData.balance < currentOrder.total) {
-                showNotification('error', 'Solde insuffisant', 'Votre solde est insuffisant pour cette commande. Veuillez déposer des fonds.');
-                closeOrderModal();
+            const total = currentOption.price * currentQuantity;
+            
+            // Vérifier le solde
+            if (userData.balance < total) {
+                showNotification('error', 'Solde insuffisant', 'Votre solde est insuffisant. Veuillez déposer des fonds.');
                 return;
             }
             
@@ -1723,18 +2105,18 @@
                 const orderRef = await db.collection('orders').add({
                     userId: currentUser.uid,
                     userEmail: currentUser.email,
-                    userName: userData.username || currentUser.displayName,
-                    serviceId: currentOrder.serviceId,
-                    serviceName: currentOrder.serviceName,
-                    optionId: currentOrder.optionId,
-                    optionName: currentOrder.optionName,
-                    platform: currentOrder.platform,
-                    quantity: currentOrder.quantity,
-                    unit: currentOrder.unit,
-                    unitPrice: currentOrder.unitPrice,
-                    total: currentOrder.total,
-                    duration: currentOrder.duration,
-                    quality: currentOrder.quality,
+                    userName: userData.username || currentUser.displayName || currentUser.email.split('@')[0],
+                    platform: currentPlatform.name,
+                    platformId: currentPlatform.id,
+                    service: currentService.name,
+                    serviceId: currentService.id,
+                    option: currentOption.name,
+                    optionId: currentOption.id,
+                    quantity: currentQuantity,
+                    unit: currentService.unit,
+                    unitPrice: currentOption.price,
+                    total: total,
+                    duration: currentOption.duration,
                     link: orderLink,
                     notes: orderNotes,
                     status: 'pending',
@@ -1742,47 +2124,113 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Déduire le montant du solde utilisateur
-                const newBalance = userData.balance - currentOrder.total;
+                // Mettre à jour le solde
+                const newBalance = userData.balance - total;
                 await db.collection('users').doc(currentUser.uid).update({
                     balance: newBalance,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Mettre à jour les données utilisateur locales
+                // Mettre à jour les données locales
                 userData.balance = newBalance;
                 updateUserInfo();
+                loadUserStats();
                 
                 // Enregistrer la transaction
                 await db.collection('transactions').add({
                     userId: currentUser.uid,
                     type: 'order',
-                    amount: currentOrder.total,
-                    description: `Commande: ${currentOrder.serviceName} - ${currentOrder.optionName}`,
+                    amount: total,
+                    description: `Commande: ${currentService.name} - ${currentOption.name}`,
                     orderId: orderRef.id,
-                    balanceBefore: userData.balance + currentOrder.total,
+                    balanceBefore: userData.balance + total,
                     balanceAfter: userData.balance,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                showNotification('success', 'Commande confirmée', 'Votre commande a été passée avec succès!');
-                closeOrderModal();
+                // Afficher le succès
+                document.getElementById('step4').style.display = 'none';
+                document.getElementById('orderSuccess').style.display = 'block';
+                updateSteps(5); // Marquer toutes les étapes comme complétées
                 
-                // Actualiser les statistiques
-                loadUserStats();
+                showNotification('success', 'Commande confirmée', 'Votre commande a été passée avec succès!');
                 
             } catch (error) {
                 console.error('Erreur lors de la commande:', error);
-                showNotification('error', 'Erreur', 'Une erreur est survenue lors de la commande. Veuillez réessayer.');
+                showNotification('error', 'Erreur', 'Une erreur est survenue. Veuillez réessayer.');
             }
         }
 
-        // Fonction pour charger les statistiques utilisateur
+        // Fonction pour déposer des fonds
+        async function depositFunds(amount, paymentMethod, phoneNumber = '') {
+            if (!currentUser || !userData) return;
+            
+            try {
+                const amountNum = parseInt(amount);
+                const newBalance = (userData.balance || 0) + amountNum;
+                
+                // Mettre à jour le solde
+                await db.collection('users').doc(currentUser.uid).update({
+                    balance: newBalance,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Mettre à jour les données locales
+                userData.balance = newBalance;
+                updateUserInfo();
+                loadUserStats();
+                
+                // Enregistrer la transaction
+                await db.collection('transactions').add({
+                    userId: currentUser.uid,
+                    type: 'deposit',
+                    amount: amountNum,
+                    description: 'Dépôt de fonds',
+                    method: paymentMethod,
+                    phone: phoneNumber,
+                    balanceBefore: newBalance - amountNum,
+                    balanceAfter: newBalance,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('success', 'Dépôt réussi', `${formatNumber(amountNum)} XAF ont été crédités sur votre compte`);
+                
+                // Fermer la modal
+                closeDepositModal();
+                
+            } catch (error) {
+                console.error('Erreur lors du dépôt:', error);
+                showNotification('error', 'Erreur', 'Une erreur est survenue lors du dépôt');
+            }
+        }
+
+        // Fonction pour mettre à jour les infos utilisateur
+        function updateUserInfo() {
+            if (currentUser && userData) {
+                // Avatar
+                const userName = userData.username || currentUser.displayName || currentUser.email.split('@')[0];
+                const initial = userName.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = initial;
+                
+                // Nom et email
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                
+                // Message de bienvenue
+                document.getElementById('welcomeMessage').textContent = `Bienvenue ${userName}!`;
+                
+                // Solde
+                const balance = userData.balance || 0;
+                document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
+                document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
+            }
+        }
+
+        // Fonction pour charger les statistiques
         async function loadUserStats() {
             if (!currentUser) return;
             
             try {
-                // Compter les commandes
                 const ordersQuery = await db.collection('orders')
                     .where('userId', '==', currentUser.uid)
                     .get();
@@ -1792,13 +2240,11 @@
                     doc.data().status === 'pending' || doc.data().status === 'processing'
                 ).length;
                 
-                // Calculer le total dépensé
                 let totalSpent = 0;
                 ordersQuery.forEach(doc => {
                     totalSpent += doc.data().total || 0;
                 });
                 
-                // Mettre à jour l'interface
                 document.getElementById('totalOrders').textContent = totalOrders;
                 document.getElementById('activeOrders').textContent = activeOrders;
                 document.getElementById('totalSpent').textContent = `${formatNumber(totalSpent)} XAF`;
@@ -1808,95 +2254,29 @@
             }
         }
 
-        // Fonction pour mettre à jour les infos utilisateur
-        function updateUserInfo() {
-            if (currentUser && userData) {
-                // Avatar avec initiale
-                const userName = userData.username || currentUser.displayName || currentUser.email;
-                const initial = userName.charAt(0).toUpperCase();
-                document.getElementById('userAvatar').textContent = initial;
-                
-                // Nom et email
-                document.getElementById('userName').textContent = userName;
-                document.getElementById('userEmail').textContent = currentUser.email;
-                
-                // Solde
-                const balance = userData.balance || 0;
-                document.getElementById('userBalance').textContent = formatNumber(balance);
-                document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
-            }
-        }
-
-        // Fonction pour déposer des fonds
-        async function depositFunds(amount) {
-            if (!currentUser || !userData) return;
-            
-            try {
-                const newBalance = (userData.balance || 0) + parseInt(amount);
-                
-                // Mettre à jour le solde dans Firestore
-                await db.collection('users').doc(currentUser.uid).update({
-                    balance: newBalance,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Mettre à jour les données locales
-                userData.balance = newBalance;
-                updateUserInfo();
-                
-                // Enregistrer la transaction
-                await db.collection('transactions').add({
-                    userId: currentUser.uid,
-                    type: 'deposit',
-                    amount: parseInt(amount),
-                    description: 'Dépôt de fonds',
-                    method: document.getElementById('paymentMethod').value,
-                    balanceBefore: newBalance - parseInt(amount),
-                    balanceAfter: newBalance,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showNotification('success', 'Dépôt réussi', `Votre compte a été crédité de ${formatNumber(amount)} XAF`);
-                
-            } catch (error) {
-                console.error('Erreur lors du dépôt:', error);
-                showNotification('error', 'Erreur', 'Une erreur est survenue lors du dépôt. Veuillez réessayer.');
-            }
-        }
-
         // Fonctions pour les modals
         function openDepositModal() {
-            document.getElementById('depositModal').classList.add('active');
-            document.getElementById('depositAmount').focus();
+            document.getElementById('depositModal').style.display = 'flex';
         }
 
         function closeDepositModal() {
-            document.getElementById('depositModal').classList.remove('active');
+            document.getElementById('depositModal').style.display = 'none';
             document.getElementById('depositForm').reset();
         }
 
-        function closeOrderModal() {
-            document.getElementById('orderModal').classList.remove('active');
-            document.getElementById('orderLink').value = '';
-            document.getElementById('orderNotes').value = '';
-            currentOrder = null;
-        }
-
-        // Initialisation de l'application
+        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             // Vérifier l'authentification
             auth.onAuthStateChanged(async user => {
                 if (user) {
                     currentUser = user;
                     
-                    // Charger les données utilisateur
                     try {
                         const userDoc = await db.collection('users').doc(user.uid).get();
                         
                         if (userDoc.exists) {
                             userData = userDoc.data();
                         } else {
-                            // Créer un profil utilisateur s'il n'existe pas
                             userData = {
                                 username: user.displayName || user.email.split('@')[0],
                                 email: user.email,
@@ -1909,87 +2289,132 @@
                             await db.collection('users').doc(user.uid).set(userData);
                         }
                         
-                        // Mettre à jour l'interface
                         updateUserInfo();
                         loadUserStats();
-                        loadServices();
+                        loadPlatforms();
                         
                     } catch (error) {
-                        console.error('Erreur lors du chargement des données utilisateur:', error);
-                        showNotification('error', 'Erreur', 'Impossible de charger vos données. Veuillez rafraîchir la page.');
+                        console.error('Erreur:', error);
+                        showNotification('error', 'Erreur', 'Impossible de charger vos données');
                     }
                     
                 } else {
-                    // Rediriger vers la page de connexion si non authentifié
                     window.location.href = 'connexion.html';
                 }
             });
             
             // Gérer le menu mobile
-            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-                document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('menuBtn').addEventListener('click', function() {
+                document.getElementById('mobileMenu').classList.add('active');
+                document.getElementById('menuOverlay').classList.add('active');
             });
             
-            // Gérer le filtre des plateformes
-            document.querySelectorAll('.platform-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const platform = this.getAttribute('data-platform');
-                    loadServices(platform);
+            document.getElementById('menuClose').addEventListener('click', closeMobileMenu);
+            document.getElementById('menuOverlay').addEventListener('click', closeMobileMenu);
+            
+            function closeMobileMenu() {
+                document.getElementById('mobileMenu').classList.remove('active');
+                document.getElementById('menuOverlay').classList.remove('active');
+            }
+            
+            // Navigation entre les étapes
+            document.getElementById('nextToStep2').addEventListener('click', () => showStep(2));
+            document.getElementById('nextToStep3').addEventListener('click', () => showStep(3));
+            document.getElementById('nextToStep4').addEventListener('click', () => {
+                generateOrderSummary();
+                showStep(4);
+            });
+            
+            document.getElementById('backToStep1').addEventListener('click', () => showStep(1));
+            document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
+            document.getElementById('backToStep3').addEventListener('click', () => showStep(3));
+            
+            // Gérer la quantité
+            document.getElementById('decreaseQuantity').addEventListener('click', () => {
+                if (currentQuantity > 1) {
+                    currentQuantity--;
+                    document.getElementById('quantityDisplay').textContent = currentQuantity;
+                    updateTotalPreview();
+                }
+            });
+            
+            document.getElementById('increaseQuantity').addEventListener('click', () => {
+                currentQuantity++;
+                document.getElementById('quantityDisplay').textContent = currentQuantity;
+                updateTotalPreview();
+            });
+            
+            // Confirmer la commande
+            document.getElementById('confirmOrderBtn').addEventListener('click', confirmOrder);
+            
+            // Nouvelle commande
+            document.getElementById('newOrderBtn').addEventListener('click', () => {
+                // Réinitialiser
+                currentPlatform = null;
+                currentService = null;
+                currentOption = null;
+                currentQuantity = 1;
+                
+                // Réinitialiser l'interface
+                document.querySelectorAll('.platform-card').forEach(card => {
+                    card.classList.remove('selected');
                 });
+                
+                document.querySelectorAll('.service-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                document.getElementById('orderLink').value = '';
+                document.getElementById('orderNotes').value = '';
+                document.getElementById('quantityDisplay').textContent = '1';
+                document.getElementById('unitPrice').textContent = '0 XAF';
+                document.getElementById('totalPreview').textContent = '0 XAF';
+                document.getElementById('nextToStep2').disabled = true;
+                document.getElementById('nextToStep3').disabled = true;
+                document.getElementById('nextToStep4').disabled = true;
+                
+                // Revenir à l'étape 1
+                document.getElementById('step4').style.display = 'block';
+                document.getElementById('orderSuccess').style.display = 'none';
+                showStep(1);
             });
             
-            // Gérer les boutons de dépôt
+            // Gérer les dépôts
             document.getElementById('depositBtn').addEventListener('click', openDepositModal);
+            document.getElementById('depositMenuBtn').addEventListener('click', function() {
+                closeMobileMenu();
+                setTimeout(openDepositModal, 300);
+            });
+            
             document.getElementById('closeDepositModal').addEventListener('click', closeDepositModal);
             document.getElementById('cancelDeposit').addEventListener('click', closeDepositModal);
             
-            // Gérer la soumission du formulaire de dépôt
             document.getElementById('confirmDeposit').addEventListener('click', function() {
                 const amount = document.getElementById('depositAmount').value;
                 const paymentMethod = document.getElementById('paymentMethod').value;
+                const phoneNumber = document.getElementById('phoneNumber').value;
                 
                 if (!amount || amount < 1000) {
-                    showNotification('error', 'Erreur', 'Le montant minimum de dépôt est de 1 000 XAF');
+                    showNotification('error', 'Erreur', 'Le montant minimum est de 1 000 XAF');
                     return;
                 }
                 
                 if (!paymentMethod) {
-                    showNotification('error', 'Erreur', 'Veuillez sélectionner une méthode de paiement');
+                    showNotification('error', 'Erreur', 'Sélectionnez une méthode de paiement');
                     return;
                 }
                 
-                // Simuler un dépôt (dans un système réel, rediriger vers une passerelle de paiement)
-                depositFunds(amount);
-                closeDepositModal();
+                depositFunds(amount, paymentMethod, phoneNumber);
             });
             
-            // Gérer les boutons de commande
-            document.getElementById('closeOrderModal').addEventListener('click', closeOrderModal);
-            document.getElementById('cancelOrder').addEventListener('click', closeOrderModal);
-            document.getElementById('confirmOrder').addEventListener('click', confirmOrder);
-            
-            // Gérer la déconnexion
+            // Déconnexion
             document.getElementById('logoutBtn').addEventListener('click', function() {
                 auth.signOut().then(() => {
                     window.location.href = 'index.html';
                 }).catch(error => {
-                    console.error('Erreur lors de la déconnexion:', error);
-                    showNotification('error', 'Erreur', 'Impossible de se déconnecter. Veuillez réessayer.');
+                    console.error('Erreur de déconnexion:', error);
+                    showNotification('error', 'Erreur', 'Impossible de se déconnecter');
                 });
-            });
-            
-            // Fermer le menu mobile en cliquant à l'extérieur
-            document.addEventListener('click', function(event) {
-                const sidebar = document.getElementById('sidebar');
-                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-                
-                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && 
-                    !sidebar.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-                    sidebar.classList.remove('active');
-                }
             });
         });
     </script>
