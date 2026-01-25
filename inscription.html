@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
         :root {
             --primary-yellow: #FFD700;
@@ -39,10 +39,33 @@
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             color: var(--text-dark);
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f2ff 100%);
+            background: linear-gradient(135deg, #0A162B 0%, #1A1F3C 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fond animé étoiles */
+        .star-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+            100% { opacity: 0.3; transform: scale(1); }
         }
 
         h1, h2, h3, h4 {
@@ -73,26 +96,14 @@
         }
 
         .btn-primary {
-            background-color: var(--primary-blue);
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-orange));
             color: var(--white);
+            box-shadow: 0 4px 15px rgba(42, 94, 232, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-orange);
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(42, 94, 232, 0.4);
         }
 
         /* Header */
@@ -104,9 +115,9 @@
             z-index: 1000;
             padding: 15px 0;
             transition: var(--transition);
-            background-color: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            background: rgba(26, 31, 60, 0.95);
             backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
         .navbar {
@@ -119,14 +130,14 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
             font-size: 1.8rem;
-            color: var(--dark-blue);
+            color: var(--white);
             text-decoration: none;
             display: flex;
             align-items: center;
         }
 
         .logo span {
-            color: var(--primary-blue);
+            color: var(--primary-yellow);
         }
 
         .logo .dot {
@@ -135,443 +146,209 @@
             line-height: 1;
         }
 
-        .logo .yellow {
-            color: var(--primary-yellow);
-        }
-
-        /* Form Section - Centré et amélioré */
-        .auth-section {
-            flex: 1;
+        /* Formulaire au centre */
+        main {
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 120px 0 60px;
-            animation: fadeIn 1s ease-out;
-            width: 100%;
+            align-items: center;
+            min-height: 100vh;
+            padding: 120px 20px 60px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .auth-container {
-            width: 100%;
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2.5rem;
             max-width: 500px;
-            background-color: var(--white);
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            /* CENTRAGE CORRIGÉ */
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes glow {
-            from {
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            }
-            to {
-                box-shadow: 0 15px 40px rgba(42, 94, 232, 0.15);
-            }
-        }
-
-        .auth-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-yellow), var(--primary-blue), var(--primary-orange));
-            animation: rainbow 3s linear infinite;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .auth-header {
+        .form-header {
             text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 0.8s ease-out 0.3s both;
+            margin-bottom: 2rem;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .auth-header h2 {
+        .form-header h2 {
             font-size: 2.2rem;
             color: var(--dark-blue);
-            margin-bottom: 10px;
+            margin-bottom: 0.5rem;
             background: linear-gradient(45deg, var(--primary-blue), var(--primary-orange));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .auth-header p {
+        .form-header p {
             color: var(--text-light);
         }
 
         .form-group {
-            margin-bottom: 25px;
-            position: relative;
-            animation: fadeInUp 0.8s ease-out;
-            animation-fill-mode: both;
-        }
-
-        .form-group:nth-child(1) { animation-delay: 0.4s; }
-        .form-group:nth-child(2) { animation-delay: 0.5s; }
-        .form-group:nth-child(3) { animation-delay: 0.6s; }
-        .form-group:nth-child(4) { animation-delay: 0.7s; }
-        .form-group:nth-child(5) { animation-delay: 0.8s; }
-        .form-group:nth-child(6) { animation-delay: 0.9s; }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-blue);
             font-weight: 500;
-            color: var(--text-dark);
+        }
+
+        .form-group label i {
+            color: var(--primary-blue);
+            margin-right: 8px;
+            width: 20px;
         }
 
         .form-control {
             width: 100%;
-            padding: 15px 20px;
+            padding: 14px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 1rem;
             font-family: 'Poppins', sans-serif;
             transition: var(--transition);
-            background-color: #f9f9f9;
+            background: #f9f9f9;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary-blue);
-            background-color: var(--white);
+            background: var(--white);
             box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1);
-            transform: translateY(-2px);
         }
 
-        .form-control.has-error {
-            border-color: var(--error-red);
-            animation: shake 0.5s ease-in-out;
+        .phone-group {
+            display: flex;
+            gap: 10px;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        .phone-group input:first-child {
+            max-width: 100px;
         }
 
-        .form-control.has-success {
-            border-color: var(--success-green);
-        }
-
-        .error-message {
+        .error {
             color: var(--error-red);
             font-size: 0.85rem;
             margin-top: 5px;
             display: none;
         }
 
-        .error-message.show {
-            display: block;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 40px;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .password-toggle:hover {
-            color: var(--primary-blue);
-        }
-
-        /* Password Strength Bar */
-        .password-strength {
-            margin-top: 10px;
+        .success {
+            color: var(--success-green);
+            font-size: 0.85rem;
+            margin-top: 5px;
             display: none;
         }
 
-        .password-strength.show {
-            display: block;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .strength-bar {
-            height: 5px;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 5px;
-        }
-
-        .strength-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 5px;
-            transition: width 0.3s ease, background-color 0.3s ease;
-        }
-
-        .strength-text {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        /* Phone input with country code */
-        .phone-input-group {
+        .btn-container {
+            margin-top: 2rem;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .country-code {
-            flex: 0 0 80px;
-        }
-
-        .phone-number {
-            flex: 1;
-        }
-
-        .form-footer {
-            margin-top: 30px;
-            text-align: center;
-            animation: fadeInUp 0.8s ease-out 1s both;
-        }
-
-        .submit-btn {
+        .btn-container button {
             width: 100%;
             padding: 16px;
             font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
         }
 
-        .submit-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-        }
-
-        .submit-btn .btn-text {
-            position: relative;
-            z-index: 2;
-        }
-
-        .submit-btn .btn-loader {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-        }
-
-        .submit-btn.loading {
-            pointer-events: none;
-        }
-
-        .submit-btn.loading .btn-text {
-            opacity: 0;
-        }
-
-        .submit-btn.loading .btn-loader {
-            display: block;
-        }
-
-        .btn-loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--white);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        .auth-links {
-            margin-top: 25px;
+        .divider {
+            display: flex;
+            align-items: center;
             text-align: center;
+            margin: 20px 0;
+            color: var(--text-light);
         }
 
-        .auth-links a {
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .divider:not(:empty)::before {
+            margin-right: 1rem;
+        }
+
+        .divider:not(:empty)::after {
+            margin-left: 1rem;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .link a {
             color: var(--primary-blue);
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
-            position: relative;
         }
 
-        .auth-links a:hover {
+        .link a:hover {
+            text-decoration: underline;
             color: var(--primary-orange);
         }
 
-        .auth-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary-orange);
-            transition: width 0.3s ease;
+        /* Footer */
+        footer {
+            background: var(--dark-blue);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
         }
 
-        .auth-links a:hover::after {
-            width: 100%;
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        /* Notification System */
-        .notification-container {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 350px;
-        }
-
-        .notification {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            border-left: 5px solid var(--success-green);
-            transform: translateX(400px);
-            opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease;
+        .social-icons {
             display: flex;
-            align-items: flex-start;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
         }
 
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .notification.error {
-            border-left-color: var(--error-red);
-        }
-
-        .notification.warning {
-            border-left-color: var(--warning-orange);
-        }
-
-        .notification-icon {
-            font-size: 1.5rem;
-            margin-right: 15px;
-            margin-top: 2px;
-        }
-
-        .notification.success .notification-icon {
-            color: var(--success-green);
-        }
-
-        .notification.error .notification-icon {
-            color: var(--error-red);
-        }
-
-        .notification.warning .notification-icon {
-            color: var(--warning-orange);
-        }
-
-        .notification-content h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .notification-content p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .notification-close {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            margin-left: auto;
-            font-size: 1.2rem;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
+        .social-icons a {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
             transition: var(--transition);
         }
 
-        .notification-close:hover {
-            color: var(--text-dark);
-        }
-
-        /* Footer simplifié */
-        footer {
-            background-color: var(--dark-blue);
-            color: var(--white);
-            padding: 30px 0;
-            margin-top: auto;
+        .social-icons a:hover {
+            background: var(--primary-blue);
+            transform: translateY(-3px);
         }
 
         .footer-bottom {
-            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.9rem;
-            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .footer-bottom a {
             color: var(--primary-yellow);
             text-decoration: none;
             transition: var(--transition);
+            margin: 0 0.5rem;
         }
 
         .footer-bottom a:hover {
@@ -579,212 +356,272 @@
             text-decoration: underline;
         }
 
-        /* Responsive */
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: var(--success-green);
+            border-left: 4px solid #2E7D32;
+        }
+
+        .notification.error {
+            background: var(--error-red);
+            border-left: 4px solid #c62828;
+        }
+
+        .notification.warning {
+            background: var(--warning-orange);
+            border-left: 4px solid #ef6c00;
+        }
+
+        /* Loader */
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-loading .loader {
+            display: inline-block;
+            margin-left: 10px;
+        }
+
         @media (max-width: 768px) {
-            .auth-container {
-                padding: 30px;
-                margin: 0 20px;
+            .form-container {
+                padding: 1.5rem;
             }
             
-            .auth-header h2 {
+            .form-header h2 {
                 font-size: 1.8rem;
             }
             
-            .notification-container {
-                left: 20px;
-                right: 20px;
-                max-width: none;
-            }
-            
-            .phone-input-group {
+            .phone-group {
                 flex-direction: column;
-                gap: 10px;
             }
             
-            .country-code {
-                flex: 1;
+            .phone-group input:first-child {
+                max-width: 100%;
             }
         }
 
         @media (max-width: 480px) {
-            .auth-container {
-                padding: 25px 20px;
+            .form-container {
+                padding: 1.25rem;
             }
             
-            .form-control {
-                padding: 12px 15px;
+            header {
+                padding: 10px 0;
             }
             
-            .btn {
-                padding: 12px 24px;
+            .logo {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header simplifié -->
+    <!-- Fond étoilé -->
+    <div class="star-background" id="starBackground"></div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message"></span>
+    </div>
+
+    <!-- Header -->
     <header>
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">
-                    Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
+                    Lik<span>é</span>o<span class="dot">.</span>Boost
                 </a>
-                <!-- Bouton retiré -->
             </nav>
         </div>
     </header>
 
-    <!-- Notification Container -->
-    <div class="notification-container" id="notificationContainer"></div>
-
-    <!-- Inscription Section -->
-    <section class="auth-section">
-        <div class="container">
-            <div class="auth-container">
-                <div class="auth-header">
-                    <h2>Créer un Compte</h2>
-                    <p>Rejoignez Likéo Boost et boostez votre visibilité en ligne</p>
-                </div>
-
-                <form id="registerForm">
-                    <div class="form-group">
-                        <label for="username">Nom d'utilisateur</label>
-                        <input type="text" id="username" class="form-control" placeholder="Votre nom d'utilisateur" required>
-                        <div class="error-message" id="usernameError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Adresse Email</label>
-                        <input type="email" id="email" class="form-control" placeholder="votre@email.com" required>
-                        <div class="error-message" id="emailError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="country">Pays</label>
-                        <select id="country" class="form-control" required>
-                            <option value="" disabled selected>Sélectionnez votre pays</option>
-                            <!-- Afrique de l'Ouest -->
-                            <option value="BJ">Bénin (+229)</option>
-                            <option value="BF">Burkina Faso (+226)</option>
-                            <option value="CV">Cap-Vert (+238)</option>
-                            <option value="CI">Côte d'Ivoire (+225)</option>
-                            <option value="GM">Gambie (+220)</option>
-                            <option value="GH">Ghana (+233)</option>
-                            <option value="GN">Guinée (+224)</option>
-                            <option value="GW">Guinée-Bissau (+245)</option>
-                            <option value="LR">Liberia (+231)</option>
-                            <option value="ML">Mali (+223)</option>
-                            <option value="MR">Mauritanie (+222)</option>
-                            <option value="NE">Niger (+227)</option>
-                            <option value="NG">Nigeria (+234)</option>
-                            <option value="SN">Sénégal (+221)</option>
-                            <option value="SL">Sierra Leone (+232)</option>
-                            <option value="TG">Togo (+228)</option>
-                            
-                            <!-- Afrique Centrale -->
-                            <option value="CM">Cameroun (+237)</option>
-                            <option value="CF">République centrafricaine (+236)</option>
-                            <option value="TD">Tchad (+235)</option>
-                            <option value="CG">Congo (+242)</option>
-                            <option value="CD">République Démocratique du Congo (+243)</option>
-                            <option value="GQ">Guinée équatoriale (+240)</option>
-                            <option value="GA">Gabon (+241)</option>
-                            <option value="ST">Sao Tomé-et-Principe (+239)</option>
-                            
-                            <!-- Afrique de l'Est -->
-                            <option value="BI">Burundi (+257)</option>
-                            <option value="KM">Comores (+269)</option>
-                            <option value="DJ">Djibouti (+253)</option>
-                            <option value="ER">Érythrée (+291)</option>
-                            <option value="ET">Éthiopie (+251)</option>
-                            <option value="KE">Kenya (+254)</option>
-                            <option value="MG">Madagascar (+261)</option>
-                            <option value="MW">Malawi (+265)</option>
-                            <option value="MU">Maurice (+230)</option>
-                            <option value="MZ">Mozambique (+258)</option>
-                            <option value="RW">Rwanda (+250)</option>
-                            <option value="SC">Seychelles (+248)</option>
-                            <option value="SO">Somalie (+252)</option>
-                            <option value="SS">Soudan du Sud (+211)</option>
-                            <option value="TZ">Tanzanie (+255)</option>
-                            <option value="UG">Ouganda (+256)</option>
-                            <option value="ZM">Zambie (+260)</option>
-                            <option value="ZW">Zimbabwe (+263)</option>
-                            
-                            <!-- Afrique du Nord -->
-                            <option value="DZ">Algérie (+213)</option>
-                            <option value="EG">Égypte (+20)</option>
-                            <option value="LY">Libye (+218)</option>
-                            <option value="MA">Maroc (+212)</option>
-                            <option value="SD">Soudan (+249)</option>
-                            <option value="TN">Tunisie (+216)</option>
-                            
-                            <!-- Afrique Australe -->
-                            <option value="AO">Angola (+244)</option>
-                            <option value="BW">Botswana (+267)</option>
-                            <option value="LS">Lesotho (+266)</option>
-                            <option value="NA">Namibie (+264)</option>
-                            <option value="ZA">Afrique du Sud (+27)</option>
-                            <option value="SZ">Eswatini (+268)</option>
-                        </select>
-                        <div class="error-message" id="countryError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">Numéro WhatsApp</label>
-                        <div class="phone-input-group">
-                            <input type="text" id="countryCode" class="form-control country-code" placeholder="+237" readonly>
-                            <input type="tel" id="phone" class="form-control phone-number" placeholder="6XX XX XX XX" required>
-                        </div>
-                        <div class="error-message" id="phoneError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Mot de passe</label>
-                        <input type="password" id="password" class="form-control" placeholder="Votre mot de passe" required>
-                        <button type="button" class="password-toggle" id="togglePassword">
-                            <i class="far fa-eye"></i>
-                        </button>
-                        <div class="error-message" id="passwordError"></div>
-                        
-                        <!-- Barre de force du mot de passe -->
-                        <div class="password-strength" id="passwordStrength">
-                            <div class="strength-bar">
-                                <div class="strength-fill" id="passwordStrengthFill"></div>
-                            </div>
-                            <span class="strength-text" id="passwordStrengthText">Force du mot de passe</span>
-                        </div>
-                        
-                        <small style="display: block; margin-top: 5px; color: var(--text-light);">
-                            Le mot de passe doit contenir au moins 8 caractères, une majuscule et un chiffre.
-                        </small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirmer le mot de passe</label>
-                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmez votre mot de passe" required>
-                        <div class="error-message" id="confirmPasswordError"></div>
-                    </div>
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-primary submit-btn">
-                            <span class="btn-text">S'inscrire</span>
-                            <div class="btn-loader"></div>
-                        </button>
-                        <div class="auth-links">
-                            <p>Vous avez déjà un compte ? <a href="connexion.html">Connectez-vous</a></p>
-                        </div>
-                    </div>
-                </form>
+    <!-- Formulaire d'inscription -->
+    <main>
+        <div class="form-container">
+            <div class="form-header">
+                <h2>Créer un compte</h2>
+                <p>Rejoignez Likéo Boost et boostez votre visibilité en ligne</p>
             </div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i>Nom d'utilisateur</label>
+                    <input type="text" id="username" class="form-control" placeholder="Votre nom d'utilisateur" required>
+                    <div class="error" id="usernameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i>Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="votre@email.com" required>
+                    <div class="error" id="emailError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pays"><i class="fas fa-globe"></i>Pays</label>
+                    <select id="pays" class="form-control" onchange="updateIndicatif()" required>
+                        <option value="">— Sélectionnez votre pays —</option>
+                        <!-- Afrique de l'Ouest -->
+                        <option value="bj">Bénin 🇧🇯 (+229)</option>
+                        <option value="bf">Burkina Faso 🇧🇫 (+226)</option>
+                        <option value="cv">Cap-Vert 🇨🇻 (+238)</option>
+                        <option value="ci">Côte d'Ivoire 🇨🇮 (+225)</option>
+                        <option value="gm">Gambie 🇬🇲 (+220)</option>
+                        <option value="gh">Ghana 🇬🇭 (+233)</option>
+                        <option value="gn">Guinée 🇬🇳 (+224)</option>
+                        <option value="gw">Guinée-Bissau 🇬🇼 (+245)</option>
+                        <option value="lr">Liberia 🇱🇷 (+231)</option>
+                        <option value="ml">Mali 🇲🇱 (+223)</option>
+                        <option value="mr">Mauritanie 🇲🇷 (+222)</option>
+                        <option value="ne">Niger 🇳🇪 (+227)</option>
+                        <option value="ng">Nigeria 🇳🇬 (+234)</option>
+                        <option value="sn">Sénégal 🇸🇳 (+221)</option>
+                        <option value="sl">Sierra Leone 🇸🇱 (+232)</option>
+                        <option value="tg">Togo 🇹🇬 (+228)</option>
+                        
+                        <!-- Afrique Centrale -->
+                        <option value="cm">Cameroun 🇨🇲 (+237)</option>
+                        <option value="cf">République centrafricaine 🇨🇫 (+236)</option>
+                        <option value="td">Tchad 🇹🇩 (+235)</option>
+                        <option value="cg">Congo 🇨🇬 (+242)</option>
+                        <option value="cd">République Démocratique du Congo 🇨🇩 (+243)</option>
+                        <option value="gq">Guinée équatoriale 🇬🇶 (+240)</option>
+                        <option value="ga">Gabon 🇬🇦 (+241)</option>
+                        <option value="st">Sao Tomé-et-Principe 🇸🇹 (+239)</option>
+                        
+                        <!-- Afrique de l'Est -->
+                        <option value="bi">Burundi 🇧🇮 (+257)</option>
+                        <option value="km">Comores 🇰🇲 (+269)</option>
+                        <option value="dj">Djibouti 🇩🇯 (+253)</option>
+                        <option value="er">Érythrée 🇪🇷 (+291)</option>
+                        <option value="et">Éthiopie 🇪🇹 (+251)</option>
+                        <option value="ke">Kenya 🇰🇪 (+254)</option>
+                        <option value="mg">Madagascar 🇲🇬 (+261)</option>
+                        <option value="mw">Malawi 🇲🇼 (+265)</option>
+                        <option value="mu">Maurice 🇲🇺 (+230)</option>
+                        <option value="mz">Mozambique 🇲🇿 (+258)</option>
+                        <option value="rw">Rwanda 🇷🇼 (+250)</option>
+                        <option value="sc">Seychelles 🇸🇨 (+248)</option>
+                        <option value="so">Somalie 🇸🇴 (+252)</option>
+                        <option value="ss">Soudan du Sud 🇸🇸 (+211)</option>
+                        <option value="tz">Tanzanie 🇹🇿 (+255)</option>
+                        <option value="ug">Ouganda 🇺🇬 (+256)</option>
+                        <option value="zm">Zambie 🇿🇲 (+260)</option>
+                        <option value="zw">Zimbabwe 🇿🇼 (+263)</option>
+                        
+                        <!-- Afrique du Nord -->
+                        <option value="dz">Algérie 🇩🇿 (+213)</option>
+                        <option value="eg">Égypte 🇪🇬 (+20)</option>
+                        <option value="ly">Libye 🇱🇾 (+218)</option>
+                        <option value="ma">Maroc 🇲🇦 (+212)</option>
+                        <option value="sd">Soudan 🇸🇩 (+249)</option>
+                        <option value="tn">Tunisie 🇹🇳 (+216)</option>
+                        
+                        <!-- Afrique Australe -->
+                        <option value="ao">Angola 🇦🇴 (+244)</option>
+                        <option value="bw">Botswana 🇧🇼 (+267)</option>
+                        <option value="ls">Lesotho 🇱🇸 (+266)</option>
+                        <option value="na">Namibie 🇳🇦 (+264)</option>
+                        <option value="za">Afrique du Sud 🇿🇦 (+27)</option>
+                        <option value="sz">Eswatini 🇸🇿 (+268)</option>
+                        
+                        <!-- Autres -->
+                        <option value="fr">France 🇫🇷 (+33)</option>
+                        <option value="be">Belgique 🇧🇪 (+32)</option>
+                        <option value="ch">Suisse 🇨🇭 (+41)</option>
+                        <option value="ca">Canada 🇨🇦 (+1)</option>
+                        <option value="us">États-Unis 🇺🇸 (+1)</option>
+                    </select>
+                    <div class="error" id="countryError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telephone"><i class="fas fa-phone"></i>Numéro WhatsApp</label>
+                    <div class="phone-group">
+                        <input type="text" id="indicatif" class="form-control" readonly placeholder="+229">
+                        <input type="tel" id="telephone" class="form-control" placeholder="6XX XX XX XX" required>
+                    </div>
+                    <div class="error" id="phoneError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="referral"><i class="fas fa-gift"></i>Code de parrainage (optionnel)</label>
+                    <input type="text" id="referral" class="form-control" placeholder="Entrez le code de votre parrain">
+                    <div class="success" id="referralSuccess"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i>Mot de passe</label>
+                    <input type="password" id="password" class="form-control" required minlength="6" placeholder="••••••">
+                    <div class="error" id="passwordError"></div>
+                    <small style="color: var(--text-light); font-size: 0.85rem;">
+                        Le mot de passe doit contenir au moins 6 caractères
+                    </small>
+                </div>
+                
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary" id="registerBtn">
+                        <span>S'inscrire</span>
+                        <div class="loader" id="registerLoader"></div>
+                    </button>
+                    
+                    <div class="link">
+                        Vous avez déjà un compte ? <a href="connexion.html">Connectez-vous</a>
+                    </div>
+                </div>
+            </form>
         </div>
-    </section>
+    </main>
 
-    <!-- Footer simplifié -->
+    <!-- Footer -->
     <footer>
-        <div class="container">
+        <div class="footer-content">
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Likéo Boost. Tous droits réservés. | Site propulsé par <a href="https://socialboosthorizon.com" target="_blank">Social Boost Horizon</a></p>
+                © 2026 Likéo Boost • Tous droits réservés • 
+                <a href="privacy.html">Confidentialité</a> • 
+                <a href="terms.html">CGV</a> • 
+                <a href="https://socialboosthorizon.com" target="_blank">Site propulsé par Social Boost Horizon</a>
             </div>
         </div>
     </footer>
@@ -802,494 +639,357 @@
         };
 
         // Initialiser Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Vérifier que Firebase est initialisé
-        console.log("Firebase initialisé:", app.name);
-        console.log("Firestore disponible:", db ? "OUI" : "NON");
-
         // Variables globales
         let isSubmitting = false;
-        
-        // Mappage des codes de pays et indicatifs
-        const countryCodes = {
-            'CM': '+237', 'CI': '+225', 'SN': '+221', 'GN': '+224', 'ML': '+223',
-            'BF': '+226', 'NE': '+227', 'TG': '+228', 'BJ': '+229', 'GA': '+241',
-            'CG': '+242', 'CD': '+243', 'MG': '+261', 'TN': '+216', 'DZ': '+213',
-            'MA': '+212', 'FR': '+33', 'BE': '+32', 'CH': '+41', 'CA': '+1',
-            'BJ': '+229', 'BF': '+226', 'CV': '+238', 'CI': '+225', 'GM': '+220',
-            'GH': '+233', 'GN': '+224', 'GW': '+245', 'LR': '+231', 'ML': '+223',
-            'MR': '+222', 'NE': '+227', 'NG': '+234', 'SN': '+221', 'SL': '+232',
-            'TG': '+228', 'CM': '+237', 'CF': '+236', 'TD': '+235', 'CG': '+242',
-            'CD': '+243', 'GQ': '+240', 'GA': '+241', 'ST': '+239', 'BI': '+257',
-            'KM': '+269', 'DJ': '+253', 'ER': '+291', 'ET': '+251', 'KE': '+254',
-            'MG': '+261', 'MW': '+265', 'MU': '+230', 'MZ': '+258', 'RW': '+250',
-            'SC': '+248', 'SO': '+252', 'SS': '+211', 'TZ': '+255', 'UG': '+256',
-            'ZM': '+260', 'ZW': '+263', 'DZ': '+213', 'EG': '+20', 'LY': '+218',
-            'MA': '+212', 'SD': '+249', 'TN': '+216', 'AO': '+244', 'BW': '+267',
-            'LS': '+266', 'NA': '+264', 'ZA': '+27', 'SZ': '+268'
-        };
 
         // Fonction pour afficher les notifications
-        function showNotification(type, title, message, duration = 5000) {
-            const container = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            // Définir l'icône selon le type
+            let icon = 'fas fa-check-circle';
+            if (type === 'error') icon = 'fas fa-exclamation-circle';
+            if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+            
+            notification.innerHTML = `<i class="${icon}"></i><span id="notification-message">${message}</span>`;
             notification.className = `notification ${type}`;
             
-            let icon = '';
-            if (type === 'success') icon = 'fas fa-check-circle';
-            else if (type === 'error') icon = 'fas fa-exclamation-circle';
-            else if (type === 'warning') icon = 'fas fa-exclamation-triangle';
-            
-            notification.innerHTML = `
-                <div class="notification-icon">
-                    <i class="${icon}"></i>
-                </div>
-                <div class="notification-content">
-                    <h4>${title}</h4>
-                    <p>${message}</p>
-                </div>
-                <button class="notification-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            container.appendChild(notification);
-            
-            // Animation d'entrée
+            // Afficher la notification
             setTimeout(() => {
                 notification.classList.add('show');
-            }, 10);
+            }, 100);
             
-            // Fermeture au clic
-            const closeBtn = notification.querySelector('.notification-close');
-            closeBtn.addEventListener('click', () => {
-                closeNotification(notification);
-            });
-            
-            // Fermeture automatique
-            if (duration > 0) {
-                setTimeout(() => {
-                    closeNotification(notification);
-                }, duration);
-            }
-            
-            return notification;
-        }
-
-        function closeNotification(notification) {
-            notification.classList.remove('show');
+            // Cacher après 5 secondes
             setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 500);
+                notification.classList.remove('show');
+            }, 5000);
         }
 
-        // Fonction pour afficher les erreurs de formulaire
-        function showError(inputId, message) {
-            const input = document.getElementById(inputId);
-            const errorElement = document.getElementById(inputId + 'Error');
+        // Créer le fond étoilé
+        function createStarBackground() {
+            const background = document.getElementById('starBackground');
+            const numberOfStars = 100;
             
-            input.classList.add('has-error');
-            input.classList.remove('has-success');
-            errorElement.textContent = message;
-            errorElement.classList.add('show');
-        }
-
-        // Fonction pour effacer les erreurs
-        function clearError(inputId) {
-            const input = document.getElementById(inputId);
-            const errorElement = document.getElementById(inputId + 'Error');
-            
-            input.classList.remove('has-error', 'has-success');
-            errorElement.textContent = '';
-            errorElement.classList.remove('show');
-        }
-
-        // Fonction pour vérifier la force du mot de passe
-        function checkPasswordStrength(password) {
-            let strength = 0;
-            const strengthBar = document.getElementById('passwordStrengthFill');
-            const strengthText = document.getElementById('passwordStrengthText');
-            const strengthContainer = document.getElementById('passwordStrength');
-            
-            if (!password) {
-                strengthContainer.classList.remove('show');
-                return;
-            }
-            
-            strengthContainer.classList.add('show');
-            
-            // Longueur minimale
-            if (password.length >= 8) strength += 25;
-            
-            // Contient des lettres minuscules et majuscules
-            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-            
-            // Contient des chiffres
-            if (/\d/.test(password)) strength += 25;
-            
-            // Contient des caractères spéciaux
-            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-            
-            // Mettre à jour la barre et le texte
-            strengthBar.style.width = `${strength}%`;
-            
-            if (strength < 25) {
-                strengthBar.style.backgroundColor = '#f44336';
-                strengthText.textContent = 'Très faible';
-                strengthText.style.color = '#f44336';
-            } else if (strength < 50) {
-                strengthBar.style.backgroundColor = '#ff9800';
-                strengthText.textContent = 'Faible';
-                strengthText.style.color = '#ff9800';
-            } else if (strength < 75) {
-                strengthBar.style.backgroundColor = '#ffc107';
-                strengthText.textContent = 'Moyen';
-                strengthText.style.color = '#ffc107';
-            } else if (strength < 100) {
-                strengthBar.style.backgroundColor = '#4caf50';
-                strengthText.textContent = 'Fort';
-                strengthText.style.color = '#4caf50';
-            } else {
-                strengthBar.style.backgroundColor = '#2e7d32';
-                strengthText.textContent = 'Très fort';
-                strengthText.style.color = '#2e7d32';
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Taille aléatoire entre 1px et 3px
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Position aléatoire
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Délai d'animation aléatoire
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                
+                background.appendChild(star);
             }
         }
 
-        // Fonction pour mettre à jour l'indicatif du pays
-        function updateCountryCode() {
-            const countrySelect = document.getElementById('country');
-            const countryCodeInput = document.getElementById('countryCode');
-            const selectedCountry = countrySelect.value;
+        // Mise à jour de l'indicatif téléphonique
+        function updateIndicatif() {
+            const codes = {
+                // Afrique de l'Ouest
+                'bj': '+229', 'bf': '+226', 'cv': '+238', 'ci': '+225', 'gm': '+220',
+                'gh': '+233', 'gn': '+224', 'gw': '+245', 'lr': '+231', 'ml': '+223',
+                'mr': '+222', 'ne': '+227', 'ng': '+234', 'sn': '+221', 'sl': '+232',
+                'tg': '+228',
+                // Afrique Centrale
+                'cm': '+237', 'cf': '+236', 'td': '+235', 'cg': '+242', 'cd': '+243',
+                'gq': '+240', 'ga': '+241', 'st': '+239',
+                // Afrique de l'Est
+                'bi': '+257', 'km': '+269', 'dj': '+253', 'er': '+291', 'et': '+251',
+                'ke': '+254', 'mg': '+261', 'mw': '+265', 'mu': '+230', 'mz': '+258',
+                'rw': '+250', 'sc': '+248', 'so': '+252', 'ss': '+211', 'tz': '+255',
+                'ug': '+256', 'zm': '+260', 'zw': '+263',
+                // Afrique du Nord
+                'dz': '+213', 'eg': '+20', 'ly': '+218', 'ma': '+212', 'sd': '+249',
+                'tn': '+216',
+                // Afrique Australe
+                'ao': '+244', 'bw': '+267', 'ls': '+266', 'na': '+264', 'za': '+27',
+                'sz': '+268',
+                // Autres
+                'fr': '+33', 'be': '+32', 'ch': '+41', 'ca': '+1', 'us': '+1'
+            };
             
-            if (selectedCountry && countryCodes[selectedCountry]) {
-                countryCodeInput.value = countryCodes[selectedCountry];
+            const paysSelect = document.getElementById('pays');
+            const indicatifInput = document.getElementById('indicatif');
+            const selectedValue = paysSelect.value;
+            
+            if (selectedValue && codes[selectedValue]) {
+                indicatifInput.value = codes[selectedValue];
             } else {
-                countryCodeInput.value = '+';
+                indicatifInput.value = '+';
             }
         }
 
-        // Fonction pour valider le formulaire
-        function validateForm() {
-            let isValid = true;
+        // Vérifier le code de parrainage
+        async function checkReferralCode(referralCode) {
+            if (!referralCode) return { valid: false };
             
-            // Valider le nom d'utilisateur
-            const username = document.getElementById('username').value.trim();
-            if (!username) {
-                showError('username', 'Le nom d\'utilisateur est requis');
-                isValid = false;
-            } else if (username.length < 3) {
-                showError('username', 'Le nom d\'utilisateur doit contenir au moins 3 caractères');
-                isValid = false;
-            } else {
-                clearError('username');
-            }
-            
-            // Valider l'email
-            const email = document.getElementById('email').value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email) {
-                showError('email', 'L\'adresse email est requise');
-                isValid = false;
-            } else if (!emailRegex.test(email)) {
-                showError('email', 'Veuillez entrer une adresse email valide');
-                isValid = false;
-            } else {
-                clearError('email');
-            }
-            
-            // Valider le pays
-            const country = document.getElementById('country').value;
-            if (!country) {
-                showError('country', 'Veuillez sélectionner votre pays');
-                isValid = false;
-            } else {
-                clearError('country');
-            }
-            
-            // Valider le téléphone
-            const phone = document.getElementById('phone').value.trim();
-            const countryCode = document.getElementById('countryCode').value;
-            if (!phone) {
-                showError('phone', 'Le numéro WhatsApp est requis');
-                isValid = false;
-            } else if (!/^[\d\s]+$/.test(phone)) {
-                showError('phone', 'Le numéro doit contenir uniquement des chiffres et espaces');
-                isValid = false;
-            } else if (phone.replace(/\s/g, '').length < 8) {
-                showError('phone', 'Le numéro doit contenir au moins 8 chiffres');
-                isValid = false;
-            } else {
-                clearError('phone');
-            }
-            
-            // Valider le mot de passe
-            const password = document.getElementById('password').value;
-            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-            if (!password) {
-                showError('password', 'Le mot de passe est requis');
-                isValid = false;
-            } else if (!passwordRegex.test(password)) {
-                showError('password', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule et un chiffre');
-                isValid = false;
-            } else {
-                clearError('password');
-            }
-            
-            // Valider la confirmation du mot de passe
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            if (!confirmPassword) {
-                showError('confirmPassword', 'Veuillez confirmer votre mot de passe');
-                isValid = false;
-            } else if (password !== confirmPassword) {
-                showError('confirmPassword', 'Les mots de passe ne correspondent pas');
-                isValid = false;
-            } else {
-                clearError('confirmPassword');
-            }
-            
-            return isValid;
-        }
-
-        // Fonction pour créer le document utilisateur dans Firestore
-        async function createUserDocument(user, userData) {
             try {
-                console.log("Tentative de création du document utilisateur dans Firestore...");
+                const querySnapshot = await db.collection('users')
+                    .where('referralCode', '==', referralCode.toUpperCase())
+                    .limit(1)
+                    .get();
                 
-                // Créer la collection 'users' et le document avec l'UID
-                const userRef = db.collection('users').doc(user.uid);
-                
-                // Vérifier si le document existe déjà (au cas où)
-                const docSnapshot = await userRef.get();
-                
-                if (docSnapshot.exists) {
-                    console.log("Le document utilisateur existe déjà, mise à jour...");
-                    await userRef.update({
-                        ...userData,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                if (!querySnapshot.empty) {
+                    const referrerData = querySnapshot.docs[0].data();
+                    return {
+                        valid: true,
+                        referrerId: querySnapshot.docs[0].id,
+                        referrerUsername: referrerData.username || 'Utilisateur inconnu'
+                    };
                 } else {
-                    console.log("Création du nouveau document utilisateur...");
-                    await userRef.set({
-                        ...userData,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                    return { valid: false };
                 }
-                
-                console.log("Document utilisateur créé/mis à jour avec succès dans Firestore");
-                return true;
             } catch (error) {
-                console.error("Erreur lors de la création du document utilisateur:", error);
-                throw error;
+                console.error("Erreur vérification parrainage:", error);
+                return { valid: false };
             }
         }
 
-        // Fonction pour gérer l'inscription
-        async function handleRegister(event) {
-            event.preventDefault();
+        // Auto-remplir le code de parrainage depuis l'URL
+        async function checkAndFillReferralCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCodeFromUrl = urlParams.get('ref');
+            const referralInput = document.getElementById('referral');
+            const referralSuccess = document.getElementById('referralSuccess');
+            
+            if (refCodeFromUrl) {
+                // Auto-remplir le code de parrainage
+                referralInput.value = refCodeFromUrl.toUpperCase();
+                
+                // Vérifier si le code est valide
+                const result = await checkReferralCode(refCodeFromUrl);
+                if (result.valid) {
+                    referralSuccess.textContent = `✅ Code valide ! Vous êtes parrainé par ${result.referrerUsername}`;
+                    referralSuccess.style.display = 'block';
+                } else {
+                    referralSuccess.textContent = '⚠️ Code de parrainage invalide';
+                    referralSuccess.style.color = 'var(--error-red)';
+                    referralSuccess.style.display = 'block';
+                }
+            }
+        }
+
+        // Vérification du code de parrainage (quand l'utilisateur entre manuellement)
+        document.getElementById('referral').addEventListener('blur', async function() {
+            const referralCode = this.value.trim();
+            if (!referralCode) return;
+            
+            const referralSuccess = document.getElementById('referralSuccess');
+            referralSuccess.textContent = '';
+            referralSuccess.style.display = 'none';
+            
+            const result = await checkReferralCode(referralCode);
+            if (result.valid) {
+                referralSuccess.textContent = `✅ Code valide ! Vous êtes parrainé par ${result.referrerUsername}`;
+                referralSuccess.style.display = 'block';
+                referralSuccess.style.color = 'var(--success-green)';
+            } else {
+                referralSuccess.textContent = '⚠️ Code de parrainage invalide';
+                referralSuccess.style.color = 'var(--error-red)';
+                referralSuccess.style.display = 'block';
+            }
+        });
+
+        // Gestion de l'inscription
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
             
             if (isSubmitting) return;
             
-            // Valider le formulaire
-            if (!validateForm()) {
-                showNotification('warning', 'Formulaire invalide', 'Veuillez corriger les erreurs dans le formulaire');
+            const btn = document.getElementById('registerBtn');
+            const loader = document.getElementById('registerLoader');
+            
+            btn.classList.add('btn-loading');
+            isSubmitting = true;
+            
+            // Réinitialiser les erreurs
+            document.querySelectorAll('.error').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
+            });
+            
+            // Récupérer les valeurs
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const pays = document.getElementById('pays').value;
+            const indicatif = document.getElementById('indicatif').value;
+            const telephone = document.getElementById('telephone').value.trim();
+            const referral = document.getElementById('referral').value.trim();
+            
+            // Validation
+            let isValid = true;
+            
+            if (!username) {
+                document.getElementById('usernameError').textContent = 'Veuillez entrer un nom d\'utilisateur';
+                document.getElementById('usernameError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('emailError').textContent = 'Veuillez entrer une adresse email valide';
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!pays) {
+                document.getElementById('countryError').textContent = 'Veuillez sélectionner votre pays';
+                document.getElementById('countryError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!telephone) {
+                document.getElementById('phoneError').textContent = 'Veuillez entrer votre numéro de téléphone';
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Le mot de passe doit contenir au moins 6 caractères';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                btn.classList.remove('btn-loading');
+                isSubmitting = false;
                 return;
             }
             
-            // Récupérer les données du formulaire
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const country = document.getElementById('country').value;
-            const countryCode = document.getElementById('countryCode').value;
-            const phone = countryCode + ' ' + document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value;
-            
-            // Activer l'état de chargement
-            isSubmitting = true;
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.classList.add('loading');
-            
             try {
-                console.log("Tentative de création de l'utilisateur avec Firebase Auth...");
+                // 1. Créer l'utilisateur avec Firebase Auth
+                const { user } = await auth.createUserWithEmailAndPassword(email, password);
+                const userId = user.uid;
                 
-                // Créer l'utilisateur avec Firebase Authentication
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+                // 2. Générer un code de parrainage pour le nouvel utilisateur
+                const generatedCode = Math.random().toString(36).substring(2,10).toUpperCase();
                 
-                console.log("Utilisateur créé avec succès dans Firebase Auth:", user.uid);
+                // 3. Vérifier le code de parrainage utilisé
+                let referredBy = null;
+                let referrerId = null;
                 
-                // Préparer les données utilisateur pour Firestore
-                const userData = {
-                    uid: user.uid,
+                if (referral) {
+                    const referralResult = await checkReferralCode(referral);
+                    if (referralResult.valid) {
+                        referredBy = referral.toUpperCase();
+                        referrerId = referralResult.referrerId;
+                        
+                        // Incrémenter le compteur de parrainage du parrain
+                        await db.collection('users').doc(referrerId).update({
+                            referralsCount: firebase.firestore.FieldValue.increment(1),
+                            referralBalance: firebase.firestore.FieldValue.increment(100) // Bonus de parrainage
+                        });
+                    }
+                }
+                
+                // 4. Créer le document utilisateur dans Firestore avec TOUS LES CHAMPS
+                await db.collection('users').doc(userId).set({
+                    // Informations de base
+                    uid: userId,
                     username: username,
                     email: email,
-                    country: country,
-                    phone: phone,
+                    phone: `${indicatif} ${telephone}`,
+                    country: pays,
                     
-                    // CHAMPS POUR LE TABLEAU DE BORD
-                    balance: 0,                    // Solde initial
-                    totalOrders: 0,               // Nombre total de commandes
-                    activeOrders: 0,              // Commandes actives
-                    totalSpent: 0,                // Total dépensé
+                    // Parrainage
+                    referralCode: generatedCode,
+                    referredBy: referredBy,
+                    referralsCount: 0,
+                    referralBalance: 0,
                     
-                    // Informations système
+                    // Statistiques et solde
+                    balance: 0,
+                    totalOrders: 0,
+                    activeOrders: 0,
+                    totalSpent: 0,
+                    
+                    // Système
                     role: 'user',
                     status: 'active',
-                    emailVerified: user.emailVerified,
+                    provider: 'email',
+                    emailVerified: false,
+                    welcomeModalShown: false,
+                    isFirstAccess: true,
+                    openedChests: [],
+                    
+                    // Métadonnées
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                };
+                });
                 
-                // Créer le document utilisateur dans Firestore
-                await createUserDocument(user, userData);
-                
-                // Envoyer l'email de vérification
+                // 5. Envoyer l'email de vérification
                 await user.sendEmailVerification();
-                console.log("Email de vérification envoyé");
                 
-                // Désactiver l'état de chargement
-                isSubmitting = false;
-                submitBtn.classList.remove('loading');
+                // 6. Afficher le succès
+                showNotification('✅ Inscription réussie ! Redirection vers le tableau de bord...', 'success');
                 
-                // Afficher le succès
-                showNotification('success', 'Inscription réussie !', 'Votre compte a été créé avec succès. Vérifiez votre email pour confirmer votre compte. Redirection vers le tableau de bord...');
-                
-                // Réinitialiser le formulaire
-                document.getElementById('registerForm').reset();
-                document.getElementById('countryCode').value = '+';
-                
-                // Stocker les informations utilisateur dans sessionStorage pour le tableau de bord
-                sessionStorage.setItem('userUID', user.uid);
-                sessionStorage.setItem('userEmail', user.email);
+                // 7. Stocker les informations dans sessionStorage
+                sessionStorage.setItem('userUID', userId);
+                sessionStorage.setItem('userEmail', email);
                 sessionStorage.setItem('userName', username);
                 
-                // Redirection vers le tableau de bord après 3 secondes
+                // 8. Rediriger vers le tableau de bord
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
-                }, 3000);
+                }, 2000);
                 
             } catch (error) {
-                // Désactiver l'état de chargement
+                console.error("Erreur d'inscription:", error);
+                
+                let errorMessage = "Une erreur s'est produite lors de l'inscription";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "Cet email est déjà utilisé";
+                    document.getElementById('emailError').textContent = errorMessage;
+                    document.getElementById('emailError').style.display = 'block';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = "Le mot de passe est trop faible";
+                    document.getElementById('passwordError').textContent = errorMessage;
+                    document.getElementById('passwordError').style.display = 'block';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "L'adresse email n'est pas valide";
+                    document.getElementById('emailError').textContent = errorMessage;
+                    document.getElementById('emailError').style.display = 'block';
+                }
+                
+                showNotification(`❌ ${errorMessage}`, 'error');
+            } finally {
+                btn.classList.remove('btn-loading');
                 isSubmitting = false;
-                submitBtn.classList.remove('loading');
-                
-                // Gérer les erreurs spécifiques
-                let errorMessage = 'Une erreur est survenue lors de l\'inscription';
-                let errorField = '';
-                
-                console.error("Erreur complète d'inscription:", error);
-                
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'Cette adresse email est déjà utilisée par un autre compte';
-                        errorField = 'email';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'L\'adresse email n\'est pas valide';
-                        errorField = 'email';
-                        break;
-                    case 'auth/operation-not-allowed':
-                        errorMessage = 'L\'inscription par email/mot de passe n\'est pas activée. Contactez l\'administrateur.';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Le mot de passe est trop faible. Utilisez au moins 8 caractères avec une majuscule et un chiffre';
-                        errorField = 'password';
-                        break;
-                    case 'permission-denied':
-                        errorMessage = 'Permission refusée. Vérifiez vos règles Firestore.';
-                        break;
-                    default:
-                        errorMessage = error.message || 'Erreur inconnue';
-                }
-                
-                // Afficher l'erreur dans le champ approprié
-                if (errorField) {
-                    showError(errorField, errorMessage);
-                }
-                
-                // Afficher la notification d'erreur
-                showNotification('error', 'Échec de l\'inscription', errorMessage);
             }
-        }
+        });
 
-        // Fonction pour basculer la visibilité du mot de passe
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            const toggleButton = document.getElementById('togglePassword');
-            const icon = toggleButton.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                confirmPasswordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                confirmPasswordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        // Initialiser l'application
+        // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("Page d'inscription chargée, initialisation des événements...");
+            // Créer le fond étoilé
+            createStarBackground();
             
-            // Gérer la soumission du formulaire
-            const registerForm = document.getElementById('registerForm');
-            if (registerForm) {
-                registerForm.addEventListener('submit', handleRegister);
-            } else {
-                console.error("Formulaire d'inscription non trouvé!");
-            }
+            // Initialiser l'indicatif
+            updateIndicatif();
             
-            // Gérer le basculement du mot de passe
-            const togglePasswordBtn = document.getElementById('togglePassword');
-            if (togglePasswordBtn) {
-                togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
-            }
-            
-            // Gérer le changement de pays
-            const countrySelect = document.getElementById('country');
-            if (countrySelect) {
-                countrySelect.addEventListener('change', updateCountryCode);
-            }
-            
-            // Vérifier la force du mot de passe en temps réel
-            const passwordInput = document.getElementById('password');
-            if (passwordInput) {
-                passwordInput.addEventListener('input', function() {
-                    checkPasswordStrength(this.value);
-                });
-            }
-            
-            // Effacer les erreurs lors de la saisie
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    clearError(this.id);
-                });
-            });
+            // Vérifier le code de parrainage depuis l'URL
+            checkAndFillReferralCode();
             
             // Vérifier si l'utilisateur est déjà connecté
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    console.log("Utilisateur déjà connecté, redirection vers le tableau de bord...");
                     // Si l'utilisateur est déjà connecté, rediriger vers le tableau de bord
                     window.location.href = 'dashboard.html';
                 }
             });
-            
-            // Initialiser l'indicatif du pays
-            updateCountryCode();
-            
-            console.log("Initialisation terminée avec succès");
         });
     </script>
 </body>
