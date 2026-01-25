@@ -296,6 +296,12 @@
             animation: shake 0.5s ease-in-out;
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
         .form-control.has-success {
             border-color: var(--success-green);
         }
@@ -796,9 +802,13 @@
         };
 
         // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Vérifier que Firebase est initialisé
+        console.log("Firebase initialisé:", app.name);
+        console.log("Firestore disponible:", db ? "OUI" : "NON");
 
         // Variables globales
         let isSubmitting = false;
@@ -1008,8 +1018,11 @@
             if (!phone) {
                 showError('phone', 'Le numéro WhatsApp est requis');
                 isValid = false;
-            } else if (!/^\d+$/.test(phone.replace(/\s/g, ''))) {
-                showError('phone', 'Le numéro doit contenir uniquement des chiffres');
+            } else if (!/^[\d\s]+$/.test(phone)) {
+                showError('phone', 'Le numéro doit contenir uniquement des chiffres et espaces');
+                isValid = false;
+            } else if (phone.replace(/\s/g, '').length < 8) {
+                showError('phone', 'Le numéro doit contenir au moins 8 chiffres');
                 isValid = false;
             } else {
                 clearError('phone');
@@ -1043,6 +1056,40 @@
             return isValid;
         }
 
+        // Fonction pour créer le document utilisateur dans Firestore
+        async function createUserDocument(user, userData) {
+            try {
+                console.log("Tentative de création du document utilisateur dans Firestore...");
+                
+                // Créer la collection 'users' et le document avec l'UID
+                const userRef = db.collection('users').doc(user.uid);
+                
+                // Vérifier si le document existe déjà (au cas où)
+                const docSnapshot = await userRef.get();
+                
+                if (docSnapshot.exists) {
+                    console.log("Le document utilisateur existe déjà, mise à jour...");
+                    await userRef.update({
+                        ...userData,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } else {
+                    console.log("Création du nouveau document utilisateur...");
+                    await userRef.set({
+                        ...userData,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                
+                console.log("Document utilisateur créé/mis à jour avec succès dans Firestore");
+                return true;
+            } catch (error) {
+                console.error("Erreur lors de la création du document utilisateur:", error);
+                throw error;
+            }
+        }
+
         // Fonction pour gérer l'inscription
         async function handleRegister(event) {
             event.preventDefault();
@@ -1069,13 +1116,16 @@
             submitBtn.classList.add('loading');
             
             try {
+                console.log("Tentative de création de l'utilisateur avec Firebase Auth...");
+                
                 // Créer l'utilisateur avec Firebase Authentication
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                // Enregistrer les informations supplémentaires dans Firestore
-                // AJOUT DE TOUS LES CHAMPS NÉCESSAIRES POUR LE TABLEAU DE BORD
-                await db.collection('users').doc(user.uid).set({
+                console.log("Utilisateur créé avec succès dans Firebase Auth:", user.uid);
+                
+                // Préparer les données utilisateur pour Firestore
+                const userData = {
                     uid: user.uid,
                     username: username,
                     email: email,
@@ -1091,23 +1141,32 @@
                     // Informations système
                     role: 'user',
                     status: 'active',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    emailVerified: user.emailVerified,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Créer le document utilisateur dans Firestore
+                await createUserDocument(user, userData);
                 
                 // Envoyer l'email de vérification
                 await user.sendEmailVerification();
+                console.log("Email de vérification envoyé");
                 
                 // Désactiver l'état de chargement
                 isSubmitting = false;
                 submitBtn.classList.remove('loading');
                 
                 // Afficher le succès
-                showNotification('success', 'Inscription réussie !', 'Votre compte a été créé avec succès. Vous serez redirigé vers le tableau de bord.');
+                showNotification('success', 'Inscription réussie !', 'Votre compte a été créé avec succès. Vérifiez votre email pour confirmer votre compte. Redirection vers le tableau de bord...');
                 
                 // Réinitialiser le formulaire
                 document.getElementById('registerForm').reset();
                 document.getElementById('countryCode').value = '+';
+                
+                // Stocker les informations utilisateur dans sessionStorage pour le tableau de bord
+                sessionStorage.setItem('userUID', user.uid);
+                sessionStorage.setItem('userEmail', user.email);
+                sessionStorage.setItem('userName', username);
                 
                 // Redirection vers le tableau de bord après 3 secondes
                 setTimeout(() => {
@@ -1121,30 +1180,40 @@
                 
                 // Gérer les erreurs spécifiques
                 let errorMessage = 'Une erreur est survenue lors de l\'inscription';
+                let errorField = '';
+                
+                console.error("Erreur complète d'inscription:", error);
                 
                 switch (error.code) {
                     case 'auth/email-already-in-use':
                         errorMessage = 'Cette adresse email est déjà utilisée par un autre compte';
-                        showError('email', errorMessage);
+                        errorField = 'email';
                         break;
                     case 'auth/invalid-email':
                         errorMessage = 'L\'adresse email n\'est pas valide';
-                        showError('email', errorMessage);
+                        errorField = 'email';
                         break;
                     case 'auth/operation-not-allowed':
-                        errorMessage = 'L\'inscription par email/mot de passe n\'est pas activée';
+                        errorMessage = 'L\'inscription par email/mot de passe n\'est pas activée. Contactez l\'administrateur.';
                         break;
                     case 'auth/weak-password':
-                        errorMessage = 'Le mot de passe est trop faible';
-                        showError('password', 'Le mot de passe est trop faible. Utilisez au moins 8 caractères avec une majuscule et un chiffre');
+                        errorMessage = 'Le mot de passe est trop faible. Utilisez au moins 8 caractères avec une majuscule et un chiffre';
+                        errorField = 'password';
+                        break;
+                    case 'permission-denied':
+                        errorMessage = 'Permission refusée. Vérifiez vos règles Firestore.';
                         break;
                     default:
-                        errorMessage = error.message;
+                        errorMessage = error.message || 'Erreur inconnue';
                 }
                 
-                // Afficher l'erreur
+                // Afficher l'erreur dans le champ approprié
+                if (errorField) {
+                    showError(errorField, errorMessage);
+                }
+                
+                // Afficher la notification d'erreur
                 showNotification('error', 'Échec de l\'inscription', errorMessage);
-                console.error('Erreur d\'inscription:', error);
             }
         }
 
@@ -1170,19 +1239,35 @@
 
         // Initialiser l'application
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page d'inscription chargée, initialisation des événements...");
+            
             // Gérer la soumission du formulaire
-            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+            } else {
+                console.error("Formulaire d'inscription non trouvé!");
+            }
             
             // Gérer le basculement du mot de passe
-            document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
+            const togglePasswordBtn = document.getElementById('togglePassword');
+            if (togglePasswordBtn) {
+                togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
+            }
             
             // Gérer le changement de pays
-            document.getElementById('country').addEventListener('change', updateCountryCode);
+            const countrySelect = document.getElementById('country');
+            if (countrySelect) {
+                countrySelect.addEventListener('change', updateCountryCode);
+            }
             
             // Vérifier la force du mot de passe en temps réel
-            document.getElementById('password').addEventListener('input', function() {
-                checkPasswordStrength(this.value);
-            });
+            const passwordInput = document.getElementById('password');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    checkPasswordStrength(this.value);
+                });
+            }
             
             // Effacer les erreurs lors de la saisie
             const inputs = document.querySelectorAll('.form-control');
@@ -1195,6 +1280,7 @@
             // Vérifier si l'utilisateur est déjà connecté
             auth.onAuthStateChanged(user => {
                 if (user) {
+                    console.log("Utilisateur déjà connecté, redirection vers le tableau de bord...");
                     // Si l'utilisateur est déjà connecté, rediriger vers le tableau de bord
                     window.location.href = 'dashboard.html';
                 }
@@ -1202,6 +1288,8 @@
             
             // Initialiser l'indicatif du pays
             updateCountryCode();
+            
+            console.log("Initialisation terminée avec succès");
         });
     </script>
 </body>
