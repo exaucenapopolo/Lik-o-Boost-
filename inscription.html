@@ -139,13 +139,19 @@
             color: var(--primary-yellow);
         }
 
-        /* Form Section */
+        /* Form Section - Centré et amélioré */
         .auth-section {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 120px 0 60px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .auth-container {
@@ -157,17 +163,28 @@
             box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.8s ease-out;
+            animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
-        @keyframes fadeInUp {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(50px) scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            }
+            to {
+                box-shadow: 0 15px 40px rgba(42, 94, 232, 0.15);
             }
         }
 
@@ -179,17 +196,40 @@
             width: 100%;
             height: 5px;
             background: linear-gradient(90deg, var(--primary-yellow), var(--primary-blue), var(--primary-orange));
+            animation: rainbow 3s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .auth-header {
             text-align: center;
             margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-header h2 {
             font-size: 2.2rem;
             color: var(--dark-blue);
             margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .auth-header p {
@@ -199,6 +239,26 @@
         .form-group {
             margin-bottom: 25px;
             position: relative;
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.4s; }
+        .form-group:nth-child(2) { animation-delay: 0.5s; }
+        .form-group:nth-child(3) { animation-delay: 0.6s; }
+        .form-group:nth-child(4) { animation-delay: 0.7s; }
+        .form-group:nth-child(5) { animation-delay: 0.8s; }
+        .form-group:nth-child(6) { animation-delay: 0.9s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .form-group label {
@@ -224,10 +284,12 @@
             border-color: var(--primary-blue);
             background-color: var(--white);
             box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1);
+            transform: translateY(-2px);
         }
 
         .form-control.has-error {
             border-color: var(--error-red);
+            animation: shake 0.5s ease-in-out;
         }
 
         .form-control.has-success {
@@ -243,13 +305,6 @@
 
         .error-message.show {
             display: block;
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
         .password-toggle {
@@ -260,11 +315,62 @@
             border: none;
             color: var(--text-light);
             cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Password Strength Bar */
+        .password-strength {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .password-strength.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .strength-bar {
+            height: 5px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Phone input with country code */
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .country-code {
+            flex: 0 0 80px;
+        }
+
+        .phone-number {
+            flex: 1;
         }
 
         .form-footer {
             margin-top: 30px;
             text-align: center;
+            animation: fadeInUp 0.8s ease-out 1s both;
         }
 
         .submit-btn {
@@ -275,6 +381,11 @@
             border-radius: 10px;
             position: relative;
             overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
         }
 
         .submit-btn .btn-text {
@@ -327,10 +438,26 @@
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
+            position: relative;
         }
 
         .auth-links a:hover {
             color: var(--primary-orange);
+        }
+
+        .auth-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-orange);
+            transition: width 0.3s ease;
+        }
+
+        .auth-links a:hover::after {
+            width: 100%;
         }
 
         /* Notification System */
@@ -410,60 +537,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
         }
 
-        /* Footer */
+        .notification-close:hover {
+            color: var(--text-dark);
+        }
+
+        /* Footer simplifié */
         footer {
             background-color: var(--dark-blue);
             color: var(--white);
-            padding: 40px 0 20px;
+            padding: 30px 0;
             margin-top: auto;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .footer-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: var(--white);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .footer-logo span {
-            color: var(--primary-blue);
-        }
-
-        .footer-logo .dot {
-            color: var(--primary-orange);
-            font-size: 2rem;
-            line-height: 1;
-        }
-
-        .footer-logo .yellow {
-            color: var(--primary-yellow);
         }
 
         .footer-bottom {
             text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 30px;
+            opacity: 0.8;
         }
 
         .footer-bottom a {
             color: var(--primary-yellow);
             text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-bottom a:hover {
+            color: var(--primary-orange);
+            text-decoration: underline;
         }
 
         /* Responsive */
@@ -481,6 +584,15 @@
                 left: 20px;
                 right: 20px;
                 max-width: none;
+            }
+            
+            .phone-input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .country-code {
+                flex: 1;
             }
         }
 
@@ -500,14 +612,14 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header simplifié -->
     <header>
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">
                     Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
                 </a>
-                <a href="connexion.html" class="btn btn-secondary">Se Connecter</a>
+                <!-- Bouton retiré -->
             </nav>
         </div>
     </header>
@@ -541,33 +653,79 @@
                         <label for="country">Pays</label>
                         <select id="country" class="form-control" required>
                             <option value="" disabled selected>Sélectionnez votre pays</option>
-                            <option value="CM">Cameroun</option>
-                            <option value="CI">Côte d'Ivoire</option>
-                            <option value="SN">Sénégal</option>
-                            <option value="GN">Guinée</option>
-                            <option value="ML">Mali</option>
-                            <option value="BF">Burkina Faso</option>
-                            <option value="NE">Niger</option>
-                            <option value="TG">Togo</option>
-                            <option value="BJ">Bénin</option>
-                            <option value="GA">Gabon</option>
-                            <option value="CG">Congo</option>
-                            <option value="CD">République Démocratique du Congo</option>
-                            <option value="MG">Madagascar</option>
-                            <option value="TN">Tunisie</option>
-                            <option value="DZ">Algérie</option>
-                            <option value="MA">Maroc</option>
-                            <option value="FR">France</option>
-                            <option value="BE">Belgique</option>
-                            <option value="CH">Suisse</option>
-                            <option value="CA">Canada</option>
+                            <!-- Afrique de l'Ouest -->
+                            <option value="BJ">Bénin (+229)</option>
+                            <option value="BF">Burkina Faso (+226)</option>
+                            <option value="CV">Cap-Vert (+238)</option>
+                            <option value="CI">Côte d'Ivoire (+225)</option>
+                            <option value="GM">Gambie (+220)</option>
+                            <option value="GH">Ghana (+233)</option>
+                            <option value="GN">Guinée (+224)</option>
+                            <option value="GW">Guinée-Bissau (+245)</option>
+                            <option value="LR">Liberia (+231)</option>
+                            <option value="ML">Mali (+223)</option>
+                            <option value="MR">Mauritanie (+222)</option>
+                            <option value="NE">Niger (+227)</option>
+                            <option value="NG">Nigeria (+234)</option>
+                            <option value="SN">Sénégal (+221)</option>
+                            <option value="SL">Sierra Leone (+232)</option>
+                            <option value="TG">Togo (+228)</option>
+                            
+                            <!-- Afrique Centrale -->
+                            <option value="CM">Cameroun (+237)</option>
+                            <option value="CF">République centrafricaine (+236)</option>
+                            <option value="TD">Tchad (+235)</option>
+                            <option value="CG">Congo (+242)</option>
+                            <option value="CD">République Démocratique du Congo (+243)</option>
+                            <option value="GQ">Guinée équatoriale (+240)</option>
+                            <option value="GA">Gabon (+241)</option>
+                            <option value="ST">Sao Tomé-et-Principe (+239)</option>
+                            
+                            <!-- Afrique de l'Est -->
+                            <option value="BI">Burundi (+257)</option>
+                            <option value="KM">Comores (+269)</option>
+                            <option value="DJ">Djibouti (+253)</option>
+                            <option value="ER">Érythrée (+291)</option>
+                            <option value="ET">Éthiopie (+251)</option>
+                            <option value="KE">Kenya (+254)</option>
+                            <option value="MG">Madagascar (+261)</option>
+                            <option value="MW">Malawi (+265)</option>
+                            <option value="MU">Maurice (+230)</option>
+                            <option value="MZ">Mozambique (+258)</option>
+                            <option value="RW">Rwanda (+250)</option>
+                            <option value="SC">Seychelles (+248)</option>
+                            <option value="SO">Somalie (+252)</option>
+                            <option value="SS">Soudan du Sud (+211)</option>
+                            <option value="TZ">Tanzanie (+255)</option>
+                            <option value="UG">Ouganda (+256)</option>
+                            <option value="ZM">Zambie (+260)</option>
+                            <option value="ZW">Zimbabwe (+263)</option>
+                            
+                            <!-- Afrique du Nord -->
+                            <option value="DZ">Algérie (+213)</option>
+                            <option value="EG">Égypte (+20)</option>
+                            <option value="LY">Libye (+218)</option>
+                            <option value="MA">Maroc (+212)</option>
+                            <option value="SD">Soudan (+249)</option>
+                            <option value="TN">Tunisie (+216)</option>
+                            
+                            <!-- Afrique Australe -->
+                            <option value="AO">Angola (+244)</option>
+                            <option value="BW">Botswana (+267)</option>
+                            <option value="LS">Lesotho (+266)</option>
+                            <option value="NA">Namibie (+264)</option>
+                            <option value="ZA">Afrique du Sud (+27)</option>
+                            <option value="SZ">Eswatini (+268)</option>
                         </select>
                         <div class="error-message" id="countryError"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="phone">Numéro WhatsApp</label>
-                        <input type="tel" id="phone" class="form-control" placeholder="+237 6XX XX XX XX" required>
+                        <div class="phone-input-group">
+                            <input type="text" id="countryCode" class="form-control country-code" placeholder="+237" readonly>
+                            <input type="tel" id="phone" class="form-control phone-number" placeholder="6XX XX XX XX" required>
+                        </div>
                         <div class="error-message" id="phoneError"></div>
                     </div>
 
@@ -578,6 +736,15 @@
                             <i class="far fa-eye"></i>
                         </button>
                         <div class="error-message" id="passwordError"></div>
+                        
+                        <!-- Barre de force du mot de passe -->
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="passwordStrengthFill"></div>
+                            </div>
+                            <span class="strength-text" id="passwordStrengthText">Force du mot de passe</span>
+                        </div>
+                        
                         <small style="display: block; margin-top: 5px; color: var(--text-light);">
                             Le mot de passe doit contenir au moins 8 caractères, une majuscule et un chiffre.
                         </small>
@@ -603,18 +770,9 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer simplifié -->
     <footer>
         <div class="container">
-            <div class="footer-content">
-                <a href="index.html" class="footer-logo">
-                    Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
-                </a>
-                <div class="footer-contact">
-                    <p><i class="fab fa-whatsapp"></i> +237 654 49 46 84</p>
-                    <p><i class="fas fa-envelope"></i> contact@likeoboost.com</p>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 Likéo Boost. Tous droits réservés. | Site propulsé par <a href="https://socialboosthorizon.com" target="_blank">Social Boost Horizon</a></p>
             </div>
@@ -640,6 +798,25 @@
 
         // Variables globales
         let isSubmitting = false;
+        
+        // Mappage des codes de pays et indicatifs
+        const countryCodes = {
+            'CM': '+237', 'CI': '+225', 'SN': '+221', 'GN': '+224', 'ML': '+223',
+            'BF': '+226', 'NE': '+227', 'TG': '+228', 'BJ': '+229', 'GA': '+241',
+            'CG': '+242', 'CD': '+243', 'MG': '+261', 'TN': '+216', 'DZ': '+213',
+            'MA': '+212', 'FR': '+33', 'BE': '+32', 'CH': '+41', 'CA': '+1',
+            'BJ': '+229', 'BF': '+226', 'CV': '+238', 'CI': '+225', 'GM': '+220',
+            'GH': '+233', 'GN': '+224', 'GW': '+245', 'LR': '+231', 'ML': '+223',
+            'MR': '+222', 'NE': '+227', 'NG': '+234', 'SN': '+221', 'SL': '+232',
+            'TG': '+228', 'CM': '+237', 'CF': '+236', 'TD': '+235', 'CG': '+242',
+            'CD': '+243', 'GQ': '+240', 'GA': '+241', 'ST': '+239', 'BI': '+257',
+            'KM': '+269', 'DJ': '+253', 'ER': '+291', 'ET': '+251', 'KE': '+254',
+            'MG': '+261', 'MW': '+265', 'MU': '+230', 'MZ': '+258', 'RW': '+250',
+            'SC': '+248', 'SO': '+252', 'SS': '+211', 'TZ': '+255', 'UG': '+256',
+            'ZM': '+260', 'ZW': '+263', 'DZ': '+213', 'EG': '+20', 'LY': '+218',
+            'MA': '+212', 'SD': '+249', 'TN': '+216', 'AO': '+244', 'BW': '+267',
+            'LS': '+266', 'NA': '+264', 'ZA': '+27', 'SZ': '+268'
+        };
 
         // Fonction pour afficher les notifications
         function showNotification(type, title, message, duration = 5000) {
@@ -718,6 +895,71 @@
             errorElement.classList.remove('show');
         }
 
+        // Fonction pour vérifier la force du mot de passe
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const strengthBar = document.getElementById('passwordStrengthFill');
+            const strengthText = document.getElementById('passwordStrengthText');
+            const strengthContainer = document.getElementById('passwordStrength');
+            
+            if (!password) {
+                strengthContainer.classList.remove('show');
+                return;
+            }
+            
+            strengthContainer.classList.add('show');
+            
+            // Longueur minimale
+            if (password.length >= 8) strength += 25;
+            
+            // Contient des lettres minuscules et majuscules
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+            
+            // Contient des chiffres
+            if (/\d/.test(password)) strength += 25;
+            
+            // Contient des caractères spéciaux
+            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+            
+            // Mettre à jour la barre et le texte
+            strengthBar.style.width = `${strength}%`;
+            
+            if (strength < 25) {
+                strengthBar.style.backgroundColor = '#f44336';
+                strengthText.textContent = 'Très faible';
+                strengthText.style.color = '#f44336';
+            } else if (strength < 50) {
+                strengthBar.style.backgroundColor = '#ff9800';
+                strengthText.textContent = 'Faible';
+                strengthText.style.color = '#ff9800';
+            } else if (strength < 75) {
+                strengthBar.style.backgroundColor = '#ffc107';
+                strengthText.textContent = 'Moyen';
+                strengthText.style.color = '#ffc107';
+            } else if (strength < 100) {
+                strengthBar.style.backgroundColor = '#4caf50';
+                strengthText.textContent = 'Fort';
+                strengthText.style.color = '#4caf50';
+            } else {
+                strengthBar.style.backgroundColor = '#2e7d32';
+                strengthText.textContent = 'Très fort';
+                strengthText.style.color = '#2e7d32';
+            }
+        }
+
+        // Fonction pour mettre à jour l'indicatif du pays
+        function updateCountryCode() {
+            const countrySelect = document.getElementById('country');
+            const countryCodeInput = document.getElementById('countryCode');
+            const selectedCountry = countrySelect.value;
+            
+            if (selectedCountry && countryCodes[selectedCountry]) {
+                countryCodeInput.value = countryCodes[selectedCountry];
+            } else {
+                countryCodeInput.value = '+';
+            }
+        }
+
         // Fonction pour valider le formulaire
         function validateForm() {
             let isValid = true;
@@ -758,8 +1000,12 @@
             
             // Valider le téléphone
             const phone = document.getElementById('phone').value.trim();
+            const countryCode = document.getElementById('countryCode').value;
             if (!phone) {
                 showError('phone', 'Le numéro WhatsApp est requis');
+                isValid = false;
+            } else if (!/^\d+$/.test(phone.replace(/\s/g, ''))) {
+                showError('phone', 'Le numéro doit contenir uniquement des chiffres');
                 isValid = false;
             } else {
                 clearError('phone');
@@ -809,7 +1055,8 @@
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
             const country = document.getElementById('country').value;
-            const phone = document.getElementById('phone').value.trim();
+            const countryCode = document.getElementById('countryCode').value;
+            const phone = countryCode + ' ' + document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
             
             // Activer l'état de chargement
@@ -846,6 +1093,7 @@
                 
                 // Réinitialiser le formulaire
                 document.getElementById('registerForm').reset();
+                document.getElementById('countryCode').value = '+';
                 
                 // Rediriger vers la page de connexion après 3 secondes
                 setTimeout(() => {
@@ -889,15 +1137,18 @@
         // Fonction pour basculer la visibilité du mot de passe
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
             const toggleButton = document.getElementById('togglePassword');
             const icon = toggleButton.querySelector('i');
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
+                confirmPasswordInput.type = 'text';
                 icon.classList.remove('fa-eye');
                 icon.classList.add('fa-eye-slash');
             } else {
                 passwordInput.type = 'password';
+                confirmPasswordInput.type = 'password';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
@@ -910,6 +1161,14 @@
             
             // Gérer le basculement du mot de passe
             document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
+            
+            // Gérer le changement de pays
+            document.getElementById('country').addEventListener('change', updateCountryCode);
+            
+            // Vérifier la force du mot de passe en temps réel
+            document.getElementById('password').addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
             
             // Effacer les erreurs lors de la saisie
             const inputs = document.querySelectorAll('.form-control');
@@ -926,6 +1185,9 @@
                     window.location.href = 'index.html';
                 }
             });
+            
+            // Initialiser l'indicatif du pays
+            updateCountryCode();
         });
     </script>
 </body>

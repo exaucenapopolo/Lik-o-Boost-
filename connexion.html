@@ -138,13 +138,19 @@
             color: var(--primary-yellow);
         }
 
-        /* Form Section */
+        /* Form Section - Centré et amélioré */
         .auth-section {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 120px 0 60px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .auth-container {
@@ -156,17 +162,28 @@
             box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.8s ease-out;
+            animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
-        @keyframes fadeInUp {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(50px) scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            }
+            to {
+                box-shadow: 0 15px 40px rgba(42, 94, 232, 0.15);
             }
         }
 
@@ -178,17 +195,40 @@
             width: 100%;
             height: 5px;
             background: linear-gradient(90deg, var(--primary-yellow), var(--primary-blue), var(--primary-orange));
+            animation: rainbow 3s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .auth-header {
             text-align: center;
             margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-header h2 {
             font-size: 2.2rem;
             color: var(--dark-blue);
             margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .auth-header p {
@@ -198,6 +238,22 @@
         .form-group {
             margin-bottom: 25px;
             position: relative;
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.4s; }
+        .form-group:nth-child(2) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .form-group label {
@@ -223,10 +279,12 @@
             border-color: var(--primary-blue);
             background-color: var(--white);
             box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1);
+            transform: translateY(-2px);
         }
 
         .form-control.has-error {
             border-color: var(--error-red);
+            animation: shake 0.5s ease-in-out;
         }
 
         .error-message {
@@ -238,13 +296,6 @@
 
         .error-message.show {
             display: block;
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
         .password-toggle {
@@ -255,6 +306,11 @@
             border: none;
             color: var(--text-light);
             cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-blue);
         }
 
         .form-options {
@@ -262,6 +318,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
         }
 
         .remember-me {
@@ -271,6 +328,12 @@
 
         .remember-me input {
             margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            cursor: pointer;
+            color: var(--text-dark);
         }
 
         .forgot-password {
@@ -278,15 +341,32 @@
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
+            position: relative;
         }
 
         .forgot-password:hover {
             color: var(--primary-orange);
         }
 
+        .forgot-password::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-orange);
+            transition: width 0.3s ease;
+        }
+
+        .forgot-password:hover::after {
+            width: 100%;
+        }
+
         .form-footer {
             margin-top: 30px;
             text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
         }
 
         .submit-btn {
@@ -297,6 +377,11 @@
             border-radius: 10px;
             position: relative;
             overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
         }
 
         .submit-btn .btn-text {
@@ -349,10 +434,26 @@
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
+            position: relative;
         }
 
         .auth-links a:hover {
             color: var(--primary-orange);
+        }
+
+        .auth-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-orange);
+            transition: width 0.3s ease;
+        }
+
+        .auth-links a:hover::after {
+            width: 100%;
         }
 
         /* Notification System */
@@ -432,60 +533,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
         }
 
-        /* Footer */
+        .notification-close:hover {
+            color: var(--text-dark);
+        }
+
+        /* Footer simplifié */
         footer {
             background-color: var(--dark-blue);
             color: var(--white);
-            padding: 40px 0 20px;
+            padding: 30px 0;
             margin-top: auto;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .footer-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: var(--white);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .footer-logo span {
-            color: var(--primary-blue);
-        }
-
-        .footer-logo .dot {
-            color: var(--primary-orange);
-            font-size: 2rem;
-            line-height: 1;
-        }
-
-        .footer-logo .yellow {
-            color: var(--primary-yellow);
         }
 
         .footer-bottom {
             text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 30px;
+            opacity: 0.8;
         }
 
         .footer-bottom a {
             color: var(--primary-yellow);
             text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-bottom a:hover {
+            color: var(--primary-orange);
+            text-decoration: underline;
         }
 
         /* Responsive */
@@ -528,14 +605,14 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header simplifié -->
     <header>
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">
                     Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
                 </a>
-                <a href="inscription.html" class="btn btn-secondary">S'inscrire</a>
+                <!-- Bouton retiré -->
             </nav>
         </div>
     </header>
@@ -590,18 +667,9 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer simplifié -->
     <footer>
         <div class="container">
-            <div class="footer-content">
-                <a href="index.html" class="footer-logo">
-                    Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
-                </a>
-                <div class="footer-contact">
-                    <p><i class="fab fa-whatsapp"></i> +237 654 49 46 84</p>
-                    <p><i class="fas fa-envelope"></i> contact@likeoboost.com</p>
-                </div>
-            </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 Likéo Boost. Tous droits réservés. | Site propulsé par <a href="https://socialboosthorizon.com" target="_blank">Social Boost Horizon</a></p>
             </div>
@@ -773,10 +841,6 @@
                 // Vérifier si l'email est vérifié
                 if (!user.emailVerified) {
                     showNotification('warning', 'Email non vérifié', 'Veuillez vérifier votre email avant de vous connecter. Consultez votre boîte de réception.');
-                    
-                    // Optionnel : renvoyer l'email de vérification
-                    // await user.sendEmailVerification();
-                    
                     return;
                 }
                 
@@ -894,13 +958,6 @@
                     window.location.href = 'index.html';
                 }
             });
-            
-            // Restaurer l'email sauvegardé si "se souvenir de moi" était coché
-            const savedEmail = localStorage.getItem('likeoboost_remember_email');
-            if (savedEmail) {
-                document.getElementById('email').value = savedEmail;
-                document.getElementById('rememberMe').checked = true;
-            }
         });
     </script>
 </body>
