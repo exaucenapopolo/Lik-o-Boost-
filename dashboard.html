@@ -1144,23 +1144,23 @@
         </div>
         
         <div class="menu-nav">
-            <a href="#dashboard" class="menu-item active" data-section="dashboard">
+            <a href="dashboard.html" class="menu-item active">
                 <i class="fas fa-home"></i>
                 Tableau de Bord
             </a>
-            <a href="#orders" class="menu-item" data-section="orders">
+            <a href="commandes.html" class="menu-item">
                 <i class="fas fa-clipboard-list"></i>
                 Mes Commandes
             </a>
-            <a href="#transactions" class="menu-item" data-section="transactions">
+            <a href="transactions.html" class="menu-item">
                 <i class="fas fa-exchange-alt"></i>
                 Transactions
             </a>
-            <a href="#profile" class="menu-item" data-section="profile">
+            <a href="profil.html" class="menu-item">
                 <i class="fas fa-user"></i>
                 Mon Profil
             </a>
-            <a href="#support" class="menu-item" data-section="support">
+            <a href="https://wa.me/237654494684" target="_blank" class="menu-item">
                 <i class="fas fa-headset"></i>
                 Support
             </a>
@@ -1449,7 +1449,6 @@
         let currentService = null;
         let currentOption = null;
         let currentQuantity = 1;
-        let currentOrderData = null;
 
         // Données des services (avec prix augmentés de 70%)
         const servicesData = [
@@ -1552,26 +1551,6 @@
                                 duration: "30 min - 1 heure"
                             }
                         ]
-                    },
-                    {
-                        id: "fb_page_followers",
-                        name: "Abonnés Page",
-                        description: "Abonnés pour votre page Facebook",
-                        unit: "1K abonnés",
-                        options: [
-                            {
-                                id: "fb_page_followers_medium",
-                                name: "Qualité moyenne",
-                                price: Math.round(843.2 * 1.7),
-                                duration: "3-5 heures"
-                            },
-                            {
-                                id: "fb_page_followers_high",
-                                name: "Haute qualité",
-                                price: Math.round(1360 * 1.7),
-                                duration: "1-2 heures"
-                            }
-                        ]
                     }
                 ]
             },
@@ -1618,26 +1597,6 @@
                                 name: "Haute qualité",
                                 price: Math.round(326.4 * 1.7),
                                 duration: "30 min - 1 heure"
-                            }
-                        ]
-                    },
-                    {
-                        id: "tiktok_comments",
-                        name: "Commentaires",
-                        description: "Commentaires personnalisés TikTok",
-                        unit: "10 commentaires",
-                        options: [
-                            {
-                                id: "tiktok_comments_medium",
-                                name: "Qualité moyenne",
-                                price: Math.round(20.4 * 1.7),
-                                duration: "2-3 heures"
-                            },
-                            {
-                                id: "tiktok_comments_high",
-                                name: "Haute qualité",
-                                price: Math.round(40.8 * 1.7),
-                                duration: "1-2 heures"
                             }
                         ]
                     }
@@ -1688,26 +1647,6 @@
                                 duration: "30 minutes"
                             }
                         ]
-                    },
-                    {
-                        id: "instagram_views",
-                        name: "Vues Vidéo/Reel",
-                        description: "Vues pour vos vidéos Instagram",
-                        unit: "1K vues",
-                        options: [
-                            {
-                                id: "instagram_views_medium",
-                                name: "Qualité moyenne",
-                                price: Math.round(5.44 * 1.7),
-                                duration: "30 minutes"
-                            },
-                            {
-                                id: "instagram_views_high",
-                                name: "Haute qualité",
-                                price: Math.round(20.4 * 1.7),
-                                duration: "10 minutes"
-                            }
-                        ]
                     }
                 ]
             },
@@ -1756,26 +1695,6 @@
                                 duration: "20 heures"
                             }
                         ]
-                    },
-                    {
-                        id: "youtube_likes",
-                        name: "J'aime",
-                        description: "J'aime pour vos vidéos YouTube",
-                        unit: "1K j'aime",
-                        options: [
-                            {
-                                id: "youtube_likes_medium",
-                                name: "Qualité moyenne",
-                                price: Math.round(367.2 * 1.7),
-                                duration: "2 heures"
-                            },
-                            {
-                                id: "youtube_likes_high",
-                                name: "Haute qualité",
-                                price: Math.round(1781.6 * 1.7),
-                                duration: "1 heure"
-                            }
-                        ]
                     }
                 ]
             },
@@ -1787,7 +1706,7 @@
                 services: [
                     {
                         id: "whatsapp_followers",
-                        name: "Abonnés Chaîne",
+                        name: "Abonnés",
                         description: "Abonnés pour votre chaîne WhatsApp",
                         unit: "1K followers",
                         options: [
@@ -1802,26 +1721,6 @@
                                 name: "Américains",
                                 price: Math.round(6120 * 1.7),
                                 duration: "3 heures"
-                            },
-                            {
-                                id: "whatsapp_followers_in",
-                                name: "Indiens",
-                                price: Math.round(6120 * 1.7),
-                                duration: "3 heures"
-                            }
-                        ]
-                    },
-                    {
-                        id: "whatsapp_reactions",
-                        name: "Réactions",
-                        description: "Réactions pour votre chaîne WhatsApp",
-                        unit: "1K réactions",
-                        options: [
-                            {
-                                id: "whatsapp_reactions_all",
-                                name: "Toutes réactions",
-                                price: Math.round(1632 * 1.7),
-                                duration: "5 heures"
                             }
                         ]
                     }
@@ -1835,7 +1734,7 @@
                 services: [
                     {
                         id: "telegram_members",
-                        name: "Membres Groupe/Canal",
+                        name: "Membres",
                         description: "Membres pour votre groupe/canal Telegram",
                         unit: "1K membres",
                         options: [
@@ -1981,6 +1880,9 @@
                     
                     // Activer le bouton suivant
                     document.getElementById('nextToStep2').disabled = false;
+                    
+                    // Afficher un feedback visuel
+                    showNotification('success', 'Plateforme sélectionnée', `Vous avez sélectionné ${platform.name}`);
                 });
                 
                 container.appendChild(platformCard);
@@ -2047,6 +1949,9 @@
                     
                     // Activer le bouton suivant
                     document.getElementById('nextToStep3').disabled = false;
+                    
+                    // Afficher un feedback
+                    showNotification('success', 'Service sélectionné', `Vous avez sélectionné ${service.name}`);
                 });
                 
                 // Gérer le clic sur les options de prix
@@ -2071,6 +1976,10 @@
                         
                         // Enregistrer l'option sélectionnée
                         selectPriceOption(optionEl);
+                        
+                        // Afficher un feedback
+                        const optionName = optionEl.querySelector('.price-label').textContent;
+                        showNotification('success', 'Qualité sélectionnée', `Vous avez choisi ${optionName}`);
                     });
                 });
                 
@@ -2155,59 +2064,50 @@
         }
 
         // Fonction pour vérifier et créer les champs utilisateur manquants
-        async function checkAndCreateUserFields(userId) {
+        async function checkAndCreateUserFields(userId, userEmail, username) {
             try {
                 const userRef = db.collection('users').doc(userId);
                 const userDoc = await userRef.get();
                 
-                if (!userDoc.exists) {
-                    // Créer un nouvel utilisateur avec tous les champs nécessaires
+                if (userDoc.exists) {
+                    // Vérifier et mettre à jour les champs manquants
+                    const userData = userDoc.data();
+                    const updates = {};
+                    
+                    // Vérifier les champs requis
+                    if (!userData.balance && userData.balance !== 0) updates.balance = 0;
+                    if (!userData.totalOrders && userData.totalOrders !== 0) updates.totalOrders = 0;
+                    if (!userData.activeOrders && userData.activeOrders !== 0) updates.activeOrders = 0;
+                    if (!userData.totalSpent && userData.totalSpent !== 0) updates.totalSpent = 0;
+                    if (!userData.username) updates.username = username;
+                    if (!userData.email) updates.email = userEmail;
+                    
+                    // Ajouter la date de mise à jour
+                    updates.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                    
+                    // Mettre à jour si des champs manquent
+                    if (Object.keys(updates).length > 0) {
+                        await userRef.update(updates);
+                        console.log('Champs utilisateur mis à jour:', updates);
+                    }
+                    
+                    return { ...userData, ...updates };
+                } else {
+                    // Créer un nouvel utilisateur avec tous les champs requis
                     const newUserData = {
-                        username: currentUser.displayName || currentUser.email.split('@')[0],
-                        email: currentUser.email,
+                        username: username,
+                        email: userEmail,
                         balance: 0,
                         totalOrders: 0,
                         activeOrders: 0,
                         totalSpent: 0,
-                        country: '',
-                        phone: '',
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
                     
                     await userRef.set(newUserData);
+                    console.log('Nouvel utilisateur créé:', newUserData);
                     return newUserData;
-                } else {
-                    // Vérifier et ajouter les champs manquants
-                    const userData = userDoc.data();
-                    const updates = {};
-                    
-                    // Liste des champs obligatoires
-                    const requiredFields = {
-                        'balance': 0,
-                        'totalOrders': 0,
-                        'activeOrders': 0,
-                        'totalSpent': 0,
-                        'username': currentUser.displayName || currentUser.email.split('@')[0]
-                    };
-                    
-                    // Vérifier chaque champ
-                    Object.keys(requiredFields).forEach(field => {
-                        if (userData[field] === undefined) {
-                            updates[field] = requiredFields[field];
-                        }
-                    });
-                    
-                    // Ajouter les champs manquants
-                    if (Object.keys(updates).length > 0) {
-                        updates.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-                        await userRef.update(updates);
-                        
-                        // Retourner les données mises à jour
-                        return { ...userData, ...updates };
-                    }
-                    
-                    return userData;
                 }
             } catch (error) {
                 console.error('Erreur lors de la vérification des champs utilisateur:', error);
@@ -2217,7 +2117,7 @@
 
         // Fonction pour charger les statistiques utilisateur
         async function loadUserStats() {
-            if (!currentUser) return;
+            if (!currentUser || !userData) return;
             
             try {
                 // Récupérer les commandes de l'utilisateur
@@ -2341,9 +2241,14 @@
                 // Afficher le succès
                 document.getElementById('step4').style.display = 'none';
                 document.getElementById('orderSuccess').style.display = 'block';
-                updateSteps(5); // Marquer toutes les étapes comme complétées
                 
-                showNotification('success', 'Commande confirmée', 'Votre commande a été passée avec succès!');
+                // Marquer toutes les étapes comme complétées
+                document.querySelectorAll('.step').forEach(step => {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                });
+                
+                showNotification('success', 'Commande confirmée!', 'Votre commande a été passée avec succès.');
                 
             } catch (error) {
                 console.error('Erreur lors de la commande:', error);
@@ -2381,8 +2286,11 @@
                     currentUser = user;
                     
                     try {
+                        // Créer le nom d'utilisateur à partir de l'email
+                        const username = user.displayName || user.email.split('@')[0];
+                        
                         // Vérifier et créer les champs nécessaires
-                        userData = await checkAndCreateUserFields(user.uid);
+                        userData = await checkAndCreateUserFields(user.uid, user.email, username);
                         
                         // Mettre à jour l'interface
                         updateUserInfo();
@@ -2393,7 +2301,8 @@
                         // Charger les plateformes
                         loadPlatforms();
                         
-                        showNotification('success', 'Connexion réussie', `Bon retour ${userData.username || 'Utilisateur'}!`);
+                        // Afficher un message de bienvenue
+                        showNotification('success', 'Connexion réussie', `Bon retour ${username}!`);
                         
                     } catch (error) {
                         console.error('Erreur lors du chargement des données utilisateur:', error);
@@ -2401,6 +2310,7 @@
                     }
                     
                 } else {
+                    // Rediriger vers la page de connexion
                     window.location.href = 'connexion.html';
                 }
             });
@@ -2425,12 +2335,16 @@
                     // Charger les services pour la plateforme sélectionnée
                     loadServices(currentPlatform.id);
                     showStep(2);
+                } else {
+                    showNotification('warning', 'Sélection requise', 'Veuillez sélectionner une plateforme');
                 }
             });
             
             document.getElementById('nextToStep3').addEventListener('click', () => {
                 if (currentPlatform && currentService && currentOption) {
                     showStep(3);
+                } else {
+                    showNotification('warning', 'Sélection requise', 'Veuillez sélectionner un service et une qualité');
                 }
             });
             
@@ -2438,6 +2352,8 @@
                 if (currentPlatform && currentService && currentOption) {
                     generateOrderSummary();
                     showStep(4);
+                } else {
+                    showNotification('warning', 'Sélection requise', 'Veuillez compléter toutes les sélections');
                 }
             });
             
