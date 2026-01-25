@@ -165,6 +165,8 @@
             animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
             transform-style: preserve-3d;
             perspective: 1000px;
+            /* CENTRAGE HORIZONTAL AJOUTÉ */
+            margin: 0 auto;
         }
 
         @keyframes slideUp {
@@ -847,9 +849,9 @@
                 // Afficher le succès
                 showNotification('success', 'Connexion réussie !', 'Vous êtes maintenant connecté à votre compte.');
                 
-                // Rediriger vers la page d'accueil après 2 secondes
+                // REDIRECTION MODIFIÉE : Vers le tableau de bord
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = 'dashboard.html';
                 }, 2000);
                 
             } catch (error) {
@@ -954,8 +956,8 @@
             // Vérifier si l'utilisateur est déjà connecté
             auth.onAuthStateChanged(user => {
                 if (user && user.emailVerified) {
-                    // Si l'utilisateur est déjà connecté et vérifié, rediriger vers la page d'accueil
-                    window.location.href = 'index.html';
+                    // Si l'utilisateur est déjà connecté et vérifié, rediriger vers le tableau de bord
+                    window.location.href = 'dashboard.html';
                 }
             });
         });

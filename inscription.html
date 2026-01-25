@@ -166,6 +166,8 @@
             animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
             transform-style: preserve-3d;
             perspective: 1000px;
+            /* CENTRAGE HORIZONTAL AJOUTÉ */
+            margin: 0 auto;
         }
 
         @keyframes slideUp {
@@ -1089,15 +1091,15 @@
                 submitBtn.classList.remove('loading');
                 
                 // Afficher le succès
-                showNotification('success', 'Inscription réussie !', 'Votre compte a été créé avec succès. Un email de vérification a été envoyé.');
+                showNotification('success', 'Inscription réussie !', 'Votre compte a été créé avec succès. Vous serez redirigé vers le tableau de bord.');
                 
                 // Réinitialiser le formulaire
                 document.getElementById('registerForm').reset();
                 document.getElementById('countryCode').value = '+';
                 
-                // Rediriger vers la page de connexion après 3 secondes
+                // REDIRECTION MODIFIÉE : Vers le tableau de bord
                 setTimeout(() => {
-                    window.location.href = 'connexion.html';
+                    window.location.href = 'dashboard.html';
                 }, 3000);
                 
             } catch (error) {
@@ -1181,8 +1183,8 @@
             // Vérifier si l'utilisateur est déjà connecté
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
-                    window.location.href = 'index.html';
+                    // Si l'utilisateur est déjà connecté, rediriger vers le tableau de bord
+                    window.location.href = 'dashboard.html';
                 }
             });
             
