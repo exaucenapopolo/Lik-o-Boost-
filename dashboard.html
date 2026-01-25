@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Likéo Boost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --primary-blue: #2A5EE8;
+            --primary-orange: #FF7A00;
+            --dark-blue: #1A1F3C;
+            --light-blue: #F0F5FF;
+            --light-gray: #F8F9FA;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --white: #FFFFFF;
+            --success-green: #4CAF50;
+            --error-red: #f44336;
+            --warning-orange: #ff9800;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f5f7ff;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-orange);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        .btn-success {
+            background-color: var(--success-green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background-color: #3d8b40;
+            transform: translateY(-3px);
+        }
+
+        /* Layout Dashboard */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--dark-blue);
+            color: var(--white);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-logo span {
+            color: var(--primary-blue);
+        }
+
+        .sidebar-logo .dot {
+            color: var(--primary-orange);
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .sidebar-logo .yellow {
+            color: var(--primary-yellow);
+        }
+
+        .sidebar-user {
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .user-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            border-left-color: var(--primary-orange);
+        }
+
+        .menu-item.active {
+            background-color: rgba(42, 94, 232, 0.1);
+            color: var(--white);
+            border-left-color: var(--primary-blue);
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            color: var(--white);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn i {
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            transition: var(--transition);
+        }
+
+        /* Topbar */
+        .topbar {
+            background-color: var(--white);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+
+        .page-title p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .balance-info {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-blue), #1A1F3C);
+            padding: 15px 25px;
+            border-radius: 15px;
+            color: var(--white);
+        }
+
+        .balance-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-right: 20px;
+        }
+
+        .balance-amount span {
+            font-size: 1.2rem;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 30px;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 1.8rem;
+            color: var(--white);
+        }
+
+        .stat-content h3 {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-content .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+
+        /* Services Section */
+        .services-section {
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--dark-blue);
+        }
+
+        .platform-filter {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .platform-btn {
+            padding: 10px 20px;
+            background-color: var(--white);
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .platform-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .platform-btn.active {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .service-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 5px solid var(--primary-blue);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-header {
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .service-title h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .service-title p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .service-body {
+            padding: 25px;
+        }
+
+        .service-option {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+
+        .service-option:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .option-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .option-price {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .option-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .option-quantity {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .quantity-label {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .quantity-input {
+            display: flex;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            background-color: #f8f9fa;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .quantity-value {
+            width: 80px;
+            height: 40px;
+            border: none;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .option-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .total-label {
+            font-weight: 600;
+        }
+
+        .total-price {
+            font-weight: 700;
+            color: var(--primary-orange);
+            font-size: 1.3rem;
+        }
+
+        .service-footer {
+            padding: 0 25px 25px;
+        }
+
+        .order-btn {
+            width: 100%;
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 350px;
+        }
+
+        .notification {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-left: 5px solid var(--success-green);
+            transform: translateX(400px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            border-left-color: var(--error-red);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning-orange);
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            margin-top: 2px;
+        }
+
+        .notification.success .notification-icon {
+            color: var(--success-green);
+        }
+
+        .notification.error .notification-icon {
+            color: var(--error-red);
+        }
+
+        .notification.warning .notification-icon {
+            color: var(--warning-orange);
+        }
+
+        .notification-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .notification-content p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            margin-left: auto;
+            font-size: 1.2rem;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar-header .sidebar-logo span,
+            .sidebar-header .sidebar-logo .yellow,
+            .sidebar-header .sidebar-logo .dot,
+            .user-info,
+            .menu-item span,
+            .logout-btn span {
+                display: none;
+            }
+            
+            .sidebar-logo {
+                justify-content: center;
+            }
+            
+            .sidebar-user {
+                justify-content: center;
+            }
+            
+            .user-avatar {
+                margin-right: 0;
+            }
+            
+            .menu-item {
+                justify-content: center;
+                padding: 20px;
+            }
+            
+            .menu-item i {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+            
+            .logout-btn {
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .logout-btn i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .topbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .balance-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .platform-filter {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 15px;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background-color: var(--white);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar" id="userAvatar">
+                    U
+                </div>
+                <div class="user-info">
+                    <h3 id="userName">Utilisateur</h3>
+                    <p id="userEmail">email@example.com</p>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Tableau de Bord</span>
+                </a>
+                <a href="#services" class="menu-item" data-section="services">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Services</span>
+                </a>
+                <a href="#orders" class="menu-item" data-section="orders">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Mes Commandes</span>
+                </a>
+                <a href="#transactions" class="menu-item" data-section="transactions">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="#profile" class="menu-item" data-section="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Mon Profil</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="page-title">
+                    <h1>Bienvenue sur Likéo Boost!</h1>
+                    <p>Boostez votre présence en ligne avec nos services professionnels</p>
+                </div>
+                
+                <div class="balance-info">
+                    <div class="balance-amount">
+                        <span id="userBalance">0</span> XAF
+                    </div>
+                    <button class="btn btn-primary" id="depositBtn">Déposer des fonds</button>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #2A5EE8, #1A1F3C);">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Solde actuel</h3>
+                            <div class="stat-value" id="currentBalance">0 XAF</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Commandes actives</h3>
+                            <div class="stat-value" id="activeOrders">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #FF7A00, #E65100);">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Commandes totales</h3>
+                            <div class="stat-value" id="totalOrders">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #9C27B0, #6A1B9A);">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total dépensé</h3>
+                            <div class="stat-value" id="totalSpent">0 XAF</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Services Section -->
+                <div class="services-section" id="servicesSection">
+                    <div class="section-header">
+                        <h2>Nos Services de Boost</h2>
+                        <div class="platform-filter" id="platformFilter">
+                            <button class="platform-btn active" data-platform="all">Toutes les plateformes</button>
+                            <button class="platform-btn" data-platform="facebook">Facebook</button>
+                            <button class="platform-btn" data-platform="tiktok">TikTok</button>
+                            <button class="platform-btn" data-platform="instagram">Instagram</button>
+                            <button class="platform-btn" data-platform="youtube">YouTube</button>
+                            <button class="platform-btn" data-platform="whatsapp">WhatsApp</button>
+                            <button class="platform-btn" data-platform="telegram">Telegram</button>
+                            <button class="platform-btn" data-platform="spotify">Spotify</button>
+                            <button class="platform-btn" data-platform="twitter">Twitter</button>
+                        </div>
+                    </div>
+                    
+                    <div class="services-grid" id="servicesGrid">
+                        <!-- Les services seront chargés dynamiquement ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Déposer des fonds</h3>
+                <button class="modal-close" id="closeDepositModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="depositForm">
+                    <div class="form-group">
+                        <label for="depositAmount">Montant à déposer (XAF)</label>
+                        <input type="number" id="depositAmount" class="form-control" min="1000" step="100" placeholder="Ex: 10000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">Méthode de paiement</label>
+                        <select id="paymentMethod" class="form-control" required>
+                            <option value="" disabled selected>Sélectionnez une méthode</option>
+                            <option value="mobile_money">Mobile Money (Orange Money, MTN Mobile Money)</option>
+                            <option value="wave">Wave</option>
+                            <option value="carte_bancaire">Carte Bancaire</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Numéro de téléphone (pour Mobile Money/Wave)</label>
+                        <input type="tel" id="phoneNumber" class="form-control" placeholder="+237 6XX XX XX XX">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeposit">Annuler</button>
+                <button class="btn btn-primary" id="confirmDeposit">Déposer</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmer la commande</h3>
+                <button class="modal-close" id="closeOrderModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="orderSummary">
+                    <!-- Le résumé de la commande sera inséré ici -->
+                </div>
+                <div class="form-group">
+                    <label for="orderLink">Lien de votre publication/profil</label>
+                    <input type="url" id="orderLink" class="form-control" placeholder="https://facebook.com/votre-profil" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderNotes">Notes supplémentaires (optionnel)</label>
+                    <textarea id="orderNotes" class="form-control" rows="3" placeholder="Instructions spéciales, commentaires..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelOrder">Annuler</button>
+                <button class="btn btn-success" id="confirmOrder">Confirmer la commande</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAYnMPv7zDw_YTihyi5rKGtpws4BMqaWI",
+            authDomain: "likeo-boost.firebaseapp.com",
+            projectId: "likeo-boost",
+            storageBucket: "likeo-boost.firebasestorage.app",
+            messagingSenderId: "385658425556",
+            appId: "1:385658425556:web:c7d7de5713ad565d34eb41",
+            measurementId: "G-RECGZ5T342"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Variables globales
+        let currentUser = null;
+        let userData = null;
+        let servicesData = [];
+        let currentOrder = null;
+
+        // Fonction pour augmenter le prix de 70%
+        function calculatePrice(basePrice) {
+            return Math.round(basePrice * 1.7);
+        }
+
+        // Services avec prix (après augmentation de 70%)
+        const services = [
+            // Facebook
+            {
+                id: "fb_views",
+                platform: "facebook",
+                name: "Vues Vidéo/Reel Facebook",
+                description: "Augmentez les vues de vos vidéos Facebook",
+                icon: "fab fa-facebook",
+                color: "#3b5998",
+                options: [
+                    {
+                        id: "fb_views_medium",
+                        name: "Vues de qualité moyenne",
+                        basePrice: 122.4,
+                        price: calculatePrice(122.4),
+                        unit: "1K vues",
+                        duration: "1-2 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "fb_views_high",
+                        name: "Vues de haute qualité",
+                        basePrice: 204,
+                        price: calculatePrice(204),
+                        unit: "1K vues",
+                        duration: "30 minutes - 1 heure",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            {
+                id: "fb_comments",
+                platform: "facebook",
+                name: "Commentaires Facebook",
+                description: "Commentaires personnalisés pour vos publications",
+                icon: "fab fa-facebook",
+                color: "#3b5998",
+                options: [
+                    {
+                        id: "fb_comments_male",
+                        name: "Commentaires masculins (🇺🇸)",
+                        basePrice: 1237.6,
+                        price: calculatePrice(1237.6),
+                        unit: "10 commentaires",
+                        duration: "2-3 heures",
+                        quality: "Personnalisé"
+                    },
+                    {
+                        id: "fb_comments_female",
+                        name: "Commentaires féminins (🇺🇸)",
+                        basePrice: 1414.4,
+                        price: calculatePrice(1414.4),
+                        unit: "10 commentaires",
+                        duration: "2-3 heures",
+                        quality: "Personnalisé"
+                    }
+                ]
+            },
+            {
+                id: "fb_reactions",
+                platform: "facebook",
+                name: "Réactions Facebook",
+                description: "Réactions emoji pour vos publications",
+                icon: "fab fa-facebook",
+                color: "#3b5998",
+                options: [
+                    {
+                        id: "fb_reactions_all",
+                        name: "Réactions (tous types)",
+                        basePrice: 571.2,
+                        price: calculatePrice(571.2),
+                        unit: "1K réactions",
+                        duration: "1-2 heures",
+                        quality: "Mixte"
+                    }
+                ]
+            },
+            {
+                id: "fb_followers_profile",
+                platform: "facebook",
+                name: "Abonnés Profil Facebook",
+                description: "Augmentez vos abonnés sur votre profil",
+                icon: "fab fa-facebook",
+                color: "#3b5998",
+                options: [
+                    {
+                        id: "fb_followers_medium",
+                        name: "Abonnés de qualité moyenne",
+                        basePrice: 843.2,
+                        price: calculatePrice(843.2),
+                        unit: "1K abonnés",
+                        duration: "3-5 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "fb_followers_high",
+                        name: "Abonnés de haute qualité",
+                        basePrice: 1360,
+                        price: calculatePrice(1360),
+                        unit: "1K abonnés",
+                        duration: "1-2 heures",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            {
+                id: "fb_likes",
+                platform: "facebook",
+                name: "J'aime Facebook",
+                description: "J'aime pour vos publications Facebook",
+                icon: "fab fa-facebook",
+                color: "#3b5998",
+                options: [
+                    {
+                        id: "fb_likes_medium",
+                        name: "J'aime de qualité moyenne",
+                        basePrice: 272,
+                        price: calculatePrice(272),
+                        unit: "1K j'aime",
+                        duration: "1-2 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "fb_likes_high",
+                        name: "J'aime de haute qualité",
+                        basePrice: 544,
+                        price: calculatePrice(544),
+                        unit: "1K j'aime",
+                        duration: "30 minutes - 1 heure",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            // TikTok
+            {
+                id: "tiktok_views",
+                platform: "tiktok",
+                name: "Vues TikTok",
+                description: "Augmentez les vues de vos vidéos TikTok",
+                icon: "fab fa-tiktok",
+                color: "#000000",
+                options: [
+                    {
+                        id: "tiktok_views_medium",
+                        name: "Vues de qualité moyenne",
+                        basePrice: 13.6,
+                        price: calculatePrice(13.6),
+                        unit: "1K vues",
+                        duration: "30 minutes - 1 heure",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "tiktok_views_high",
+                        name: "Vues de haute qualité",
+                        basePrice: 23.12,
+                        price: calculatePrice(23.12),
+                        unit: "1K vues",
+                        duration: "10-30 minutes",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            {
+                id: "tiktok_likes",
+                platform: "tiktok",
+                name: "J'aime TikTok",
+                description: "J'aime pour vos vidéos TikTok",
+                icon: "fab fa-tiktok",
+                color: "#000000",
+                options: [
+                    {
+                        id: "tiktok_likes_medium",
+                        name: "J'aime de qualité moyenne",
+                        basePrice: 167.28,
+                        price: calculatePrice(167.28),
+                        unit: "1K j'aime",
+                        duration: "1-2 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "tiktok_likes_high",
+                        name: "J'aime de haute qualité",
+                        basePrice: 326.4,
+                        price: calculatePrice(326.4),
+                        unit: "1K j'aime",
+                        duration: "30 minutes - 1 heure",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            // Instagram
+            {
+                id: "instagram_comments",
+                platform: "instagram",
+                name: "Commentaires Instagram",
+                description: "Commentaires personnalisés pour vos publications",
+                icon: "fab fa-instagram",
+                color: "#e1306c",
+                options: [
+                    {
+                        id: "instagram_comments_medium",
+                        name: "Commentaires de qualité moyenne",
+                        basePrice: 81.6,
+                        price: calculatePrice(81.6),
+                        unit: "10 commentaires",
+                        duration: "4 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "instagram_comments_high",
+                        name: "Commentaires de haute qualité",
+                        basePrice: 163.2,
+                        price: calculatePrice(163.2),
+                        unit: "10 commentaires",
+                        duration: "2 heures",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            {
+                id: "instagram_likes",
+                platform: "instagram",
+                name: "J'aime Instagram",
+                description: "J'aime pour vos publications Instagram",
+                icon: "fab fa-instagram",
+                color: "#e1306c",
+                options: [
+                    {
+                        id: "instagram_likes_medium",
+                        name: "J'aime de qualité moyenne",
+                        basePrice: 367.2,
+                        price: calculatePrice(367.2),
+                        unit: "1K j'aime",
+                        duration: "1 heure",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "instagram_likes_high",
+                        name: "J'aime de haute qualité",
+                        basePrice: 544,
+                        price: calculatePrice(544),
+                        unit: "1K j'aime",
+                        duration: "30 minutes",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            // YouTube
+            {
+                id: "youtube_views",
+                platform: "youtube",
+                name: "Vues YouTube",
+                description: "Augmentez les vues de vos vidéos YouTube",
+                icon: "fab fa-youtube",
+                color: "#ff0000",
+                options: [
+                    {
+                        id: "youtube_views_medium",
+                        name: "Vues de qualité moyenne",
+                        basePrice: 1360,
+                        price: calculatePrice(1360),
+                        unit: "1K vues",
+                        duration: "5 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "youtube_views_high",
+                        name: "Vues de haute qualité",
+                        basePrice: 1904,
+                        price: calculatePrice(1904),
+                        unit: "1K vues",
+                        duration: "7 heures",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            {
+                id: "youtube_subscribers",
+                platform: "youtube",
+                name: "Abonnés YouTube",
+                description: "Abonnés pour votre chaîne YouTube",
+                icon: "fab fa-youtube",
+                color: "#ff0000",
+                options: [
+                    {
+                        id: "youtube_subs_medium",
+                        name: "Abonnés de qualité moyenne",
+                        basePrice: 31280,
+                        price: calculatePrice(31280),
+                        unit: "1K abonnés",
+                        duration: "24 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "youtube_subs_high",
+                        name: "Abonnés de haute qualité",
+                        basePrice: 35360,
+                        price: calculatePrice(35360),
+                        unit: "1K abonnés",
+                        duration: "20 heures",
+                        quality: "Haute"
+                    }
+                ]
+            },
+            // WhatsApp
+            {
+                id: "whatsapp_followers",
+                platform: "whatsapp",
+                name: "Abonnés WhatsApp",
+                description: "Abonnés pour votre chaîne WhatsApp",
+                icon: "fab fa-whatsapp",
+                color: "#25D366",
+                options: [
+                    {
+                        id: "whatsapp_followers_int",
+                        name: "Abonnés internationaux",
+                        basePrice: 3400,
+                        price: calculatePrice(3400),
+                        unit: "1K followers",
+                        duration: "3 heures",
+                        quality: "International"
+                    },
+                    {
+                        id: "whatsapp_followers_us",
+                        name: "Abonnés américains",
+                        basePrice: 6120,
+                        price: calculatePrice(6120),
+                        unit: "1K followers",
+                        duration: "3 heures",
+                        quality: "Américain"
+                    }
+                ]
+            },
+            // Telegram
+            {
+                id: "telegram_members",
+                platform: "telegram",
+                name: "Membres Telegram",
+                description: "Membres pour votre groupe/canal Telegram",
+                icon: "fab fa-telegram",
+                color: "#0088cc",
+                options: [
+                    {
+                        id: "telegram_members_medium",
+                        name: "Membres de qualité moyenne",
+                        basePrice: 1904,
+                        price: calculatePrice(1904),
+                        unit: "1K membres",
+                        duration: "2 heures",
+                        quality: "Moyenne"
+                    },
+                    {
+                        id: "telegram_members_high",
+                        name: "Membres de haute qualité",
+                        basePrice: 2720,
+                        price: calculatePrice(2720),
+                        unit: "1K membres",
+                        duration: "1 heure",
+                        quality: "Haute"
+                    }
+                ]
+            }
+        ];
+
+        // Fonction pour afficher les notifications
+        function showNotification(type, title, message, duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            let icon = '';
+            if (type === 'success') icon = 'fas fa-check-circle';
+            else if (type === 'error') icon = 'fas fa-exclamation-circle';
+            else if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+            
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                </div>
+                <button class="notification-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Animation d'entrée
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Fermeture au clic
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                closeNotification(notification);
+            });
+            
+            // Fermeture automatique
+            if (duration > 0) {
+                setTimeout(() => {
+                    closeNotification(notification);
+                }, duration);
+            }
+            
+            return notification;
+        }
+
+        function closeNotification(notification) {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 500);
+        }
+
+        // Fonction pour formater les nombres avec séparateurs de milliers
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        // Fonction pour charger les services
+        function loadServices(platform = 'all') {
+            const servicesGrid = document.getElementById('servicesGrid');
+            servicesGrid.innerHTML = '';
+            
+            const filteredServices = platform === 'all' 
+                ? services 
+                : services.filter(service => service.platform === platform);
+            
+            if (filteredServices.length === 0) {
+                servicesGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <h3>Aucun service disponible pour cette plateforme</h3>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredServices.forEach(service => {
+                const serviceCard = document.createElement('div');
+                serviceCard.className = 'service-card';
+                serviceCard.style.borderTopColor = service.color;
+                
+                let optionsHTML = '';
+                service.options.forEach(option => {
+                    const optionId = `${service.id}_${option.id}`;
+                    optionsHTML += `
+                        <div class="service-option" data-option-id="${optionId}">
+                            <div class="option-header">
+                                <div class="option-name">${option.name}</div>
+                                <div class="option-price">${formatNumber(option.price)} XAF</div>
+                            </div>
+                            <div class="option-details">
+                                <div class="option-quality">Qualité: ${option.quality}</div>
+                                <div class="option-duration">Durée: ${option.duration}</div>
+                            </div>
+                            <div class="option-quantity">
+                                <div class="quantity-label">Quantité (${option.unit}):</div>
+                                <div class="quantity-input">
+                                    <button type="button" class="quantity-btn minus" onclick="updateQuantity('${optionId}', -1)">-</button>
+                                    <input type="number" class="quantity-value" id="quantity_${optionId}" value="1" min="1" onchange="updateTotal('${optionId}')">
+                                    <button type="button" class="quantity-btn plus" onclick="updateQuantity('${optionId}', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="option-total">
+                                <div class="total-label">Total:</div>
+                                <div class="total-price" id="total_${optionId}">${formatNumber(option.price)} XAF</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                serviceCard.innerHTML = `
+                    <div class="service-header">
+                        <div class="service-icon" style="background-color: ${service.color}">
+                            <i class="${service.icon}"></i>
+                        </div>
+                        <div class="service-title">
+                            <h3>${service.name}</h3>
+                            <p>${service.description}</p>
+                        </div>
+                    </div>
+                    <div class="service-body">
+                        ${optionsHTML}
+                    </div>
+                    <div class="service-footer">
+                        <button class="btn btn-primary order-btn" onclick="prepareOrder('${service.id}')">
+                            Commander
+                        </button>
+                    </div>
+                `;
+                
+                servicesGrid.appendChild(serviceCard);
+            });
+        }
+
+        // Fonctions globales pour les boutons de quantité
+        window.updateQuantity = function(optionId, change) {
+            const input = document.getElementById(`quantity_${optionId}`);
+            let currentValue = parseInt(input.value) || 1;
+            currentValue += change;
+            
+            if (currentValue < 1) currentValue = 1;
+            input.value = currentValue;
+            
+            updateTotal(optionId);
+        };
+
+        window.updateTotal = function(optionId) {
+            const input = document.getElementById(`quantity_${optionId}`);
+            const quantity = parseInt(input.value) || 1;
+            
+            // Trouver l'option correspondante
+            let optionPrice = 0;
+            let optionName = '';
+            
+            services.forEach(service => {
+                service.options.forEach(option => {
+                    if (`${service.id}_${option.id}` === optionId) {
+                        optionPrice = option.price;
+                        optionName = option.name;
+                    }
+                });
+            });
+            
+            const total = optionPrice * quantity;
+            document.getElementById(`total_${optionId}`).textContent = `${formatNumber(total)} XAF`;
+        };
+
+        // Fonction pour préparer une commande
+        window.prepareOrder = function(serviceId) {
+            const service = services.find(s => s.id === serviceId);
+            if (!service) return;
+            
+            // Trouver l'option sélectionnée (première option par défaut)
+            const option = service.options[0];
+            const optionId = `${service.id}_${option.id}`;
+            const quantity = parseInt(document.getElementById(`quantity_${optionId}`).value) || 1;
+            const total = option.price * quantity;
+            
+            currentOrder = {
+                serviceId: serviceId,
+                serviceName: service.name,
+                optionId: option.id,
+                optionName: option.name,
+                platform: service.platform,
+                quantity: quantity,
+                unit: option.unit,
+                unitPrice: option.price,
+                total: total,
+                duration: option.duration,
+                quality: option.quality
+            };
+            
+            // Afficher le résumé de la commande
+            const orderSummary = document.getElementById('orderSummary');
+            orderSummary.innerHTML = `
+                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px; color: var(--dark-blue);">Résumé de la commande</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><strong>Service:</strong></div>
+                        <div>${service.name}</div>
+                        <div><strong>Option:</strong></div>
+                        <div>${option.name}</div>
+                        <div><strong>Plateforme:</strong></div>
+                        <div style="text-transform: capitalize;">${service.platform}</div>
+                        <div><strong>Quantité:</strong></div>
+                        <div>${quantity} ${option.unit}</div>
+                        <div><strong>Prix unitaire:</strong></div>
+                        <div>${formatNumber(option.price)} XAF</div>
+                        <div><strong>Durée:</strong></div>
+                        <div>${option.duration}</div>
+                        <div><strong>Total:</strong></div>
+                        <div style="font-weight: 700; color: var(--primary-orange); font-size: 1.2rem;">
+                            ${formatNumber(total)} XAF
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Ouvrir la modal
+            document.getElementById('orderModal').classList.add('active');
+        };
+
+        // Fonction pour confirmer une commande
+        async function confirmOrder() {
+            if (!currentOrder || !currentUser) return;
+            
+            const orderLink = document.getElementById('orderLink').value;
+            const orderNotes = document.getElementById('orderNotes').value;
+            
+            if (!orderLink) {
+                showNotification('error', 'Erreur', 'Veuillez entrer le lien de votre publication/profil');
+                return;
+            }
+            
+            // Vérifier le solde de l'utilisateur
+            if (userData.balance < currentOrder.total) {
+                showNotification('error', 'Solde insuffisant', 'Votre solde est insuffisant pour cette commande. Veuillez déposer des fonds.');
+                closeOrderModal();
+                return;
+            }
+            
+            try {
+                // Créer la commande dans Firestore
+                const orderRef = await db.collection('orders').add({
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    userName: userData.username || currentUser.displayName,
+                    serviceId: currentOrder.serviceId,
+                    serviceName: currentOrder.serviceName,
+                    optionId: currentOrder.optionId,
+                    optionName: currentOrder.optionName,
+                    platform: currentOrder.platform,
+                    quantity: currentOrder.quantity,
+                    unit: currentOrder.unit,
+                    unitPrice: currentOrder.unitPrice,
+                    total: currentOrder.total,
+                    duration: currentOrder.duration,
+                    quality: currentOrder.quality,
+                    link: orderLink,
+                    notes: orderNotes,
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Déduire le montant du solde utilisateur
+                const newBalance = userData.balance - currentOrder.total;
+                await db.collection('users').doc(currentUser.uid).update({
+                    balance: newBalance,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Mettre à jour les données utilisateur locales
+                userData.balance = newBalance;
+                updateUserInfo();
+                
+                // Enregistrer la transaction
+                await db.collection('transactions').add({
+                    userId: currentUser.uid,
+                    type: 'order',
+                    amount: currentOrder.total,
+                    description: `Commande: ${currentOrder.serviceName} - ${currentOrder.optionName}`,
+                    orderId: orderRef.id,
+                    balanceBefore: userData.balance + currentOrder.total,
+                    balanceAfter: userData.balance,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('success', 'Commande confirmée', 'Votre commande a été passée avec succès!');
+                closeOrderModal();
+                
+                // Actualiser les statistiques
+                loadUserStats();
+                
+            } catch (error) {
+                console.error('Erreur lors de la commande:', error);
+                showNotification('error', 'Erreur', 'Une erreur est survenue lors de la commande. Veuillez réessayer.');
+            }
+        }
+
+        // Fonction pour charger les statistiques utilisateur
+        async function loadUserStats() {
+            if (!currentUser) return;
+            
+            try {
+                // Compter les commandes
+                const ordersQuery = await db.collection('orders')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+                
+                const totalOrders = ordersQuery.size;
+                const activeOrders = ordersQuery.docs.filter(doc => 
+                    doc.data().status === 'pending' || doc.data().status === 'processing'
+                ).length;
+                
+                // Calculer le total dépensé
+                let totalSpent = 0;
+                ordersQuery.forEach(doc => {
+                    totalSpent += doc.data().total || 0;
+                });
+                
+                // Mettre à jour l'interface
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('activeOrders').textContent = activeOrders;
+                document.getElementById('totalSpent').textContent = `${formatNumber(totalSpent)} XAF`;
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+            }
+        }
+
+        // Fonction pour mettre à jour les infos utilisateur
+        function updateUserInfo() {
+            if (currentUser && userData) {
+                // Avatar avec initiale
+                const userName = userData.username || currentUser.displayName || currentUser.email;
+                const initial = userName.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = initial;
+                
+                // Nom et email
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                
+                // Solde
+                const balance = userData.balance || 0;
+                document.getElementById('userBalance').textContent = formatNumber(balance);
+                document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
+            }
+        }
+
+        // Fonction pour déposer des fonds
+        async function depositFunds(amount) {
+            if (!currentUser || !userData) return;
+            
+            try {
+                const newBalance = (userData.balance || 0) + parseInt(amount);
+                
+                // Mettre à jour le solde dans Firestore
+                await db.collection('users').doc(currentUser.uid).update({
+                    balance: newBalance,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Mettre à jour les données locales
+                userData.balance = newBalance;
+                updateUserInfo();
+                
+                // Enregistrer la transaction
+                await db.collection('transactions').add({
+                    userId: currentUser.uid,
+                    type: 'deposit',
+                    amount: parseInt(amount),
+                    description: 'Dépôt de fonds',
+                    method: document.getElementById('paymentMethod').value,
+                    balanceBefore: newBalance - parseInt(amount),
+                    balanceAfter: newBalance,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('success', 'Dépôt réussi', `Votre compte a été crédité de ${formatNumber(amount)} XAF`);
+                
+            } catch (error) {
+                console.error('Erreur lors du dépôt:', error);
+                showNotification('error', 'Erreur', 'Une erreur est survenue lors du dépôt. Veuillez réessayer.');
+            }
+        }
+
+        // Fonctions pour les modals
+        function openDepositModal() {
+            document.getElementById('depositModal').classList.add('active');
+            document.getElementById('depositAmount').focus();
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.remove('active');
+            document.getElementById('depositForm').reset();
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('active');
+            document.getElementById('orderLink').value = '';
+            document.getElementById('orderNotes').value = '';
+            currentOrder = null;
+        }
+
+        // Initialisation de l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier l'authentification
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    
+                    // Charger les données utilisateur
+                    try {
+                        const userDoc = await db.collection('users').doc(user.uid).get();
+                        
+                        if (userDoc.exists) {
+                            userData = userDoc.data();
+                        } else {
+                            // Créer un profil utilisateur s'il n'existe pas
+                            userData = {
+                                username: user.displayName || user.email.split('@')[0],
+                                email: user.email,
+                                balance: 0,
+                                country: '',
+                                phone: '',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            };
+                            
+                            await db.collection('users').doc(user.uid).set(userData);
+                        }
+                        
+                        // Mettre à jour l'interface
+                        updateUserInfo();
+                        loadUserStats();
+                        loadServices();
+                        
+                    } catch (error) {
+                        console.error('Erreur lors du chargement des données utilisateur:', error);
+                        showNotification('error', 'Erreur', 'Impossible de charger vos données. Veuillez rafraîchir la page.');
+                    }
+                    
+                } else {
+                    // Rediriger vers la page de connexion si non authentifié
+                    window.location.href = 'connexion.html';
+                }
+            });
+            
+            // Gérer le menu mobile
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+            
+            // Gérer le filtre des plateformes
+            document.querySelectorAll('.platform-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const platform = this.getAttribute('data-platform');
+                    loadServices(platform);
+                });
+            });
+            
+            // Gérer les boutons de dépôt
+            document.getElementById('depositBtn').addEventListener('click', openDepositModal);
+            document.getElementById('closeDepositModal').addEventListener('click', closeDepositModal);
+            document.getElementById('cancelDeposit').addEventListener('click', closeDepositModal);
+            
+            // Gérer la soumission du formulaire de dépôt
+            document.getElementById('confirmDeposit').addEventListener('click', function() {
+                const amount = document.getElementById('depositAmount').value;
+                const paymentMethod = document.getElementById('paymentMethod').value;
+                
+                if (!amount || amount < 1000) {
+                    showNotification('error', 'Erreur', 'Le montant minimum de dépôt est de 1 000 XAF');
+                    return;
+                }
+                
+                if (!paymentMethod) {
+                    showNotification('error', 'Erreur', 'Veuillez sélectionner une méthode de paiement');
+                    return;
+                }
+                
+                // Simuler un dépôt (dans un système réel, rediriger vers une passerelle de paiement)
+                depositFunds(amount);
+                closeDepositModal();
+            });
+            
+            // Gérer les boutons de commande
+            document.getElementById('closeOrderModal').addEventListener('click', closeOrderModal);
+            document.getElementById('cancelOrder').addEventListener('click', closeOrderModal);
+            document.getElementById('confirmOrder').addEventListener('click', confirmOrder);
+            
+            // Gérer la déconnexion
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                auth.signOut().then(() => {
+                    window.location.href = 'index.html';
+                }).catch(error => {
+                    console.error('Erreur lors de la déconnexion:', error);
+                    showNotification('error', 'Erreur', 'Impossible de se déconnecter. Veuillez réessayer.');
+                });
+            });
+            
+            // Fermer le menu mobile en cliquant à l'extérieur
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active') && 
+                    !sidebar.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
