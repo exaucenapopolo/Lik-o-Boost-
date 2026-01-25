@@ -1099,6 +1099,26 @@
             font-size: 1.1rem;
             min-width: 200px;
         }
+
+        /* New: Link Input Section */
+        .link-container {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .link-input {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .link-example {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -1226,7 +1246,7 @@
             <section class="service-flow">
                 <div class="flow-header">
                     <h2>Commander un service</h2>
-                    <p>Sélectionnez votre plateforme, service, qualité et quantité</p>
+                    <p>Sélectionnez votre plateforme, service, qualité, quantité et lien</p>
                 </div>
                 
                 <div class="flow-steps">
@@ -1244,6 +1264,10 @@
                     </div>
                     <div class="step" data-step="4">
                         <div class="step-icon">4</div>
+                        <div class="step-label">Lien</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-icon">5</div>
                         <div class="step-label">Commander</div>
                     </div>
                 </div>
@@ -1331,8 +1355,36 @@
                     </div>
                 </div>
 
-                <!-- Step 4: Order Confirmation -->
+                <!-- Step 4: Link Input -->
                 <div class="flow-section" id="step4">
+                    <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Entrez le lien de votre publication/profil</h3>
+                    
+                    <div class="link-container">
+                        <div class="form-group">
+                            <label for="orderLink">Lien de votre publication/profil *</label>
+                            <input type="url" id="orderLink" class="form-control" placeholder="https://facebook.com/votre-profil" required>
+                            <div class="link-example">
+                                Exemples: 
+                                <br>• Facebook: https://facebook.com/votre-profil
+                                <br>• Instagram: https://instagram.com/votre-compte
+                                <br>• TikTok: https://tiktok.com/@votre-compte
+                                <br>• YouTube: https://youtube.com/watch?v=ID_VIDEO
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-navigation">
+                        <button class="btn btn-secondary" id="backToStep3">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <button class="btn btn-primary" id="nextToStep5" disabled>
+                            Suivant <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Order Confirmation -->
+                <div class="flow-section" id="step5">
                     <h3 style="margin-bottom: 20px; font-size: 1.2rem;">Confirmez votre commande</h3>
                     
                     <!-- Order Summary -->
@@ -1343,18 +1395,13 @@
                     <!-- Order Form -->
                     <div class="order-form">
                         <div class="form-group">
-                            <label for="orderLink">Lien de votre publication/profil *</label>
-                            <input type="url" id="orderLink" class="form-control" placeholder="https://facebook.com/votre-profil" required>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="orderNotes">Notes supplémentaires (optionnel)</label>
                             <textarea id="orderNotes" class="form-control" placeholder="Instructions spéciales, commentaires..."></textarea>
                         </div>
                     </div>
                     
                     <div class="flow-navigation">
-                        <button class="btn btn-secondary" id="backToStep3">
+                        <button class="btn btn-secondary" id="backToStep4">
                             <i class="fas fa-arrow-left"></i> Retour
                         </button>
                         <button class="btn btn-success" id="confirmOrderBtn">
@@ -1449,6 +1496,7 @@
         let currentService = null;
         let currentOption = null;
         let currentQuantity = 1;
+        let currentLink = '';
 
         // Données des services (avec prix augmentés de 70%)
         const servicesData = [
@@ -2022,7 +2070,7 @@
 
         // Fonction pour générer le récapitulatif de commande
         function generateOrderSummary() {
-            if (!currentPlatform || !currentService || !currentOption) return;
+            if (!currentPlatform || !currentService || !currentOption || !currentLink) return;
             
             const total = currentOption.price * currentQuantity;
             
@@ -2045,6 +2093,10 @@
                 <div class="summary-item">
                     <div class="summary-label">Quantité:</div>
                     <div class="summary-value">${currentQuantity} ${currentService.unit}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Lien:</div>
+                    <div class="summary-value" style="word-break: break-word; font-size: 0.9rem;">${currentLink}</div>
                 </div>
                 <div class="summary-item">
                     <div class="summary-label">Durée:</div>
@@ -2162,12 +2214,13 @@
                 
             } catch (error) {
                 console.error('Erreur lors du chargement des statistiques:', error);
+                // Ne pas bloquer l'application en cas d'erreur
             }
         }
 
         // Fonction pour confirmer la commande
         async function confirmOrder() {
-            if (!currentUser || !userData || !currentPlatform || !currentService || !currentOption) {
+            if (!currentUser || !userData || !currentPlatform || !currentService || !currentOption || !currentLink) {
                 showNotification('error', 'Erreur', 'Informations de commande incomplètes');
                 return;
             }
@@ -2175,7 +2228,7 @@
             const orderLink = document.getElementById('orderLink').value;
             const orderNotes = document.getElementById('orderNotes').value;
             
-            if (!orderLink) {
+            if (!currentLink) {
                 showNotification('error', 'Erreur', 'Veuillez entrer le lien de votre publication/profil');
                 return;
             }
@@ -2205,7 +2258,7 @@
                     unitPrice: currentOption.price,
                     total: total,
                     duration: currentOption.duration,
-                    link: orderLink,
+                    link: currentLink,
                     notes: orderNotes,
                     status: 'pending',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -2239,7 +2292,7 @@
                 });
                 
                 // Afficher le succès
-                document.getElementById('step4').style.display = 'none';
+                document.getElementById('step5').style.display = 'none';
                 document.getElementById('orderSuccess').style.display = 'block';
                 
                 // Marquer toutes les étapes comme complétées
@@ -2350,8 +2403,24 @@
             
             document.getElementById('nextToStep4').addEventListener('click', () => {
                 if (currentPlatform && currentService && currentOption) {
-                    generateOrderSummary();
                     showStep(4);
+                } else {
+                    showNotification('warning', 'Sélection requise', 'Veuillez compléter toutes les sélections');
+                }
+            });
+            
+            document.getElementById('nextToStep5').addEventListener('click', () => {
+                // Récupérer le lien
+                currentLink = document.getElementById('orderLink').value.trim();
+                
+                if (!currentLink) {
+                    showNotification('error', 'Lien requis', 'Veuillez entrer le lien de votre publication/profil');
+                    return;
+                }
+                
+                if (currentPlatform && currentService && currentOption && currentLink) {
+                    generateOrderSummary();
+                    showStep(5);
                 } else {
                     showNotification('warning', 'Sélection requise', 'Veuillez compléter toutes les sélections');
                 }
@@ -2360,6 +2429,13 @@
             document.getElementById('backToStep1').addEventListener('click', () => showStep(1));
             document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
             document.getElementById('backToStep3').addEventListener('click', () => showStep(3));
+            document.getElementById('backToStep4').addEventListener('click', () => showStep(4));
+            
+            // Gérer la saisie du lien
+            document.getElementById('orderLink').addEventListener('input', function() {
+                const link = this.value.trim();
+                document.getElementById('nextToStep5').disabled = !link;
+            });
             
             // Gérer la quantité
             document.getElementById('decreaseQuantity').addEventListener('click', () => {
@@ -2386,6 +2462,7 @@
                 currentService = null;
                 currentOption = null;
                 currentQuantity = 1;
+                currentLink = '';
                 
                 // Réinitialiser l'interface
                 document.querySelectorAll('.platform-card').forEach(card => {
@@ -2404,12 +2481,13 @@
                 document.getElementById('nextToStep2').disabled = true;
                 document.getElementById('nextToStep3').disabled = true;
                 document.getElementById('nextToStep4').disabled = true;
+                document.getElementById('nextToStep5').disabled = true;
                 
                 // Recharger les plateformes
                 loadPlatforms();
                 
                 // Revenir à l'étape 1
-                document.getElementById('step4').style.display = 'block';
+                document.getElementById('step5').style.display = 'block';
                 document.getElementById('orderSuccess').style.display = 'none';
                 showStep(1);
             });
