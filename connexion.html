@@ -138,7 +138,7 @@
             color: var(--primary-yellow);
         }
 
-        /* Form Section - Centré et amélioré */
+        /* Form Section - CORRIGÉ pour centrage */
         .auth-section {
             flex: 1;
             display: flex;
@@ -146,6 +146,7 @@
             justify-content: center;
             padding: 120px 0 60px;
             animation: fadeIn 1s ease-out;
+            width: 100%;
         }
 
         @keyframes fadeIn {
@@ -165,8 +166,9 @@
             animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
             transform-style: preserve-3d;
             perspective: 1000px;
-            /* CENTRAGE HORIZONTAL AJOUTÉ */
-            margin: 0 auto;
+            /* CENTRAGE CORRIGÉ */
+            margin-left: auto;
+            margin-right: auto;
         }
 
         @keyframes slideUp {
@@ -802,7 +804,7 @@
             return isValid;
         }
 
-        // Fonction pour gérer la connexion
+        // Fonction pour gérer la connexion - CORRIGÉE
         async function handleLogin(event) {
             event.preventDefault();
             
@@ -840,16 +842,13 @@
                 isSubmitting = false;
                 submitBtn.classList.remove('loading');
                 
-                // Vérifier si l'email est vérifié
-                if (!user.emailVerified) {
-                    showNotification('warning', 'Email non vérifié', 'Veuillez vérifier votre email avant de vous connecter. Consultez votre boîte de réception.');
-                    return;
-                }
+                // SUPPRIMÉ: Vérification de l'email vérifié
+                // On connecte l'utilisateur directement sans vérifier l'email
                 
                 // Afficher le succès
                 showNotification('success', 'Connexion réussie !', 'Vous êtes maintenant connecté à votre compte.');
                 
-                // REDIRECTION MODIFIÉE : Vers le tableau de bord
+                // Rediriger vers le tableau de bord après 2 secondes
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 2000);
@@ -955,8 +954,8 @@
             
             // Vérifier si l'utilisateur est déjà connecté
             auth.onAuthStateChanged(user => {
-                if (user && user.emailVerified) {
-                    // Si l'utilisateur est déjà connecté et vérifié, rediriger vers le tableau de bord
+                if (user) {
+                    // Si l'utilisateur est déjà connecté, rediriger vers le tableau de bord
                     window.location.href = 'dashboard.html';
                 }
             });
