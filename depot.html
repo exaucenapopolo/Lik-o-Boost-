@@ -631,6 +631,15 @@
             return num.toLocaleString('fr-FR');
         }
 
+        // Helper function to get auth headers with Firebase token
+        async function getAuthHeaders() {
+            const token = await currentUser.getIdToken();
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
         function showNotification(type, title, message, duration = 4000) {
             const container = document.getElementById('notificationContainer');
             const notification = document.createElement('div');
@@ -702,13 +711,13 @@
             try {
                 const transactionId = `dep-${Date.now()}`;
                 
+                const authHeaders = await getAuthHeaders();
                 const response = await fetch(API_BASE_URL + '/api/fapshi/initiate', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: authHeaders,
                     body: JSON.stringify({
                         amount: selectedAmount,
                         email: userData?.email || currentUser.email || '',
-                        userId: currentUser.uid,
                         externalId: transactionId
                     })
                 });
@@ -790,15 +799,15 @@
 
         async function loadTransactions() {
             try {
-                const snapshot = await db.collection('users').doc(currentUser.uid)
-                    .collection('transactions')
-                    .orderBy('createdAt', 'desc')
-                    .limit(10)
-                    .get();
+                const headers = await getAuthHeaders();
+                const response = await fetch(API_BASE_URL + `/api/deposits/${currentUser.uid}`, {
+                    headers: headers
+                });
+                const data = await response.json();
 
                 const container = document.getElementById('transactionsContainer');
 
-                if (snapshot.empty) {
+                if (!data.deposits || data.deposits.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-receipt"></i>
@@ -809,8 +818,7 @@
                 }
 
                 container.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const tx = doc.data();
+                data.deposits.forEach(tx => {
                     const statusClass = tx.status === 'completed' ? 'success' : 
                                        tx.status === 'pending' ? 'pending' : 'failed';
                     const statusIcon = tx.status === 'completed' ? 'check' : 
@@ -818,15 +826,18 @@
                     const statusText = tx.status === 'completed' ? 'Reussi' : 
                                       tx.status === 'pending' ? 'En attente' : 'Echoue';
 
-                    const date = tx.createdAt ? tx.createdAt.toDate().toLocaleDateString('fr-FR') : 'Date inconnue';
+                    let date = 'Date inconnue';
+                    if (tx.createdAt && tx.createdAt._seconds) {
+                        date = new Date(tx.createdAt._seconds * 1000).toLocaleDateString('fr-FR');
+                    }
 
                     container.innerHTML += `
-                        <div class="transaction-item" data-testid="transaction-item-${doc.id}">
+                        <div class="transaction-item" data-testid="transaction-item-${tx.transId}">
                             <div class="transaction-icon ${statusClass}">
                                 <i class="fas fa-${statusIcon}"></i>
                             </div>
                             <div class="transaction-info">
-                                <h4>Depot ${tx.method === 'orange' ? 'Orange Money' : 'MTN MoMo'}</h4>
+                                <h4>Depot Mobile Money</h4>
                                 <p>${date} - ${statusText}</p>
                             </div>
                             <div class="transaction-amount ${tx.status === 'pending' ? 'pending' : ''}">

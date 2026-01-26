@@ -900,18 +900,29 @@
             }
         }
 
+        // Helper function to get auth headers with Firebase token
+        async function getAuthHeaders() {
+            const token = await currentUser.getIdToken();
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
         // Envoyer commande a ExoSupplier
-        async function sendOrderToExoSupplier(serviceId, link, quantity) {
+        async function sendOrderToExoSupplier(serviceId, link, quantity, serviceName, platform, price) {
             try {
+                const headers = await getAuthHeaders();
                 const response = await fetch(API_BASE_URL + '/api/exo/order', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: headers,
                     body: JSON.stringify({
                         service: serviceId,
                         link: link,
-                        quantity: quantity
+                        quantity: quantity,
+                        serviceName: serviceName || '',
+                        platform: platform || '',
+                        price: price || 0
                     })
                 });
                 
@@ -1188,9 +1199,16 @@
                 let exoOrderId = null;
                 let exoOrderError = null;
                 
-                // Envoyer la commande a ExoSupplier
+                // Envoyer la commande a ExoSupplier (le backend stocke aussi dans Firestore)
                 try {
-                    const exoResult = await sendOrderToExoSupplier(serviceId, currentLink, currentQuantity);
+                    const exoResult = await sendOrderToExoSupplier(
+                        serviceId, 
+                        currentLink, 
+                        currentQuantity,
+                        currentService.name,
+                        currentPlatform.name,
+                        total
+                    );
                     
                     if (exoResult.order) {
                         exoOrderId = exoResult.order;
@@ -1198,48 +1216,44 @@
                     } else if (exoResult.error) {
                         exoOrderError = exoResult.error;
                         console.error('ExoSupplier error:', exoOrderError);
+                        hideLoading();
+                        showNotification('error', 'Erreur', exoOrderError);
+                        return;
                     }
                 } catch (exoError) {
                     console.error('Error calling ExoSupplier:', exoError);
                     exoOrderError = exoError.message;
+                    hideLoading();
+                    showNotification('error', 'Erreur', 'Impossible de passer la commande');
+                    return;
                 }
                 
-                // Sauvegarder la commande dans Firestore
-                const orderData = {
-                    userId: currentUser.uid,
-                    userEmail: currentUser.email,
-                    userName: userData.username,
-                    platform: currentPlatform.name,
-                    platformId: currentPlatform.id,
-                    service: currentService.name,
-                    exoServiceId: serviceId,
-                    quantity: currentQuantity,
-                    pricePerK: currentService.pricePerK,
-                    unitPrice: unitPrice,
-                    total: total,
-                    link: currentLink,
-                    remarks: document.getElementById('orderRemarks').value,
-                    exoOrderId: exoOrderId,
-                    exoOrderError: exoOrderError,
-                    status: exoOrderId ? 'processing' : (exoOrderError ? 'error' : 'pending'),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                await db.collection('orders').add(orderData);
-                
-                // Mettre a jour le solde utilisateur
-                const newBalance = userData.balance - total;
-                await db.collection('users').doc(currentUser.uid).update({
-                    balance: newBalance,
-                    totalOrders: firebase.firestore.FieldValue.increment(1),
-                    activeOrders: firebase.firestore.FieldValue.increment(1),
-                    totalSpent: firebase.firestore.FieldValue.increment(total)
-                });
-                
-                userData.balance = newBalance;
-                userData.totalOrders = (userData.totalOrders || 0) + 1;
-                userData.activeOrders = (userData.activeOrders || 0) + 1;
-                userData.totalSpent = (userData.totalSpent || 0) + total;
+                // Mettre a jour le solde utilisateur via le backend
+                try {
+                    const deductHeaders = await getAuthHeaders();
+                    const deductResponse = await fetch(API_BASE_URL + '/api/deduct-balance', {
+                        method: 'POST',
+                        headers: deductHeaders,
+                        body: JSON.stringify({
+                            amount: total,
+                            orderId: exoOrderId
+                        })
+                    });
+                    
+                    const deductResult = await deductResponse.json();
+                    
+                    if (deductResult.error) {
+                        throw new Error(deductResult.error);
+                    }
+                    
+                    userData.balance = deductResult.newBalance;
+                    userData.totalOrders = deductResult.totalOrders;
+                    userData.activeOrders = deductResult.activeOrders;
+                    userData.totalSpent = deductResult.totalSpent;
+                } catch (deductError) {
+                    console.error('Error deducting balance:', deductError);
+                    // Continue anyway as order was placed
+                }
                 
                 updateUserInfo();
                 hideLoading();

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Historique des Commandes - Likéo Boost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --primary-blue: #2A5EE8;
+            --primary-orange: #FF7A00;
+            --dark-blue: #1A1F3C;
+            --light-blue: #F0F5FF;
+            --light-gray: #F8F9FA;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --white: #FFFFFF;
+            --success-green: #4CAF50;
+            --error-red: #f44336;
+            --warning-orange: #ff9800;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f5f7ff;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .container { width: 100%; max-width: 100%; margin: 0 auto; padding: 0 15px; }
+
+        .btn {
+            display: inline-block; padding: 12px 24px;
+            border-radius: 50px; text-decoration: none;
+            font-weight: 600; font-size: 0.95rem;
+            transition: var(--transition); cursor: pointer;
+            border: none; text-align: center; white-space: nowrap;
+        }
+
+        .btn-primary { background-color: var(--primary-blue); color: var(--white); }
+        .btn-primary:hover { background-color: var(--primary-orange); transform: translateY(-2px); }
+
+        .mobile-header {
+            background-color: var(--white); padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky; top: 0; z-index: 100; width: 100%;
+        }
+
+        .mobile-header-content { display: flex; justify-content: space-between; align-items: center; }
+
+        .logo {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            display: flex; align-items: center; gap: 8px;
+            color: var(--primary-blue); text-decoration: none;
+            font-weight: 500; font-size: 0.9rem;
+        }
+
+        .page-content { padding: 20px 0; }
+
+        .page-title {
+            font-size: 1.5rem; margin-bottom: 20px;
+            color: var(--dark-blue);
+        }
+
+        .orders-container { display: flex; flex-direction: column; gap: 15px; }
+
+        .order-card {
+            background: var(--white); border-radius: 15px;
+            padding: 20px; box-shadow: var(--shadow);
+        }
+
+        .order-header {
+            display: flex; justify-content: space-between;
+            align-items: flex-start; margin-bottom: 15px;
+            flex-wrap: wrap; gap: 10px;
+        }
+
+        .order-id {
+            font-weight: 700; color: var(--primary-blue);
+            font-size: 0.95rem;
+        }
+
+        .order-status {
+            padding: 5px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #FFF3E0; color: #E65100; }
+        .status-processing, .status-in-progress, .status-partial { background: #E3F2FD; color: #1565C0; }
+        .status-completed { background: #E8F5E9; color: #2E7D32; }
+        .status-canceled, .status-failed { background: #FFEBEE; color: #C62828; }
+
+        .order-details { display: grid; gap: 10px; }
+
+        .order-row {
+            display: flex; justify-content: space-between;
+            font-size: 0.9rem; padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .order-row:last-child { border-bottom: none; }
+
+        .order-label { color: var(--text-light); }
+        .order-value { font-weight: 500; color: var(--text-dark); text-align: right; max-width: 60%; word-break: break-all; }
+
+        .order-link {
+            font-size: 0.8rem; color: var(--primary-blue);
+            text-decoration: none; word-break: break-all;
+        }
+
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
+        .empty-state h3 { margin-bottom: 10px; color: var(--text-dark); }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.9); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+
+        .loading-overlay.hidden { display: none; }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .refresh-btn {
+            background: var(--primary-blue); color: white;
+            border: none; padding: 10px 20px; border-radius: 25px;
+            cursor: pointer; display: flex; align-items: center;
+            gap: 8px; font-weight: 500; margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover { background: var(--primary-orange); }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <header class="mobile-header">
+        <div class="container">
+            <div class="mobile-header-content">
+                <a href="dashboard.html" class="back-btn" data-testid="link-back-dashboard">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour
+                </a>
+                <div class="logo">Likéo</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <div class="container">
+            <h1 class="page-title"><i class="fas fa-history"></i> Historique des Commandes</h1>
+            
+            <button class="refresh-btn" id="refreshBtn" data-testid="button-refresh-orders">
+                <i class="fas fa-sync-alt"></i>
+                Actualiser
+            </button>
+
+            <div class="orders-container" id="ordersContainer">
+                <div class="empty-state">
+                    <i class="fas fa-shopping-bag"></i>
+                    <h3>Chargement...</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
+            authDomain: "likeo-5e3e9.firebaseapp.com",
+            projectId: "likeo-5e3e9",
+            storageBucket: "likeo-5e3e9.firebasestorage.app",
+            messagingSenderId: "1071170297332",
+            appId: "1:1071170297332:web:fa5e60f75848b986712da1",
+            measurementId: "G-RV38D7VYF5"
+        };
+
+        let app, auth, db;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            console.log("Firebase initialise");
+        } catch (error) {
+            console.error("Erreur Firebase:", error);
+        }
+
+        const API_BASE_URL = window.location.hostname.includes('replit') 
+            ? '' 
+            : 'https://likeo-boost.replit.app';
+
+        let currentUser = null;
+
+        function formatNumber(num) {
+            return num.toLocaleString('fr-FR');
+        }
+
+        // Helper function to get auth headers with Firebase token
+        async function getAuthHeaders() {
+            const token = await currentUser.getIdToken();
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function getStatusClass(status) {
+            const statusLower = (status || 'pending').toLowerCase();
+            if (statusLower === 'completed') return 'status-completed';
+            if (statusLower === 'pending') return 'status-pending';
+            if (statusLower === 'processing' || statusLower === 'in progress' || statusLower === 'partial') return 'status-processing';
+            if (statusLower === 'canceled' || statusLower === 'cancelled' || statusLower === 'failed') return 'status-canceled';
+            return 'status-pending';
+        }
+
+        function getStatusText(status) {
+            const statusLower = (status || 'pending').toLowerCase();
+            if (statusLower === 'completed') return 'Termine';
+            if (statusLower === 'pending') return 'En attente';
+            if (statusLower === 'processing' || statusLower === 'in progress') return 'En cours';
+            if (statusLower === 'partial') return 'Partiel';
+            if (statusLower === 'canceled' || statusLower === 'cancelled') return 'Annule';
+            if (statusLower === 'failed') return 'Echoue';
+            return status || 'En attente';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        async function loadOrders() {
+            const container = document.getElementById('ordersContainer');
+            
+            try {
+                const headers = await getAuthHeaders();
+                const response = await fetch(API_BASE_URL + `/api/orders/${currentUser.uid}`, {
+                    headers: headers
+                });
+                const data = await response.json();
+
+                if (!data.orders || data.orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h3>Aucune commande</h3>
+                            <p>Vous n'avez pas encore passe de commande</p>
+                            <a href="dashboard.html" class="btn btn-primary" style="margin-top: 20px;">
+                                Passer une commande
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.orders.forEach(order => {
+                    let date = 'N/A';
+                    if (order.createdAt && order.createdAt._seconds) {
+                        date = new Date(order.createdAt._seconds * 1000).toLocaleString('fr-FR');
+                    }
+
+                    const statusClass = getStatusClass(order.status);
+                    const statusText = getStatusText(order.status);
+
+                    container.innerHTML += `
+                        <div class="order-card" data-testid="order-card-${order.orderId}">
+                            <div class="order-header">
+                                <span class="order-id">#${order.orderId}</span>
+                                <span class="order-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="order-details">
+                                <div class="order-row">
+                                    <span class="order-label">Plateforme</span>
+                                    <span class="order-value">${order.platform || 'N/A'}</span>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Service</span>
+                                    <span class="order-value">${order.serviceName || 'N/A'}</span>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Quantite</span>
+                                    <span class="order-value">${formatNumber(order.quantity || 0)}</span>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Quantite restante</span>
+                                    <span class="order-value">${order.remains !== undefined ? formatNumber(order.remains) : 'N/A'}</span>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Compte de depart</span>
+                                    <span class="order-value">${order.startCount !== null && order.startCount !== undefined ? formatNumber(order.startCount) : 'N/A'}</span>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Prix</span>
+                                    <span class="order-value">${formatNumber(order.price || 0)} XAF</span>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Lien</span>
+                                    <a href="${order.link}" target="_blank" class="order-link order-value">${order.link || 'N/A'}</a>
+                                </div>
+                                <div class="order-row">
+                                    <span class="order-label">Date</span>
+                                    <span class="order-value">${date}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger vos commandes</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            await loadOrders();
+            hideLoading();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    await loadOrders();
+                    hideLoading();
+                } else {
+                    window.location.href = 'connexion.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
