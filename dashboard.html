@@ -609,18 +609,14 @@
                         <span class="step-label">Service</span>
                     </div>
                     <div class="step" data-step="3">
-                        <div class="step-icon"><i class="fas fa-gem"></i></div>
-                        <span class="step-label">Qualite</span>
-                    </div>
-                    <div class="step" data-step="4">
                         <div class="step-icon"><i class="fas fa-sort-numeric-up"></i></div>
                         <span class="step-label">Quantite</span>
                     </div>
-                    <div class="step" data-step="5">
+                    <div class="step" data-step="4">
                         <div class="step-icon"><i class="fas fa-link"></i></div>
                         <span class="step-label">Lien</span>
                     </div>
-                    <div class="step" data-step="6">
+                    <div class="step" data-step="5">
                         <div class="step-icon"><i class="fas fa-check"></i></div>
                         <span class="step-label">Confirmer</span>
                     </div>
@@ -643,23 +639,6 @@
                 </div>
 
                 <div id="step3" class="hidden">
-                    <div class="quality-container">
-                        <div class="quality-header">
-                            <h3>Choisir la qualite</h3>
-                            <p>Prix affiches pour 1000 unites</p>
-                        </div>
-                        <div class="quality-options" id="qualityOptions"></div>
-                        <div style="text-align: center; font-size: 1rem; color: var(--text-light); margin-top: 20px;">
-                            * La haute qualite = Livraison plus rapide, meilleure retention
-                        </div>
-                    </div>
-                    <div class="flow-navigation">
-                        <button class="btn btn-secondary" id="backToStep2"><i class="fas fa-arrow-left"></i> Retour</button>
-                        <button class="btn btn-primary" id="nextToStep4" disabled>Suivant <i class="fas fa-arrow-right"></i></button>
-                    </div>
-                </div>
-
-                <div id="step4" class="hidden">
                     <div class="quantity-container">
                         <div class="quantity-header">
                             <h3>Choisir la quantite</h3>
@@ -668,7 +647,7 @@
                         <div class="quantity-input">
                             <button class="quantity-btn" id="decreaseQty">-</button>
                             <div class="quantity-display">
-                                <input type="number" id="quantityInput" min="1" value="1000">
+                                <input type="number" id="quantityInput" min="1" value="100">
                             </div>
                             <button class="quantity-btn" id="increaseQty">+</button>
                         </div>
@@ -678,12 +657,12 @@
                         </div>
                     </div>
                     <div class="flow-navigation">
-                        <button class="btn btn-secondary" id="backToStep3"><i class="fas fa-arrow-left"></i> Retour</button>
-                        <button class="btn btn-primary" id="nextToStep5">Suivant <i class="fas fa-arrow-right"></i></button>
+                        <button class="btn btn-secondary" id="backToStep2"><i class="fas fa-arrow-left"></i> Retour</button>
+                        <button class="btn btn-primary" id="nextToStep4">Suivant <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <div id="step5" class="hidden">
+                <div id="step4" class="hidden">
                     <div class="order-form">
                         <div class="form-group">
                             <label for="orderLink">Lien de votre publication/profil *</label>
@@ -696,15 +675,15 @@
                         </div>
                     </div>
                     <div class="flow-navigation">
-                        <button class="btn btn-secondary" id="backToStep4"><i class="fas fa-arrow-left"></i> Retour</button>
-                        <button class="btn btn-primary" id="nextToStep6">Suivant <i class="fas fa-arrow-right"></i></button>
+                        <button class="btn btn-secondary" id="backToStep3"><i class="fas fa-arrow-left"></i> Retour</button>
+                        <button class="btn btn-primary" id="nextToStep5">Suivant <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <div id="step6" class="hidden">
+                <div id="step5" class="hidden">
                     <div class="order-summary" id="orderSummary"></div>
                     <div class="flow-navigation">
-                        <button class="btn btn-secondary" id="backToStep5"><i class="fas fa-arrow-left"></i> Retour</button>
+                        <button class="btn btn-secondary" id="backToStep4"><i class="fas fa-arrow-left"></i> Retour</button>
                         <button class="btn btn-success" id="confirmOrder"><i class="fas fa-check"></i> Confirmer la commande</button>
                     </div>
                 </div>
@@ -746,199 +725,85 @@
         let userData = null;
         let currentPlatform = null;
         let currentService = null;
-        let currentQuality = null;
-        let currentQuantity = 1000;
+        let currentQuantity = 100;
         let currentLink = '';
         let exoServices = [];
+        let platformsData = [];
 
-        // Mapping des services locaux vers les IDs ExoSupplier (IDs reels de l'API)
-        const serviceMapping = {
-            // Instagram
-            'ig_comments': { standard: 3014, premium: 3015 },
-            'ig_likes': { standard: 2997, premium: 2998 },
-            'ig_views': { standard: 3108, premium: 3109 },
-            'ig_followers': { standard: 3106, premium: 3107 },
-            // YouTube - IDs a verifier selon les services disponibles
-            'yt_views': { standard: 3128, premium: 3129 },
-            'yt_subs': { standard: 3130, premium: 3131 },
-            'yt_likes': { standard: 3132, premium: 3133 },
-            // Facebook
-            'fb_views': { standard: 3125, premium: 3126 },
-            'fb_likes': { standard: 3127, premium: 3127 },
-            'fb_page_followers': { standard: 3123, premium: 3124 },
-            // TikTok
-            'tt_views': { standard: 3047, premium: 3043 },
-            'tt_likes': { standard: 3048, premium: 3049 },
-            'tt_comments': { standard: 3154, premium: 3101 },
-            'tt_followers': { standard: 3036, premium: 3037 }
+        // Taux de conversion USD vers XAF
+        const USD_TO_XAF = 615;
+
+        // Configuration des plateformes
+        const platformConfig = {
+            'TikTok': { icon: 'fab fa-tiktok', color: '#000000' },
+            'Instagram': { icon: 'fab fa-instagram', color: '#E1306C' },
+            'Facebook': { icon: 'fab fa-facebook-f', color: '#1877F2' },
+            'YouTube': { icon: 'fab fa-youtube', color: '#FF0000' },
+            'Twitter': { icon: 'fab fa-twitter', color: '#1DA1F2' },
+            'Telegram': { icon: 'fab fa-telegram', color: '#0088cc' },
+            'WhatsApp': { icon: 'fab fa-whatsapp', color: '#25D366' },
+            'Autres': { icon: 'fas fa-globe', color: '#6c757d' }
         };
 
-        const servicesData = [
-            {
-                id: 'instagram', 
-                name: 'Instagram', 
-                icon: 'fab fa-instagram', 
-                color: '#E1306C',
-                services: [
-                    { 
-                        id: 'ig_comments', 
-                        name: 'Commentaires Personnalises', 
-                        description: 'Commentaires de qualite sur vos posts', 
-                        unit: 'commentaires',
-                        referenceUnit: 10,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 81.6, description: 'Livraison: 4h' },
-                            { id: 'premium', name: 'Haute Qualite', price: 163.2, description: 'Livraison: 2h' }
-                        ]
-                    },
-                    { 
-                        id: 'ig_likes', 
-                        name: 'J\'aime', 
-                        description: 'Boostez vos likes sur vos posts', 
-                        unit: 'j\'aime',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 367.2, description: 'Livraison: 1h' },
-                            { id: 'premium', name: 'Haute Qualite', price: 544, description: 'Livraison: 30 min' }
-                        ]
-                    },
-                    { 
-                        id: 'ig_views', 
-                        name: 'Vues Video/Reel', 
-                        description: 'Augmentez vos vues video/Reel', 
-                        unit: 'vues',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 5.44, description: 'Livraison: 30 min' },
-                            { id: 'premium', name: 'Haute Qualite', price: 20.4, description: 'Livraison: 10 min' }
-                        ]
-                    },
-                    { 
-                        id: 'ig_followers', 
-                        name: 'Abonnes Instagram', 
-                        description: 'Augmentez vos abonnes', 
-                        unit: 'abonnes',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 500, description: 'Livraison: 24h' },
-                            { id: 'premium', name: 'Haute Qualite', price: 800, description: 'Livraison: 12h' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'youtube', 
-                name: 'YouTube', 
-                icon: 'fab fa-youtube', 
-                color: '#FF0000',
-                services: [
-                    { 
-                        id: 'yt_views', 
-                        name: 'Vues YouTube', 
-                        description: 'Augmentez vos vues video', 
-                        unit: 'vues',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 1360, description: 'Livraison: 5h' },
-                            { id: 'premium', name: 'Haute Qualite', price: 1904, description: 'Livraison: 7h' }
-                        ]
-                    },
-                    { 
-                        id: 'yt_subs', 
-                        name: 'Abonnes YouTube', 
-                        description: 'Plus d\'abonnes sur votre chaine', 
-                        unit: 'abonnes',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 31280, description: 'Livraison: 24h' },
-                            { id: 'premium', name: 'Haute Qualite', price: 35360, description: 'Livraison: 20h' }
-                        ]
-                    },
-                    { 
-                        id: 'yt_likes', 
-                        name: 'J\'aime YouTube', 
-                        description: 'Likes sur vos videos', 
-                        unit: 'j\'aime',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 367.2, description: 'Livraison: 2h' },
-                            { id: 'premium', name: 'Haute Qualite', price: 1781.6, description: 'Livraison: 1h' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'facebook', 
-                name: 'Facebook', 
-                icon: 'fab fa-facebook-f', 
-                color: '#1877F2',
-                services: [
-                    { 
-                        id: 'fb_views', 
-                        name: 'Vues Video/Reel', 
-                        description: 'Vues pour vos videos Facebook', 
-                        unit: 'vues',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 122.4, description: '' },
-                            { id: 'premium', name: 'Haute Qualite', price: 204, description: '' }
-                        ]
-                    },
-                    { 
-                        id: 'fb_likes', 
-                        name: 'J\'aime Publication', 
-                        description: 'Likes pour vos publications', 
-                        unit: 'j\'aime',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 272, description: '' },
-                            { id: 'premium', name: 'Haute Qualite', price: 544, description: '' }
-                        ]
-                    },
-                    { 
-                        id: 'fb_page_followers', 
-                        name: 'Abonnes Page', 
-                        description: 'Abonnes pour votre page', 
-                        unit: 'abonnes',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 843.2, description: '' },
-                            { id: 'premium', name: 'Haute Qualite', price: 1360, description: '' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'tiktok', 
-                name: 'TikTok', 
-                icon: 'fab fa-tiktok', 
-                color: '#000000',
-                services: [
-                    { 
-                        id: 'tt_views', 
-                        name: 'Vues TikTok', 
-                        description: 'Vues pour vos videos TikTok', 
-                        unit: 'vues',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 13.6, description: '' },
-                            { id: 'premium', name: 'Haute Qualite', price: 23.12, description: '' }
-                        ]
-                    },
-                    { 
-                        id: 'tt_likes', 
-                        name: 'J\'aime TikTok', 
-                        description: 'Likes pour vos videos', 
-                        unit: 'j\'aime',
-                        referenceUnit: 1000,
-                        qualities: [
-                            { id: 'standard', name: 'Qualite Moyenne', price: 167.28, description: '' },
-                            { id: 'premium', name: 'Haute Qualite', price: 326.4, description: '' }
-                        ]
-                    }
-                ]
-            }
-        ];
+        // Decoder les entites HTML
+        function decodeHtml(text) {
+            const txt = document.createElement('textarea');
+            txt.innerHTML = text;
+            return txt.value;
+        }
+
+        // Detecter la plateforme d'un service
+        function detectPlatform(category) {
+            const cat = category.toLowerCase();
+            if (cat.includes('tiktok') || cat.includes('tik tok')) return 'TikTok';
+            if (cat.includes('instagram')) return 'Instagram';
+            if (cat.includes('facebook')) return 'Facebook';
+            if (cat.includes('youtube')) return 'YouTube';
+            if (cat.includes('twitter')) return 'Twitter';
+            if (cat.includes('telegram')) return 'Telegram';
+            if (cat.includes('whatsapp')) return 'WhatsApp';
+            return 'Autres';
+        }
+
+        // Organiser les services par plateforme
+        function organizeServicesByPlatform(services) {
+            const platforms = {};
+            
+            services.forEach(service => {
+                const category = decodeHtml(service.category || '');
+                const platform = detectPlatform(category);
+                
+                if (!platforms[platform]) {
+                    platforms[platform] = {
+                        id: platform.toLowerCase(),
+                        name: platform,
+                        icon: platformConfig[platform]?.icon || 'fas fa-globe',
+                        color: platformConfig[platform]?.color || '#6c757d',
+                        services: []
+                    };
+                }
+                
+                // Convertir le prix USD en XAF (prix pour 1000 unites)
+                const pricePerK = parseFloat(service.rate) * USD_TO_XAF;
+                
+                platforms[platform].services.push({
+                    exoId: service.service,
+                    name: decodeHtml(service.name),
+                    category: category,
+                    pricePerK: pricePerK,
+                    min: service.min,
+                    max: service.max,
+                    refill: service.refill,
+                    cancel: service.cancel
+                });
+            });
+            
+            // Convertir en tableau et trier
+            return Object.values(platforms).sort((a, b) => {
+                const order = ['TikTok', 'Instagram', 'Facebook', 'YouTube', 'Twitter', 'Telegram', 'WhatsApp', 'Autres'];
+                return order.indexOf(a.name) - order.indexOf(b.name);
+            });
+        }
 
         function formatNumber(num) {
             return num.toLocaleString('fr-FR', {
@@ -985,7 +850,7 @@
             document.getElementById('loadingOverlay').classList.remove('hidden');
         }
 
-        // Charger les services ExoSupplier
+        // Charger les services ExoSupplier et organiser par plateforme
         async function loadExoServices() {
             try {
                 const response = await fetch('/api/exo/services');
@@ -994,14 +859,24 @@
                     if (contentType && contentType.includes('application/json')) {
                         exoServices = await response.json();
                         console.log('ExoSupplier services loaded:', exoServices.length);
+                        
+                        // Organiser les services par plateforme
+                        platformsData = organizeServicesByPlatform(exoServices);
+                        console.log('Platforms organized:', platformsData.map(p => p.name + ' (' + p.services.length + ')'));
+                        
+                        // Charger les plateformes dans l'UI
+                        loadPlatforms();
                     } else {
                         console.warn('ExoSupplier services response is not JSON');
+                        showNotification('error', 'Erreur', 'Impossible de charger les services');
                     }
                 } else {
                     console.warn('ExoSupplier services request failed:', response.status);
+                    showNotification('error', 'Erreur', 'Impossible de charger les services');
                 }
             } catch (error) {
                 console.error('Error loading ExoSupplier services:', error);
+                showNotification('error', 'Erreur', 'Impossible de charger les services');
             }
         }
 
@@ -1121,7 +996,12 @@
             const container = document.getElementById('platformsContainer');
             container.innerHTML = '';
             
-            servicesData.forEach(platform => {
+            if (platformsData.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);">Chargement des services...</p>';
+                return;
+            }
+            
+            platformsData.forEach(platform => {
                 const card = document.createElement('div');
                 card.className = 'platform-card';
                 card.innerHTML = `
@@ -1129,6 +1009,7 @@
                         <i class="${platform.icon}"></i>
                     </div>
                     <div class="platform-name">${platform.name}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light);">${platform.services.length} services</div>
                 `;
                 
                 card.addEventListener('click', () => {
@@ -1146,23 +1027,18 @@
             const container = document.getElementById('servicesContainer');
             container.innerHTML = '';
             
-            const platform = servicesData.find(p => p.id === platformId);
+            const platform = platformsData.find(p => p.id === platformId);
             if (!platform) return;
             
             platform.services.forEach(service => {
                 const item = document.createElement('div');
                 item.className = 'service-item';
                 
-                let minPrice = service.qualities[0].price;
-                service.qualities.forEach(q => {
-                    if (q.price < minPrice) minPrice = q.price;
-                });
-                
                 item.innerHTML = `
                     <div class="service-name">${service.name}</div>
-                    <div class="service-desc">${service.description}</div>
+                    <div class="service-desc">ID: ${service.exoId} | Min: ${service.min} | Max: ${formatNumber(service.max)}</div>
                     <div style="font-size: 0.9rem; color: var(--primary-blue); margin-top: 5px;">
-                        A partir de ${formatNumber(minPrice)} XAF/${service.referenceUnit === 10 ? '10' : '1K'} ${service.unit}
+                        ${formatNumber(service.pricePerK)} XAF/1K
                     </div>
                 `;
                 
@@ -1170,75 +1046,32 @@
                     document.querySelectorAll('.service-item').forEach(s => s.classList.remove('selected'));
                     item.classList.add('selected');
                     currentService = service;
-                    document.getElementById('nextToStep3').disabled = false;
                     
-                    loadQualities(service.qualities, service.referenceUnit);
+                    // Mettre a jour la quantite minimum
+                    currentQuantity = Math.max(service.min, 100);
+                    document.getElementById('quantityInput').value = currentQuantity;
+                    document.getElementById('quantityInput').min = service.min;
+                    document.getElementById('quantityInput').max = service.max;
+                    
+                    document.getElementById('nextToStep3').disabled = false;
+                    updatePriceDisplay();
                 });
                 
                 container.appendChild(item);
             });
         }
 
-        function loadQualities(qualities, referenceUnit) {
-            const container = document.getElementById('qualityOptions');
-            container.innerHTML = '';
-            
-            qualities.forEach(quality => {
-                const option = document.createElement('div');
-                option.className = 'quality-option';
-                option.dataset.id = quality.id;
-                option.dataset.price = quality.price;
-                option.dataset.description = quality.description;
-                
-                const unitText = referenceUnit === 10 ? '10' : '1K';
-                
-                option.innerHTML = `
-                    <div class="quality-name">${quality.name}</div>
-                    <div class="quality-price">${formatNumber(quality.price)} XAF/${unitText}</div>
-                    <div class="quality-desc">${quality.description || 'Sans delai specifie'}</div>
-                `;
-                
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.quality-option').forEach(o => o.classList.remove('selected'));
-                    option.classList.add('selected');
-                    
-                    currentQuality = {
-                        id: quality.id,
-                        name: quality.name,
-                        price: quality.price,
-                        description: quality.description
-                    };
-                    
-                    document.getElementById('nextToStep4').disabled = false;
-                    updatePriceDisplay();
-                });
-                
-                container.appendChild(option);
-            });
-            
-            if (qualities.length > 0) {
-                container.querySelector('.quality-option').click();
-            }
-        }
-
         function updatePriceDisplay() {
-            if (currentQuality && currentService) {
-                const unitText = currentService.referenceUnit === 10 ? '10' : '1K';
-                document.getElementById('unitPrice').textContent = `${formatNumber(currentQuality.price)} XAF/${unitText}`;
-                document.getElementById('quantityUnit').textContent = currentService.unit;
+            if (currentService) {
+                document.getElementById('unitPrice').textContent = `${formatNumber(currentService.pricePerK)} XAF/1K`;
+                document.getElementById('quantityUnit').textContent = 'unites';
                 updateTotal();
             }
         }
 
         function updateTotal() {
-            if (currentQuality && currentService) {
-                let unitPrice;
-                if (currentService.referenceUnit === 10) {
-                    unitPrice = currentQuality.price / 10;
-                } else {
-                    unitPrice = currentQuality.price / 1000;
-                }
-                
+            if (currentService) {
+                const unitPrice = currentService.pricePerK / 1000;
                 const total = unitPrice * currentQuantity;
                 document.getElementById('totalPreview').textContent = `${formatNumber(total)} XAF`;
             }
@@ -1261,15 +1094,9 @@
         }
 
         function generateSummary() {
-            if (!currentPlatform || !currentService || !currentQuality) return;
+            if (!currentPlatform || !currentService) return;
             
-            let unitPrice;
-            if (currentService.referenceUnit === 10) {
-                unitPrice = currentQuality.price / 10;
-            } else {
-                unitPrice = currentQuality.price / 1000;
-            }
-            
+            const unitPrice = currentService.pricePerK / 1000;
             const total = unitPrice * currentQuantity;
             const remarks = document.getElementById('orderRemarks').value;
             const link = document.getElementById('orderLink').value;
@@ -1285,16 +1112,16 @@
                     <span class="summary-value">${currentService.name}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Qualite:</span>
-                    <span class="summary-value">${currentQuality.name}</span>
+                    <span class="summary-label">ID ExoSupplier:</span>
+                    <span class="summary-value">${currentService.exoId}</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Quantite:</span>
-                    <span class="summary-value">${formatNumber(currentQuantity)} ${currentService.unit}</span>
+                    <span class="summary-value">${formatNumber(currentQuantity)} unites</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Prix/${currentService.referenceUnit === 10 ? '10' : '1K'}:</span>
-                    <span class="summary-value">${formatNumber(currentQuality.price)} XAF</span>
+                    <span class="summary-label">Prix/1K:</span>
+                    <span class="summary-value">${formatNumber(currentService.pricePerK)} XAF</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Lien:</span>
@@ -1314,18 +1141,18 @@
         }
 
         async function confirmOrder() {
-            if (!currentUser || !userData || !currentPlatform || !currentService || !currentQuality || !currentLink) {
+            if (!currentUser || !userData || !currentPlatform || !currentService || !currentLink) {
                 showNotification('error', 'Erreur', 'Informations incompletes');
                 return;
             }
             
-            let unitPrice;
-            if (currentService.referenceUnit === 10) {
-                unitPrice = currentQuality.price / 10;
-            } else {
-                unitPrice = currentQuality.price / 1000;
+            // Verifier la quantite minimum
+            if (currentQuantity < currentService.min) {
+                showNotification('error', 'Quantite invalide', `Minimum requis: ${currentService.min}`);
+                return;
             }
             
+            const unitPrice = currentService.pricePerK / 1000;
             const total = unitPrice * currentQuantity;
             
             if (userData.balance < total) {
@@ -1336,29 +1163,25 @@
             try {
                 showLoading();
                 
-                // Trouver l'ID du service ExoSupplier
-                const serviceId = serviceMapping[currentService.id]?.[currentQuality.id];
+                // Utiliser directement l'ID ExoSupplier du service
+                const serviceId = currentService.exoId;
                 let exoOrderId = null;
                 let exoOrderError = null;
                 
-                if (serviceId) {
-                    // Envoyer la commande a ExoSupplier
-                    try {
-                        const exoResult = await sendOrderToExoSupplier(serviceId, currentLink, currentQuantity);
-                        
-                        if (exoResult.order) {
-                            exoOrderId = exoResult.order;
-                            console.log('ExoSupplier order created:', exoOrderId);
-                        } else if (exoResult.error) {
-                            exoOrderError = exoResult.error;
-                            console.error('ExoSupplier error:', exoOrderError);
-                        }
-                    } catch (exoError) {
-                        console.error('Error calling ExoSupplier:', exoError);
-                        exoOrderError = exoError.message;
+                // Envoyer la commande a ExoSupplier
+                try {
+                    const exoResult = await sendOrderToExoSupplier(serviceId, currentLink, currentQuantity);
+                    
+                    if (exoResult.order) {
+                        exoOrderId = exoResult.order;
+                        console.log('ExoSupplier order created:', exoOrderId);
+                    } else if (exoResult.error) {
+                        exoOrderError = exoResult.error;
+                        console.error('ExoSupplier error:', exoOrderError);
                     }
-                } else {
-                    console.warn('No ExoSupplier mapping for service:', currentService.id, currentQuality.id);
+                } catch (exoError) {
+                    console.error('Error calling ExoSupplier:', exoError);
+                    exoOrderError = exoError.message;
                 }
                 
                 // Sauvegarder la commande dans Firestore
@@ -1369,11 +1192,9 @@
                     platform: currentPlatform.name,
                     platformId: currentPlatform.id,
                     service: currentService.name,
-                    serviceId: currentService.id,
-                    quality: currentQuality.name,
-                    qualityId: currentQuality.id,
+                    exoServiceId: serviceId,
                     quantity: currentQuantity,
-                    unit: currentService.unit,
+                    pricePerK: currentService.pricePerK,
                     unitPrice: unitPrice,
                     total: total,
                     link: currentLink,
@@ -1404,7 +1225,7 @@
                 hideLoading();
                 
                 // Afficher succes
-                document.getElementById('step6').classList.add('hidden');
+                document.getElementById('step5').classList.add('hidden');
                 const successDiv = document.getElementById('orderSuccess');
                 successDiv.style.display = 'block';
                 
@@ -1429,20 +1250,18 @@
         function resetOrder() {
             currentPlatform = null;
             currentService = null;
-            currentQuality = null;
-            currentQuantity = 1000;
+            currentQuantity = 100;
             currentLink = '';
             
-            document.getElementById('quantityInput').value = '1000';
+            document.getElementById('quantityInput').value = '100';
             document.getElementById('orderLink').value = '';
             document.getElementById('orderRemarks').value = '';
             document.getElementById('orderSuccess').style.display = 'none';
             document.getElementById('exoOrderId').textContent = '';
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
-            document.getElementById('nextToStep4').disabled = true;
             
-            document.querySelectorAll('.platform-card, .service-item, .quality-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.platform-card, .service-item').forEach(el => el.classList.remove('selected'));
             
             showStep(1);
         }
@@ -1513,7 +1332,7 @@
                 }
             });
             
-            // Navigation
+            // Navigation simplifiee: Plateforme -> Service -> Quantite -> Lien -> Confirmation
             document.getElementById('nextToStep2').addEventListener('click', () => {
                 if (currentPlatform) {
                     loadServices(currentPlatform.id);
@@ -1530,25 +1349,22 @@
             document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
             
             document.getElementById('nextToStep4').addEventListener('click', () => {
-                if (currentQuality) showStep(4);
+                if (currentService) showStep(4);
             });
             
             document.getElementById('backToStep3').addEventListener('click', () => showStep(3));
             
-            document.getElementById('nextToStep5').addEventListener('click', () => showStep(5));
-            document.getElementById('backToStep4').addEventListener('click', () => showStep(4));
-            
-            document.getElementById('nextToStep6').addEventListener('click', () => {
+            document.getElementById('nextToStep5').addEventListener('click', () => {
                 currentLink = document.getElementById('orderLink').value.trim();
                 if (!currentLink) {
                     showNotification('warning', 'Lien requis', 'Veuillez entrer le lien');
                     return;
                 }
                 generateSummary();
-                showStep(6);
+                showStep(5);
             });
             
-            document.getElementById('backToStep5').addEventListener('click', () => showStep(5));
+            document.getElementById('backToStep4').addEventListener('click', () => showStep(4));
             document.getElementById('confirmOrder').addEventListener('click', confirmOrder);
             document.getElementById('newOrderBtn').addEventListener('click', resetOrder);
             
@@ -1556,24 +1372,25 @@
             const quantityInput = document.getElementById('quantityInput');
             
             document.getElementById('decreaseQty').addEventListener('click', () => {
-                const step = currentService?.referenceUnit === 10 ? 10 : 100;
-                if (currentQuantity > step) {
-                    currentQuantity -= step;
+                const minQty = currentService?.min || 10;
+                if (currentQuantity > minQty) {
+                    currentQuantity -= 100;
+                    if (currentQuantity < minQty) currentQuantity = minQty;
                     quantityInput.value = currentQuantity;
                     updateTotal();
                 }
             });
             
             document.getElementById('increaseQty').addEventListener('click', () => {
-                const step = currentService?.referenceUnit === 10 ? 10 : 100;
-                currentQuantity += step;
+                currentQuantity += 100;
                 quantityInput.value = currentQuantity;
                 updateTotal();
             });
             
             quantityInput.addEventListener('input', function() {
                 const val = parseInt(this.value) || 1;
-                currentQuantity = Math.max(1, val);
+                const minQty = currentService?.min || 1;
+                currentQuantity = Math.max(minQty, val);
                 updateTotal();
             });
         });
