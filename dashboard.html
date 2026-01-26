@@ -729,6 +729,8 @@
         let currentLink = '';
         let exoServices = [];
         let platformsData = [];
+        let servicesLoaded = false;
+        let userLoaded = false;
 
         // Taux de conversion USD vers XAF
         const USD_TO_XAF = 615;
@@ -850,6 +852,13 @@
             document.getElementById('loadingOverlay').classList.remove('hidden');
         }
 
+        // Fonction pour charger les plateformes quand tout est pret
+        function tryLoadPlatforms() {
+            if (servicesLoaded && userLoaded) {
+                loadPlatforms();
+            }
+        }
+
         // Charger les services ExoSupplier et organiser par plateforme
         async function loadExoServices() {
             try {
@@ -864,8 +873,8 @@
                         platformsData = organizeServicesByPlatform(exoServices);
                         console.log('Platforms organized:', platformsData.map(p => p.name + ' (' + p.services.length + ')'));
                         
-                        // Charger les plateformes dans l'UI
-                        loadPlatforms();
+                        servicesLoaded = true;
+                        tryLoadPlatforms();
                     } else {
                         console.warn('ExoSupplier services response is not JSON');
                         showNotification('error', 'Erreur', 'Impossible de charger les services');
@@ -1285,7 +1294,8 @@
                     try {
                         userData = await getOrCreateUserData(user);
                         updateUserInfo();
-                        loadPlatforms();
+                        userLoaded = true;
+                        tryLoadPlatforms();
                         hideLoading();
                         
                         showNotification('success', 'Bienvenue!', `Bon retour ${userData.username || 'utilisateur'}!`);
@@ -1304,7 +1314,8 @@
                         };
                         
                         updateUserInfo();
-                        loadPlatforms();
+                        userLoaded = true;
+                        tryLoadPlatforms();
                     }
                 } else {
                     console.log("Non connecte, redirection...");
