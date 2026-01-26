@@ -854,17 +854,22 @@
 
         // Fonction pour charger les plateformes quand tout est pret
         function tryLoadPlatforms() {
+            console.log('tryLoadPlatforms called - servicesLoaded:', servicesLoaded, 'userLoaded:', userLoaded, 'platformsData:', platformsData.length);
             if (servicesLoaded && userLoaded) {
+                console.log('Loading platforms now...');
                 loadPlatforms();
             }
         }
 
         // Charger les services ExoSupplier et organiser par plateforme
         async function loadExoServices() {
+            console.log('loadExoServices started...');
             try {
                 const response = await fetch('/api/exo/services');
+                console.log('API response status:', response.status, 'ok:', response.ok);
                 if (response.ok) {
                     const contentType = response.headers.get('content-type');
+                    console.log('Content-Type:', contentType);
                     if (contentType && contentType.includes('application/json')) {
                         exoServices = await response.json();
                         console.log('ExoSupplier services loaded:', exoServices.length);
@@ -874,6 +879,7 @@
                         console.log('Platforms organized:', platformsData.map(p => p.name + ' (' + p.services.length + ')'));
                         
                         servicesLoaded = true;
+                        console.log('Services loaded, calling tryLoadPlatforms...');
                         tryLoadPlatforms();
                     } else {
                         console.warn('ExoSupplier services response is not JSON');
@@ -1283,13 +1289,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log("Dashboard charge, verification auth...");
             
-            // Charger les services ExoSupplier
-            loadExoServices();
-            
             auth.onAuthStateChanged(async user => {
                 if (user) {
                     console.log("Utilisateur connecte:", user.uid);
                     currentUser = user;
+                    
+                    // Charger les services ExoSupplier seulement si l'utilisateur est connecte
+                    loadExoServices();
                     
                     try {
                         userData = await getOrCreateUserData(user);
