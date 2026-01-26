@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Depot - Likeo Boost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --primary-blue: #2A5EE8;
+            --primary-orange: #FF7A00;
+            --dark-blue: #1A1F3C;
+            --light-blue: #F0F5FF;
+            --light-gray: #F8F9FA;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --white: #FFFFFF;
+            --success-green: #4CAF50;
+            --error-red: #f44336;
+            --warning-orange: #ff9800;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f5f7ff;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .container { width: 100%; max-width: 100%; margin: 0 auto; padding: 0 15px; }
+
+        .btn {
+            display: inline-block; padding: 12px 24px;
+            border-radius: 50px; text-decoration: none;
+            font-weight: 600; font-size: 0.95rem;
+            transition: var(--transition); cursor: pointer;
+            border: none; text-align: center; white-space: nowrap;
+        }
+
+        .btn-primary { background-color: var(--primary-blue); color: var(--white); }
+        .btn-primary:hover {
+            background-color: var(--primary-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 122, 0, 0.2);
+        }
+
+        .btn-yellow {
+            background-color: var(--primary-yellow);
+            color: var(--dark-blue);
+            font-weight: 700;
+        }
+        .btn-yellow:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-success { background-color: var(--success-green); color: var(--white); }
+        .btn-success:hover { background-color: #3d8b40; }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .mobile-header {
+            background-color: var(--white); padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky; top: 0; z-index: 100; width: 100%;
+        }
+
+        .mobile-header-content { display: flex; justify-content: space-between; align-items: center; }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.5rem;
+            color: var(--dark-blue); text-decoration: none;
+            display: flex; align-items: center;
+        }
+        .logo span { color: var(--primary-blue); }
+        .logo .dot { color: var(--primary-orange); font-size: 1.8rem; line-height: 1; }
+        .logo .yellow { color: var(--primary-yellow); }
+
+        .back-btn {
+            background: none; border: none;
+            font-size: 1.2rem; color: var(--primary-blue);
+            cursor: pointer; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: var(--transition);
+            text-decoration: none;
+        }
+        .back-btn:hover { background-color: rgba(42, 94, 232, 0.1); }
+
+        .main-content { padding: 20px 0 40px; }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+        .page-title p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .balance-card .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .balance-card .amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .deposit-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--dark-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i {
+            color: var(--primary-blue);
+        }
+
+        .amount-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .amount-option {
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--white);
+        }
+        .amount-option:hover {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+        .amount-option.selected {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        .amount-option .value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .amount-option .label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .custom-amount {
+            margin-bottom: 20px;
+        }
+        .custom-amount label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        .custom-amount input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+        }
+        .custom-amount input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .payment-method:hover {
+            border-color: var(--primary-blue);
+        }
+        .payment-method.selected {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+        .payment-method img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-right: 15px;
+        }
+        .payment-method .method-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        .payment-method .method-icon.mtn {
+            background: #ffcc00;
+            color: #000;
+        }
+        .payment-method .method-icon.orange {
+            background: #ff6600;
+            color: #fff;
+        }
+        .payment-method .method-info h4 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+        .payment-method .method-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+        .payment-method .check-icon {
+            margin-left: auto;
+            color: var(--primary-blue);
+            display: none;
+        }
+        .payment-method.selected .check-icon {
+            display: block;
+        }
+
+        .phone-input {
+            margin-bottom: 20px;
+        }
+        .phone-input label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        .phone-input input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+        }
+        .phone-input input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .deposit-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+        }
+
+        .deposit-summary {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .deposit-summary .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .deposit-summary .row:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            font-weight: 700;
+        }
+        .deposit-summary .label {
+            color: var(--text-light);
+        }
+
+        .notification-container {
+            position: fixed;
+            top: 80px;
+            right: 15px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification {
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            min-width: 280px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .notification.success { background-color: var(--success-green); }
+        .notification.error { background-color: var(--error-red); }
+        .notification.warning { background-color: var(--warning-orange); }
+        .notification.info { background-color: var(--primary-blue); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        .loading-overlay.hidden { display: none; }
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            margin-top: 15px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .transactions-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        .transaction-icon.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success-green);
+        }
+        .transaction-icon.pending {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning-orange);
+        }
+        .transaction-icon.failed {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error-red);
+        }
+        .transaction-info {
+            flex: 1;
+        }
+        .transaction-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+        .transaction-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+        .transaction-amount {
+            font-weight: 700;
+            color: var(--success-green);
+        }
+        .transaction-amount.pending {
+            color: var(--warning-orange);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (min-width: 768px) {
+            .container { max-width: 600px; }
+            .amount-options { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Chargement...</div>
+    </div>
+
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <header class="mobile-header">
+        <div class="container">
+            <div class="mobile-header-content">
+                <a href="dashboard.html" class="back-btn" data-testid="link-back-dashboard">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <a href="dashboard.html" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
+                <div style="width: 40px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h1><i class="fas fa-wallet"></i> Depot</h1>
+                <p>Rechargez votre compte pour commander des services</p>
+            </div>
+
+            <div class="balance-card">
+                <div class="label">Solde actuel</div>
+                <div class="amount" id="currentBalance" data-testid="text-current-balance">0 XAF</div>
+            </div>
+
+            <div class="deposit-section">
+                <h3 class="section-title"><i class="fas fa-coins"></i> Montant du depot</h3>
+                
+                <div class="amount-options">
+                    <div class="amount-option" data-amount="500" data-testid="button-amount-500">
+                        <div class="value">500</div>
+                        <div class="label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-amount="1000" data-testid="button-amount-1000">
+                        <div class="value">1 000</div>
+                        <div class="label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-amount="2000" data-testid="button-amount-2000">
+                        <div class="value">2 000</div>
+                        <div class="label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-amount="5000" data-testid="button-amount-5000">
+                        <div class="value">5 000</div>
+                        <div class="label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-amount="10000" data-testid="button-amount-10000">
+                        <div class="value">10 000</div>
+                        <div class="label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-amount="20000" data-testid="button-amount-20000">
+                        <div class="value">20 000</div>
+                        <div class="label">XAF</div>
+                    </div>
+                </div>
+
+                <div class="custom-amount">
+                    <label for="customAmount">Ou entrez un montant personnalise</label>
+                    <input type="number" id="customAmount" placeholder="Ex: 3500" min="100" data-testid="input-custom-amount">
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-mobile-alt"></i> Mode de paiement</h3>
+
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="momo" data-testid="button-method-momo">
+                        <div class="method-icon mtn">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="method-info">
+                            <h4>MTN Mobile Money</h4>
+                            <p>Paiement instantane via MTN MoMo</p>
+                        </div>
+                        <i class="fas fa-check-circle check-icon"></i>
+                    </div>
+                    <div class="payment-method" data-method="orange" data-testid="button-method-orange">
+                        <div class="method-icon orange">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="method-info">
+                            <h4>Orange Money</h4>
+                            <p>Paiement instantane via Orange Money</p>
+                        </div>
+                        <i class="fas fa-check-circle check-icon"></i>
+                    </div>
+                </div>
+
+                <div class="deposit-summary">
+                    <div class="row">
+                        <span class="label">Montant</span>
+                        <span id="summaryAmount">0 XAF</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Frais</span>
+                        <span id="summaryFees">0 XAF</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Total a payer</span>
+                        <span id="summaryTotal">0 XAF</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-yellow deposit-btn" id="depositBtn" disabled data-testid="button-deposit">
+                    <i class="fas fa-check-circle"></i> Confirmer le depot
+                </button>
+            </div>
+
+            <div class="transactions-section">
+                <h3 class="section-title"><i class="fas fa-history"></i> Historique des depots</h3>
+                <div id="transactionsContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>Aucun depot effectue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP62J82gKVy1CqvlWZY3RAT1_ZEqcZrsA",
+            authDomain: "likeo-5e3e9.firebaseapp.com",
+            projectId: "likeo-5e3e9",
+            storageBucket: "likeo-5e3e9.firebasestorage.app",
+            messagingSenderId: "1050735746498",
+            appId: "1:1050735746498:web:a8f9f7a7ae7d6a9bb0e7c1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const API_BASE_URL = window.location.hostname.includes('replit') 
+            ? '' 
+            : 'https://likeo-boost.replit.app';
+
+        let currentUser = null;
+        let userData = null;
+        let selectedAmount = 0;
+        let selectedMethod = 'momo';
+
+        function formatNumber(num) {
+            return num.toLocaleString('fr-FR');
+        }
+
+        function showNotification(type, title, message, duration = 4000) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icons = { success: 'check-circle', error: 'times-circle', warning: 'exclamation-triangle', info: 'info-circle' };
+            notification.innerHTML = `<i class="fas fa-${icons[type] || 'info-circle'}"></i><div><strong>${title}</strong><br>${message}</div>`;
+            
+            container.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
+
+        function showLoading(text = 'Chargement...') {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.querySelector('.loading-text').textContent = text;
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function updateSummary() {
+            const amount = selectedAmount;
+            const fees = 0;
+            const total = amount + fees;
+
+            document.getElementById('summaryAmount').textContent = `${formatNumber(amount)} XAF`;
+            document.getElementById('summaryFees').textContent = `${formatNumber(fees)} XAF`;
+            document.getElementById('summaryTotal').textContent = `${formatNumber(total)} XAF`;
+
+            document.getElementById('depositBtn').disabled = amount < 100;
+        }
+
+        document.querySelectorAll('.amount-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedAmount = parseInt(option.dataset.amount);
+                document.getElementById('customAmount').value = '';
+                updateSummary();
+            });
+        });
+
+        document.getElementById('customAmount').addEventListener('input', (e) => {
+            document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
+            selectedAmount = parseInt(e.target.value) || 0;
+            updateSummary();
+        });
+
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', () => {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                method.classList.add('selected');
+                selectedMethod = method.dataset.method;
+            });
+        });
+
+        document.getElementById('depositBtn').addEventListener('click', async () => {
+            if (selectedAmount < 100) {
+                showNotification('error', 'Erreur', 'Le montant minimum est de 100 XAF');
+                return;
+            }
+
+            showLoading('Preparation du paiement...');
+
+            try {
+                const transactionId = `dep-${Date.now()}`;
+                
+                const response = await fetch(API_BASE_URL + '/api/fapshi/initiate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: selectedAmount,
+                        email: userData?.email || currentUser.email || '',
+                        userId: currentUser.uid,
+                        externalId: transactionId
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Fapshi response:', data);
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.link && data.transId) {
+                    await db.collection('users').doc(currentUser.uid)
+                        .collection('transactions').doc(data.transId).set({
+                            type: 'deposit',
+                            amount: selectedAmount,
+                            method: selectedMethod,
+                            status: 'pending',
+                            transId: data.transId,
+                            externalId: transactionId,
+                            paymentLink: data.link,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                    hideLoading();
+                    
+                    localStorage.setItem('pendingTransId', data.transId);
+                    localStorage.setItem('pendingAmount', selectedAmount.toString());
+                    
+                    window.location.href = data.link;
+                } else {
+                    throw new Error('Reponse invalide du serveur');
+                }
+
+            } catch (error) {
+                console.error('Deposit error:', error);
+                hideLoading();
+                showNotification('error', 'Erreur', error.message || 'Une erreur est survenue');
+            }
+        });
+
+        async function checkPaymentStatus(transId, attempts = 0) {
+            if (attempts >= 60) {
+                showNotification('warning', 'Timeout', 'Le paiement a expire. Veuillez reessayer.');
+                loadTransactions();
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE_URL + '/api/fapshi/verify-and-credit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        transId: transId,
+                        userId: currentUser.uid
+                    })
+                });
+                const data = await response.json();
+                console.log('Payment verification:', data);
+
+                if (data.status === 'success' || data.status === 'already_processed') {
+                    const newBalance = data.newBalance || data.balance || (userData.balance || 0) + (data.amount || selectedAmount);
+                    userData.balance = newBalance;
+                    document.getElementById('currentBalance').textContent = `${formatNumber(newBalance)} XAF`;
+
+                    showNotification('success', 'Depot reussi!', `Votre solde a ete mis a jour`);
+                    
+                    selectedAmount = 0;
+                    document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
+                    document.getElementById('customAmount').value = '';
+                    document.getElementById('phoneNumber').value = '';
+                    updateSummary();
+                    
+                    loadTransactions();
+
+                } else if (data.status === 'failed') {
+                    showNotification('error', 'Paiement echoue', 'Le paiement n\'a pas abouti. Veuillez reessayer.');
+                    loadTransactions();
+
+                } else {
+                    setTimeout(() => checkPaymentStatus(transId, attempts + 1), 5000);
+                }
+
+            } catch (error) {
+                console.error('Error checking payment status:', error);
+                setTimeout(() => checkPaymentStatus(transId, attempts + 1), 5000);
+            }
+        }
+
+        async function loadTransactions() {
+            try {
+                const snapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('transactions')
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+
+                const container = document.getElementById('transactionsContainer');
+
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-receipt"></i>
+                            <p>Aucun depot effectue</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const tx = doc.data();
+                    const statusClass = tx.status === 'completed' ? 'success' : 
+                                       tx.status === 'pending' ? 'pending' : 'failed';
+                    const statusIcon = tx.status === 'completed' ? 'check' : 
+                                      tx.status === 'pending' ? 'clock' : 'times';
+                    const statusText = tx.status === 'completed' ? 'Reussi' : 
+                                      tx.status === 'pending' ? 'En attente' : 'Echoue';
+
+                    const date = tx.createdAt ? tx.createdAt.toDate().toLocaleDateString('fr-FR') : 'Date inconnue';
+
+                    container.innerHTML += `
+                        <div class="transaction-item" data-testid="transaction-item-${doc.id}">
+                            <div class="transaction-icon ${statusClass}">
+                                <i class="fas fa-${statusIcon}"></i>
+                            </div>
+                            <div class="transaction-info">
+                                <h4>Depot ${tx.method === 'orange' ? 'Orange Money' : 'MTN MoMo'}</h4>
+                                <p>${date} - ${statusText}</p>
+                            </div>
+                            <div class="transaction-amount ${tx.status === 'pending' ? 'pending' : ''}">
+                                +${formatNumber(tx.amount)} XAF
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).get();
+                if (doc.exists) {
+                    userData = doc.data();
+                    document.getElementById('currentBalance').textContent = `${formatNumber(userData.balance || 0)} XAF`;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    await loadUserData();
+                    await loadTransactions();
+                    hideLoading();
+                    
+                    const pendingTransId = localStorage.getItem('pendingTransId');
+                    if (pendingTransId) {
+                        showNotification('info', 'Verification', 'Verification du paiement en cours...');
+                        localStorage.removeItem('pendingTransId');
+                        localStorage.removeItem('pendingAmount');
+                        checkPaymentStatus(pendingTransId);
+                    }
+                } else {
+                    window.location.href = 'connexion.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
