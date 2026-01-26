@@ -734,6 +734,11 @@
 
         // Taux de conversion USD vers XAF
         const USD_TO_XAF = 615;
+        
+        // URL de base de l'API (utiliser Replit en production)
+        const API_BASE_URL = window.location.hostname.includes('replit') 
+            ? '' 
+            : 'https://likeo-boost.replit.app';
 
         // Configuration des plateformes
         const platformConfig = {
@@ -865,7 +870,7 @@
         async function loadExoServices() {
             console.log('loadExoServices started...');
             try {
-                const response = await fetch('/api/exo/services');
+                const response = await fetch(API_BASE_URL + '/api/exo/services');
                 console.log('API response status:', response.status, 'ok:', response.ok);
                 if (response.ok) {
                     const contentType = response.headers.get('content-type');
@@ -898,7 +903,7 @@
         // Envoyer commande a ExoSupplier
         async function sendOrderToExoSupplier(serviceId, link, quantity) {
             try {
-                const response = await fetch('/api/exo/order', {
+                const response = await fetch(API_BASE_URL + '/api/exo/order', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
