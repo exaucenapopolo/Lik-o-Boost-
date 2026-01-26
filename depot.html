@@ -721,18 +721,8 @@
                 }
 
                 if (data.link && data.transId) {
-                    await db.collection('users').doc(currentUser.uid)
-                        .collection('transactions').doc(data.transId).set({
-                            type: 'deposit',
-                            amount: selectedAmount,
-                            method: selectedMethod,
-                            status: 'pending',
-                            transId: data.transId,
-                            externalId: transactionId,
-                            paymentLink: data.link,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-
+                    // Le backend stocke deja la transaction dans pending_payments
+                    // On redirige simplement vers la page de paiement Fapshi
                     hideLoading();
                     
                     localStorage.setItem('pendingTransId', data.transId);
