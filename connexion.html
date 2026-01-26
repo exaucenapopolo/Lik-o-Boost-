@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary-yellow: #FFD700;
@@ -28,11 +28,7 @@
             --transition: all 0.3s ease;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -51,12 +47,7 @@
             margin-bottom: 1rem;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
         .btn {
             display: inline-block;
@@ -71,355 +62,141 @@
             text-align: center;
         }
 
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: var(--white);
-        }
-
+        .btn-primary { background-color: var(--primary-blue); color: var(--white); }
         .btn-primary:hover {
             background-color: var(--primary-orange);
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
         }
 
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            transform: translateY(-3px);
-        }
-
-        /* Header */
         header {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 15px 0;
+            top: 0; left: 0; width: 100%;
+            z-index: 1000; padding: 15px 0;
             transition: var(--transition);
             background-color: rgba(255, 255, 255, 0.98);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(10px);
         }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .navbar { display: flex; justify-content: space-between; align-items: center; }
 
         .logo {
             font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.8rem;
+            font-weight: 900; font-size: 1.8rem;
             color: var(--dark-blue);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
+            text-decoration: none; display: flex; align-items: center;
         }
+        .logo span { color: var(--primary-blue); }
+        .logo .dot { color: var(--primary-orange); font-size: 2.2rem; line-height: 1; }
+        .logo .yellow { color: var(--primary-yellow); }
 
-        .logo span {
-            color: var(--primary-blue);
-        }
-
-        .logo .dot {
-            color: var(--primary-orange);
-            font-size: 2.2rem;
-            line-height: 1;
-        }
-
-        .logo .yellow {
-            color: var(--primary-yellow);
-        }
-
-        /* Form Section - CORRIGÉ pour centrage */
         .auth-section {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            flex: 1; display: flex;
+            align-items: center; justify-content: center;
             padding: 120px 0 60px;
-            animation: fadeIn 1s ease-out;
-            width: 100%;
+            animation: fadeIn 1s ease-out; width: 100%;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .auth-container {
-            width: 100%;
-            max-width: 450px;
+            width: 100%; max-width: 450px;
             background-color: var(--white);
-            border-radius: 20px;
-            padding: 50px;
+            border-radius: 20px; padding: 50px;
             box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            animation: slideUp 0.8s ease-out, glow 2s ease-in-out infinite alternate;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            /* CENTRAGE CORRIGÉ */
-            margin-left: auto;
-            margin-right: auto;
+            position: relative; overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+            margin-left: auto; margin-right: auto;
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes glow {
-            from {
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            }
-            to {
-                box-shadow: 0 15px 40px rgba(42, 94, 232, 0.15);
-            }
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .auth-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
+            content: ''; position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
             background: linear-gradient(90deg, var(--primary-yellow), var(--primary-blue), var(--primary-orange));
-            animation: rainbow 3s linear infinite;
         }
 
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 0.8s ease-out 0.3s both;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
+        .auth-header { text-align: center; margin-bottom: 40px; }
         .auth-header h2 {
-            font-size: 2.2rem;
-            color: var(--dark-blue);
-            margin-bottom: 10px;
+            font-size: 2.2rem; color: var(--dark-blue); margin-bottom: 10px;
             background: linear-gradient(45deg, var(--primary-blue), var(--primary-orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
+        .auth-header p { color: var(--text-light); }
 
-        .auth-header p {
-            color: var(--text-light);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-            animation: fadeInUp 0.8s ease-out;
-            animation-fill-mode: both;
-        }
-
-        .form-group:nth-child(1) { animation-delay: 0.4s; }
-        .form-group:nth-child(2) { animation-delay: 0.5s; }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-dark);
-        }
+        .form-group { margin-bottom: 25px; position: relative; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-dark); }
 
         .form-control {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: var(--transition);
-            background-color: #f9f9f9;
+            width: 100%; padding: 15px 20px;
+            border: 2px solid #e0e0e0; border-radius: 10px;
+            font-size: 1rem; font-family: 'Poppins', sans-serif;
+            transition: var(--transition); background-color: #f9f9f9;
         }
 
         .form-control:focus {
-            outline: none;
-            border-color: var(--primary-blue);
+            outline: none; border-color: var(--primary-blue);
             background-color: var(--white);
             box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1);
-            transform: translateY(-2px);
         }
 
-        .form-control.has-error {
-            border-color: var(--error-red);
-            animation: shake 0.5s ease-in-out;
-        }
+        .form-control.has-error { border-color: var(--error-red); }
 
-        .error-message {
-            color: var(--error-red);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
+        .error-message { color: var(--error-red); font-size: 0.85rem; margin-top: 5px; display: none; }
+        .error-message.show { display: block; }
 
         .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 40px;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
+            position: absolute; right: 15px; top: 40px;
+            background: none; border: none;
+            color: var(--text-light); cursor: pointer;
             transition: var(--transition);
         }
-
-        .password-toggle:hover {
-            color: var(--primary-blue);
-        }
+        .password-toggle:hover { color: var(--primary-blue); }
 
         .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            animation: fadeInUp 0.8s ease-out 0.6s both;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 25px;
         }
 
-        .remember-me {
-            display: flex;
-            align-items: center;
-        }
-
-        .remember-me input {
-            margin-right: 8px;
-            cursor: pointer;
-        }
-
-        .remember-me label {
-            cursor: pointer;
-            color: var(--text-dark);
-        }
+        .remember-me { display: flex; align-items: center; }
+        .remember-me input { margin-right: 8px; cursor: pointer; }
+        .remember-me label { cursor: pointer; color: var(--text-dark); }
 
         .forgot-password {
             color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 500;
+            text-decoration: none; font-weight: 500;
             transition: var(--transition);
-            position: relative;
         }
+        .forgot-password:hover { color: var(--primary-orange); }
 
-        .forgot-password:hover {
-            color: var(--primary-orange);
-        }
-
-        .forgot-password::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary-orange);
-            transition: width 0.3s ease;
-        }
-
-        .forgot-password:hover::after {
-            width: 100%;
-        }
-
-        .form-footer {
-            margin-top: 30px;
-            text-align: center;
-            animation: fadeInUp 0.8s ease-out 0.8s both;
-        }
+        .form-footer { margin-top: 30px; text-align: center; }
 
         .submit-btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
+            width: 100%; padding: 16px;
+            font-size: 1.1rem; font-weight: 600;
+            border-radius: 10px; position: relative;
+            overflow: hidden; transition: var(--transition);
         }
-
-        .submit-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-        }
-
-        .submit-btn .btn-text {
-            position: relative;
-            z-index: 2;
-        }
-
+        .submit-btn:hover { transform: translateY(-3px) scale(1.02); }
+        .submit-btn .btn-text { position: relative; z-index: 2; }
         .submit-btn .btn-loader {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
+            display: none; position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 2;
         }
-
-        .submit-btn.loading {
-            pointer-events: none;
-        }
-
-        .submit-btn.loading .btn-text {
-            opacity: 0;
-        }
-
-        .submit-btn.loading .btn-loader {
-            display: block;
-        }
+        .submit-btn.loading { pointer-events: none; }
+        .submit-btn.loading .btn-text { opacity: 0; }
+        .submit-btn.loading .btn-loader { display: block; }
 
         .btn-loader {
-            width: 20px;
-            height: 20px;
+            width: 20px; height: 20px;
             border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--white);
+            border-radius: 50%; border-top-color: var(--white);
             animation: spin 1s linear infinite;
         }
 
@@ -428,203 +205,77 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        .auth-links {
-            margin-top: 25px;
-            text-align: center;
-        }
-
+        .auth-links { margin-top: 25px; text-align: center; }
         .auth-links a {
             color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 500;
+            text-decoration: none; font-weight: 500;
             transition: var(--transition);
-            position: relative;
         }
+        .auth-links a:hover { color: var(--primary-orange); }
 
-        .auth-links a:hover {
-            color: var(--primary-orange);
-        }
-
-        .auth-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary-orange);
-            transition: width 0.3s ease;
-        }
-
-        .auth-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Notification System */
         .notification-container {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 350px;
+            position: fixed; top: 100px; right: 20px;
+            z-index: 9999; max-width: 350px;
         }
 
         .notification {
             background-color: var(--white);
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 10px; padding: 20px;
             margin-bottom: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             border-left: 5px solid var(--success-green);
-            transform: translateX(400px);
-            opacity: 0;
+            transform: translateX(400px); opacity: 0;
             transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease;
-            display: flex;
-            align-items: flex-start;
+            display: flex; align-items: flex-start;
         }
+        .notification.show { transform: translateX(0); opacity: 1; }
+        .notification.error { border-left-color: var(--error-red); }
+        .notification.warning { border-left-color: var(--warning-orange); }
 
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
+        .notification-icon { font-size: 1.5rem; margin-right: 15px; margin-top: 2px; }
+        .notification.success .notification-icon { color: var(--success-green); }
+        .notification.error .notification-icon { color: var(--error-red); }
+        .notification.warning .notification-icon { color: var(--warning-orange); }
 
-        .notification.error {
-            border-left-color: var(--error-red);
-        }
-
-        .notification.warning {
-            border-left-color: var(--warning-orange);
-        }
-
-        .notification-icon {
-            font-size: 1.5rem;
-            margin-right: 15px;
-            margin-top: 2px;
-        }
-
-        .notification.success .notification-icon {
-            color: var(--success-green);
-        }
-
-        .notification.error .notification-icon {
-            color: var(--error-red);
-        }
-
-        .notification.warning .notification-icon {
-            color: var(--warning-orange);
-        }
-
-        .notification-content h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .notification-content p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
+        .notification-content h4 { font-size: 1.1rem; margin-bottom: 5px; }
+        .notification-content p { font-size: 0.9rem; color: var(--text-light); }
 
         .notification-close {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            margin-left: auto;
-            font-size: 1.2rem;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
+            background: none; border: none;
+            color: var(--text-light); cursor: pointer;
+            margin-left: auto; font-size: 1.2rem;
         }
+        .notification-close:hover { color: var(--text-dark); }
 
-        .notification-close:hover {
-            color: var(--text-dark);
-        }
-
-        /* Footer simplifié */
         footer {
             background-color: var(--dark-blue);
-            color: var(--white);
-            padding: 30px 0;
-            margin-top: auto;
+            color: var(--white); padding: 30px 0; margin-top: auto;
         }
+        .footer-bottom { text-align: center; font-size: 0.9rem; opacity: 0.8; }
+        .footer-bottom a { color: var(--primary-yellow); text-decoration: none; }
+        .footer-bottom a:hover { color: var(--primary-orange); }
 
-        .footer-bottom {
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .footer-bottom a {
-            color: var(--primary-yellow);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .footer-bottom a:hover {
-            color: var(--primary-orange);
-            text-decoration: underline;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .auth-container {
-                padding: 30px;
-                margin: 0 20px;
-            }
-            
-            .auth-header h2 {
-                font-size: 1.8rem;
-            }
-            
-            .form-options {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .notification-container {
-                left: 20px;
-                right: 20px;
-                max-width: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .auth-container {
-                padding: 25px 20px;
-            }
-            
-            .form-control {
-                padding: 12px 15px;
-            }
-            
-            .btn {
-                padding: 12px 24px;
-            }
+            .auth-container { padding: 30px; margin: 0 20px; }
+            .auth-header h2 { font-size: 1.8rem; }
+            .form-options { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .notification-container { left: 20px; right: 20px; max-width: none; }
         }
     </style>
 </head>
 <body>
-    <!-- Header simplifié -->
     <header>
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">
                     Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
                 </a>
-                <!-- Bouton retiré -->
             </nav>
         </div>
     </header>
 
-    <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
 
-    <!-- Connexion Section -->
     <section class="auth-section">
         <div class="container">
             <div class="auth-container">
@@ -671,199 +322,142 @@
         </div>
     </section>
 
-    <!-- Footer simplifié -->
     <footer>
         <div class="container">
             <div class="footer-bottom">
-                <p>&copy; 2026 Likéo Boost. Tous droits réservés. | Site propulsé par <a href="https://socialboosthorizon.com" target="_blank">Social Boost Horizon</a></p>
+                <p>&copy; 2026 Likéo Boost. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Configuration Firebase
+        // Configuration Firebase - Nouveau projet
         const firebaseConfig = {
-            apiKey: "AIzaSyDAYnMPv7zDw_YTihyi5rKGtpws4BMqaWI",
-            authDomain: "likeo-boost.firebaseapp.com",
-            projectId: "likeo-boost",
-            storageBucket: "likeo-boost.firebasestorage.app",
-            messagingSenderId: "385658425556",
-            appId: "1:385658425556:web:c7d7de5713ad565d34eb41",
-            measurementId: "G-RECGZ5T342"
+            apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
+            authDomain: "likeo-5e3e9.firebaseapp.com",
+            projectId: "likeo-5e3e9",
+            storageBucket: "likeo-5e3e9.firebasestorage.app",
+            messagingSenderId: "1071170297332",
+            appId: "1:1071170297332:web:fa5e60f75848b986712da1",
+            measurementId: "G-RV38D7VYF5"
         };
 
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        let app, auth, db;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            console.log("Firebase initialisé avec succès");
+        } catch (error) {
+            console.error("Erreur d'initialisation Firebase:", error);
+        }
 
-        // Variables globales
         let isSubmitting = false;
 
-        // Fonction pour afficher les notifications
         function showNotification(type, title, message, duration = 5000) {
             const container = document.getElementById('notificationContainer');
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             
-            let icon = '';
-            if (type === 'success') icon = 'fas fa-check-circle';
-            else if (type === 'error') icon = 'fas fa-exclamation-circle';
-            else if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+            let icon = type === 'success' ? 'fas fa-check-circle' : 
+                       type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-exclamation-triangle';
             
             notification.innerHTML = `
-                <div class="notification-icon">
-                    <i class="${icon}"></i>
-                </div>
-                <div class="notification-content">
-                    <h4>${title}</h4>
-                    <p>${message}</p>
-                </div>
-                <button class="notification-close">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="notification-icon"><i class="${icon}"></i></div>
+                <div class="notification-content"><h4>${title}</h4><p>${message}</p></div>
+                <button class="notification-close"><i class="fas fa-times"></i></button>
             `;
             
             container.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
             
-            // Animation d'entrée
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            // Fermeture au clic
-            const closeBtn = notification.querySelector('.notification-close');
-            closeBtn.addEventListener('click', () => {
-                closeNotification(notification);
-            });
-            
-            // Fermeture automatique
-            if (duration > 0) {
-                setTimeout(() => {
-                    closeNotification(notification);
-                }, duration);
-            }
-            
-            return notification;
+            notification.querySelector('.notification-close').addEventListener('click', () => closeNotification(notification));
+            if (duration > 0) setTimeout(() => closeNotification(notification), duration);
         }
 
         function closeNotification(notification) {
             notification.classList.remove('show');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 500);
+            setTimeout(() => notification.parentNode && notification.parentNode.removeChild(notification), 500);
         }
 
-        // Fonction pour afficher les erreurs de formulaire
         function showError(inputId, message) {
             const input = document.getElementById(inputId);
             const errorElement = document.getElementById(inputId + 'Error');
-            
-            input.classList.add('has-error');
-            errorElement.textContent = message;
-            errorElement.classList.add('show');
+            if (input) input.classList.add('has-error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+            }
         }
 
-        // Fonction pour effacer les erreurs
         function clearError(inputId) {
             const input = document.getElementById(inputId);
             const errorElement = document.getElementById(inputId + 'Error');
-            
-            input.classList.remove('has-error');
-            errorElement.textContent = '';
-            errorElement.classList.remove('show');
+            if (input) input.classList.remove('has-error');
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.remove('show');
+            }
         }
 
-        // Fonction pour valider le formulaire
-        function validateForm() {
-            let isValid = true;
-            
-            // Valider l'email
-            const email = document.getElementById('email').value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email) {
-                showError('email', 'L\'adresse email est requise');
-                isValid = false;
-            } else if (!emailRegex.test(email)) {
-                showError('email', 'Veuillez entrer une adresse email valide');
-                isValid = false;
-            } else {
-                clearError('email');
-            }
-            
-            // Valider le mot de passe
-            const password = document.getElementById('password').value;
-            if (!password) {
-                showError('password', 'Le mot de passe est requis');
-                isValid = false;
-            } else {
-                clearError('password');
-            }
-            
-            return isValid;
-        }
-
-        // Fonction pour gérer la connexion - CORRIGÉE
         async function handleLogin(event) {
             event.preventDefault();
             
             if (isSubmitting) return;
             
-            // Valider le formulaire
-            if (!validateForm()) {
-                showNotification('warning', 'Formulaire invalide', 'Veuillez corriger les erreurs dans le formulaire');
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!email) {
+                showError('email', 'L\'adresse email est requise');
+                return;
+            }
+            if (!password) {
+                showError('password', 'Le mot de passe est requis');
                 return;
             }
             
-            // Récupérer les données du formulaire
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            
-            // Activer l'état de chargement
             isSubmitting = true;
             const submitBtn = document.querySelector('.submit-btn');
             submitBtn.classList.add('loading');
             
             try {
-                // Configurer la persistance de l'authentification
-                const persistence = rememberMe ? 
-                    firebase.auth.Auth.Persistence.LOCAL : 
-                    firebase.auth.Auth.Persistence.SESSION;
-                
-                await auth.setPersistence(persistence);
-                
-                // Connecter l'utilisateur
+                console.log("Tentative de connexion...");
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
+                console.log("Connexion réussie:", user.uid);
                 
-                // Désactiver l'état de chargement
+                // Mettre à jour le lastLogin
+                try {
+                    await db.collection('users').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (e) {
+                    console.log("Mise à jour lastLogin échouée (normal si premier login):", e);
+                }
+                
+                localStorage.setItem('userUID', user.uid);
+                localStorage.setItem('userEmail', user.email);
+                
                 isSubmitting = false;
                 submitBtn.classList.remove('loading');
                 
-                // SUPPRIMÉ: Vérification de l'email vérifié
-                // On connecte l'utilisateur directement sans vérifier l'email
+                showNotification('success', 'Connexion réussie!', 'Redirection vers le tableau de bord...');
                 
-                // Afficher le succès
-                showNotification('success', 'Connexion réussie !', 'Vous êtes maintenant connecté à votre compte.');
-                
-                // Rediriger vers le tableau de bord après 2 secondes
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
-                }, 2000);
+                }, 1500);
                 
             } catch (error) {
-                // Désactiver l'état de chargement
                 isSubmitting = false;
                 submitBtn.classList.remove('loading');
                 
-                // Gérer les erreurs spécifiques
-                let errorMessage = 'Une erreur est survenue lors de la connexion';
+                console.error("Erreur connexion:", error);
                 
+                let errorMessage = 'Une erreur est survenue';
                 switch (error.code) {
                     case 'auth/user-not-found':
-                        errorMessage = 'Aucun compte trouvé avec cette adresse email';
+                        errorMessage = 'Aucun compte trouvé avec cet email';
                         showError('email', errorMessage);
                         break;
                     case 'auth/wrong-password':
@@ -871,49 +465,38 @@
                         showError('password', errorMessage);
                         break;
                     case 'auth/invalid-email':
-                        errorMessage = 'L\'adresse email n\'est pas valide';
+                        errorMessage = 'Adresse email invalide';
                         showError('email', errorMessage);
                         break;
-                    case 'auth/user-disabled':
-                        errorMessage = 'Ce compte a été désactivé';
-                        break;
                     case 'auth/too-many-requests':
-                        errorMessage = 'Trop de tentatives de connexion. Veuillez réessayer plus tard';
+                        errorMessage = 'Trop de tentatives. Veuillez réessayer plus tard.';
                         break;
                     default:
                         errorMessage = error.message;
                 }
                 
-                // Afficher l'erreur
                 showNotification('error', 'Échec de la connexion', errorMessage);
-                console.error('Erreur de connexion:', error);
             }
         }
 
-        // Fonction pour réinitialiser le mot de passe
         async function handlePasswordReset() {
             const email = document.getElementById('email').value.trim();
             
             if (!email) {
-                showNotification('warning', 'Email requis', 'Veuillez entrer votre adresse email pour réinitialiser votre mot de passe');
+                showNotification('warning', 'Email requis', 'Veuillez entrer votre adresse email');
+                showError('email', 'Entrez votre email pour réinitialiser le mot de passe');
                 return;
             }
             
             try {
                 await auth.sendPasswordResetEmail(email);
-                showNotification('success', 'Email envoyé', 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email.');
+                showNotification('success', 'Email envoyé', 'Vérifiez votre boîte de réception pour réinitialiser votre mot de passe');
             } catch (error) {
-                let errorMessage = 'Une erreur est survenue lors de l\'envoi de l\'email de réinitialisation';
-                
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'Aucun compte trouvé avec cette adresse email';
-                }
-                
-                showNotification('error', 'Échec d\'envoi', errorMessage);
+                console.error("Erreur réinitialisation:", error);
+                showNotification('error', 'Erreur', 'Impossible d\'envoyer l\'email de réinitialisation');
             }
         }
 
-        // Fonction pour basculer la visibilité du mot de passe
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const toggleButton = document.getElementById('togglePassword');
@@ -921,41 +504,30 @@
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
                 passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
 
-        // Initialiser l'application
         document.addEventListener('DOMContentLoaded', function() {
-            // Gérer la soumission du formulaire
+            console.log("Page de connexion chargée");
+            
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // Gérer le basculement du mot de passe
             document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
-            
-            // Gérer la réinitialisation du mot de passe
             document.getElementById('forgotPassword').addEventListener('click', function(e) {
                 e.preventDefault();
                 handlePasswordReset();
             });
             
-            // Effacer les erreurs lors de la saisie
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    clearError(this.id);
-                });
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.addEventListener('input', function() { clearError(this.id); });
             });
             
-            // Vérifier si l'utilisateur est déjà connecté
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Si l'utilisateur est déjà connecté, rediriger vers le tableau de bord
+                    console.log("Utilisateur déjà connecté, redirection...");
                     window.location.href = 'dashboard.html';
                 }
             });
