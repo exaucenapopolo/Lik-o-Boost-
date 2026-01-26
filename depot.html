@@ -597,18 +597,26 @@
     </main>
 
     <script>
+        // Configuration Firebase - Meme config que dashboard.html
         const firebaseConfig = {
-            apiKey: "AIzaSyBP62J82gKVy1CqvlWZY3RAT1_ZEqcZrsA",
+            apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
             projectId: "likeo-5e3e9",
             storageBucket: "likeo-5e3e9.firebasestorage.app",
-            messagingSenderId: "1050735746498",
-            appId: "1:1050735746498:web:a8f9f7a7ae7d6a9bb0e7c1"
+            messagingSenderId: "1071170297332",
+            appId: "1:1071170297332:web:fa5e60f75848b986712da1",
+            measurementId: "G-RV38D7VYF5"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        let app, auth, db;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            console.log("Firebase initialise sur depot.html");
+        } catch (error) {
+            console.error("Erreur Firebase:", error);
+        }
 
         const API_BASE_URL = window.location.hostname.includes('replit') 
             ? '' 
