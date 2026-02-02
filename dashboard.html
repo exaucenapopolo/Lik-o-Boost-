@@ -531,10 +531,10 @@
             <div class="balance-label">Votre solde</div>
         </div>
         <nav class="menu-nav">
-            <a href="#" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
-            <a href="#" class="menu-item"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
+            <a href="dashboard.html" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
+            <a href="historique-commandes.html" class="menu-item" data-testid="link-menu-orders"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
             <a href="depot.html" class="menu-item"><i class="fas fa-wallet"></i>Depot</a>
-            <a href="#" class="menu-item"><i class="fas fa-history"></i>Historique</a>
+            <a href="historique-commandes.html" class="menu-item"><i class="fas fa-history"></i>Historique</a>
             <a href="#" class="menu-item"><i class="fas fa-user"></i>Mon profil</a>
             <a href="#" class="menu-item"><i class="fas fa-headset"></i>Support</a>
             <a href="#" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Deconnexion</a>
@@ -698,7 +698,10 @@
                     <i class="fas fa-check-circle"></i>
                     <h2>Commande confirmee!</h2>
                     <p>Votre commande a ete passee avec succes. Vous recevrez vos engagements dans les plus brefs delais.</p>
-                    <button class="btn btn-primary" id="newOrderBtn">Nouvelle commande</button>
+                    <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                        <button class="btn btn-primary" id="newOrderBtn" data-testid="button-new-order">Nouvelle commande</button>
+                        <a href="historique-commandes.html" class="btn btn-secondary" data-testid="link-view-orders"><i class="fas fa-history"></i> Voir mes commandes</a>
+                    </div>
                 </div>
             </section>
         </div>
@@ -915,7 +918,7 @@
             };
         }
 
-        // Envoyer commande a ExoSupplier
+        // Envoyer commande au serveur (qui verifie le solde et envoie au fournisseur)
         async function sendOrderToExoSupplier(serviceId, link, quantity, serviceName, platform, price, comments = null) {
             try {
                 const headers = await getAuthHeaders();
@@ -938,18 +941,25 @@
                     body: JSON.stringify(body)
                 });
                 
-                // Verifier que la reponse est OK avant de parser le JSON
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('ExoSupplier API error:', response.status, errorText);
-                    throw new Error(`Erreur serveur: ${response.status}`);
+                // Parser la reponse JSON avec gestion d'erreur robuste
+                let data;
+                try {
+                    data = await response.json();
+                } catch (parseError) {
+                    console.error('Failed to parse response:', parseError);
+                    return { error: 'Erreur serveur', message: 'Une erreur est survenue. Veuillez reessayer.' };
                 }
                 
-                const data = await response.json();
-                console.log('ExoSupplier order response:', data);
+                // Si reponse non OK, retourner les details de l'erreur
+                if (!response.ok) {
+                    console.error('Order API error:', response.status, data);
+                    return data; // Retourner l'erreur avec le message
+                }
+                
+                console.log('Order response:', data);
                 return data;
             } catch (error) {
-                console.error('Error sending order to ExoSupplier:', error);
+                console.error('Error sending order:', error);
                 throw error;
             }
         }
@@ -1099,7 +1109,8 @@
                     // Afficher le champ de commentaires si c'est un service de commentaires personnalises
                     const isCustomComments = service.name.toLowerCase().includes('custom') || 
                                             service.name.toLowerCase().includes('personnalis') ||
-                                            service.name.toLowerCase().includes('your text');
+                                            service.name.toLowerCase().includes('your text') ||
+                                            service.name.toLowerCase().includes('commentaire');
                     const commentsSection = document.getElementById('customCommentsSection');
                     const quantityInput = document.getElementById('quantityInput');
                     const quantityBtns = document.querySelector('.quantity-input');
@@ -1200,7 +1211,8 @@
             // Verifier si c'est un service de commentaires personnalises
             const isCustomComments = currentService.name.toLowerCase().includes('custom') || 
                                     currentService.name.toLowerCase().includes('personnalis') ||
-                                    currentService.name.toLowerCase().includes('your text');
+                                    currentService.name.toLowerCase().includes('your text') ||
+                                    currentService.name.toLowerCase().includes('commentaire');
             
             let customCommentsText = null;
             if (isCustomComments) {
@@ -1240,7 +1252,7 @@
                 let exoOrderId = null;
                 let exoOrderError = null;
                 
-                // Envoyer la commande a ExoSupplier (le backend stocke aussi dans Firestore)
+                // Envoyer la commande (le backend verifie le solde, deduit, et envoie au fournisseur)
                 try {
                     const exoResult = await sendOrderToExoSupplier(
                         serviceId, 
@@ -1254,47 +1266,40 @@
                     
                     if (exoResult.order) {
                         exoOrderId = exoResult.order;
-                        console.log('ExoSupplier order created:', exoOrderId);
+                        console.log('Commande creee:', exoOrderId);
+                        
+                        // Mettre a jour les donnees utilisateur avec la reponse du serveur
+                        if (exoResult.newBalance !== undefined) {
+                            userData.balance = exoResult.newBalance;
+                        }
+                        if (exoResult.totalOrders !== undefined) {
+                            userData.totalOrders = exoResult.totalOrders;
+                        }
+                        if (exoResult.activeOrders !== undefined) {
+                            userData.activeOrders = exoResult.activeOrders;
+                        }
+                        if (exoResult.totalSpent !== undefined) {
+                            userData.totalSpent = exoResult.totalSpent;
+                        }
                     } else if (exoResult.error) {
                         exoOrderError = exoResult.error;
-                        console.error('ExoSupplier error:', exoOrderError);
+                        console.error('Erreur commande:', exoOrderError);
                         hideLoading();
-                        showNotification('error', 'Erreur', exoOrderError);
+                        
+                        // Afficher un message specifique pour le solde insuffisant
+                        if (exoResult.message) {
+                            showNotification('error', 'Solde insuffisant', exoResult.message);
+                        } else {
+                            showNotification('error', 'Erreur', exoOrderError);
+                        }
                         return;
                     }
                 } catch (exoError) {
-                    console.error('Error calling ExoSupplier:', exoError);
+                    console.error('Error calling order API:', exoError);
                     exoOrderError = exoError.message;
                     hideLoading();
                     showNotification('error', 'Erreur', 'Impossible de passer la commande');
                     return;
-                }
-                
-                // Mettre a jour le solde utilisateur via le backend
-                try {
-                    const deductHeaders = await getAuthHeaders();
-                    const deductResponse = await fetch(API_BASE_URL + '/api/deduct-balance', {
-                        method: 'POST',
-                        headers: deductHeaders,
-                        body: JSON.stringify({
-                            amount: total,
-                            orderId: exoOrderId
-                        })
-                    });
-                    
-                    const deductResult = await deductResponse.json();
-                    
-                    if (deductResult.error) {
-                        throw new Error(deductResult.error);
-                    }
-                    
-                    userData.balance = deductResult.newBalance;
-                    userData.totalOrders = deductResult.totalOrders;
-                    userData.activeOrders = deductResult.activeOrders;
-                    userData.totalSpent = deductResult.totalSpent;
-                } catch (deductError) {
-                    console.error('Error deducting balance:', deductError);
-                    // Continue anyway as order was placed
                 }
                 
                 updateUserInfo();
