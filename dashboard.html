@@ -1042,8 +1042,38 @@
             document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('totalOrders').textContent = userData.totalOrders || 0;
-            document.getElementById('activeOrders').textContent = userData.activeOrders || 0;
+            // activeOrders will be updated by loadRealActiveOrdersCount()
+            document.getElementById('activeOrders').textContent = '...';
             document.getElementById('totalSpent').textContent = `${formatNumber(userData.totalSpent || 0)} XAF`;
+        }
+
+        // Load real count of "in progress" orders from API
+        async function loadRealActiveOrdersCount() {
+            try {
+                const headers = await getAuthHeaders();
+                const response = await fetch(API_BASE_URL + `/api/orders/${currentUser.uid}`, {
+                    headers: headers
+                });
+                const data = await response.json();
+                
+                if (data.orders && data.orders.length > 0) {
+                    // Count orders with status "In progress", "processing", "partial" (all active states)
+                    const activeCount = data.orders.filter(order => {
+                        const status = (order.status || '').toLowerCase().replace(/[_-]/g, ' ');
+                        return status === 'in progress' || 
+                               status === 'inprogress' || 
+                               status === 'processing' || 
+                               status === 'partial';
+                    }).length;
+                    
+                    document.getElementById('activeOrders').textContent = activeCount;
+                } else {
+                    document.getElementById('activeOrders').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error loading active orders count:', error);
+                document.getElementById('activeOrders').textContent = '0';
+            }
         }
 
         function loadPlatforms() {
@@ -1370,6 +1400,9 @@
                         userLoaded = true;
                         tryLoadPlatforms();
                         hideLoading();
+                        
+                        // Load real active orders count from API
+                        loadRealActiveOrdersCount();
                         
                         showNotification('success', 'Bienvenue!', `Bon retour ${userData.username || 'utilisateur'}!`);
                         

@@ -309,8 +309,8 @@
 
                     const statusClass = getStatusClass(order.status);
                     const statusText = getStatusText(order.status);
-                    // Generate user-friendly order reference (hide internal ID)
-                    const orderRef = `LKB-${String(order.orderId).slice(-6)}`;
+                    // Use sequential order number if available, fallback to old format
+                    const orderRef = order.orderNumber || `LKB-${String(order.orderId).slice(-6)}`;
 
                     container.innerHTML += `
                         <div class="order-card" data-testid="order-card-${index}">
