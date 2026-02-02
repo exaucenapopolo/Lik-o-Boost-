@@ -673,11 +673,11 @@
                         <div class="form-group">
                             <label for="orderLink">Lien de votre publication/profil *</label>
                             <input type="url" id="orderLink" class="form-control" placeholder="https://..." required>
-                        </div>
-                        <div class="form-group">
-                            <label for="orderRemarks">Remarques (optionnel)</label>
-                            <textarea id="orderRemarks" class="form-control" placeholder="Instructions speciales..."></textarea>
                             <small style="color: var(--text-light); font-size: 0.85rem;">Pour les abonnes: veuillez fournir un lien de profil public. Pour les likes/commentaires: lien direct du post.</small>
+                        </div>
+                        <div id="serviceDescriptionBox" class="service-description-box hidden" style="background: var(--primary-gradient); padding: 12px 15px; border-radius: 8px; margin-top: 10px;">
+                            <strong style="color: var(--text-dark);"><i class="fas fa-info-circle"></i> Information du service:</strong>
+                            <p id="serviceDescriptionText" style="margin: 8px 0 0 0; color: var(--text-secondary); font-size: 0.9rem;"></p>
                         </div>
                     </div>
                     <div class="flow-navigation">
@@ -802,9 +802,10 @@
                     exoId: service.service,
                     name: decodeHtml(service.name),
                     category: category,
+                    description: service.desc ? decodeHtml(service.desc) : null,
                     pricePerK: pricePerK,
-                    min: service.min,
-                    max: service.max,
+                    min: parseInt(service.min) || 1,
+                    max: parseInt(service.max) || 1000000,
                     refill: service.refill,
                     cancel: service.cancel
                 });
@@ -1159,7 +1160,6 @@
             
             const unitPrice = currentService.pricePerK / 1000;
             const total = unitPrice * currentQuantity;
-            const remarks = document.getElementById('orderRemarks').value;
             const link = document.getElementById('orderLink').value;
             
             document.getElementById('orderSummary').innerHTML = `
@@ -1184,12 +1184,6 @@
                     <span class="summary-label">Lien:</span>
                     <span class="summary-value" style="word-break:break-all;font-size:0.85rem;">${link}</span>
                 </div>
-                ${remarks ? `
-                <div class="summary-item">
-                    <span class="summary-label">Remarques:</span>
-                    <span class="summary-value" style="font-size:0.85rem;">${remarks}</span>
-                </div>
-                ` : ''}
                 <div class="summary-item">
                     <span class="summary-label">Total:</span>
                     <span class="summary-value summary-total">${formatNumber(total)} XAF</span>
@@ -1336,9 +1330,9 @@
             document.getElementById('quantityInput').disabled = false;
             document.querySelector('.quantity-input').style.opacity = '1';
             document.getElementById('orderLink').value = '';
-            document.getElementById('orderRemarks').value = '';
             document.getElementById('customComments').value = '';
             document.getElementById('customCommentsSection').classList.add('hidden');
+            document.getElementById('serviceDescriptionBox').classList.add('hidden');
             document.getElementById('orderSuccess').style.display = 'none';
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
@@ -1433,7 +1427,18 @@
             document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
             
             document.getElementById('nextToStep4').addEventListener('click', () => {
-                if (currentService) showStep(4);
+                if (currentService) {
+                    // Afficher la description du service si disponible
+                    const descBox = document.getElementById('serviceDescriptionBox');
+                    const descText = document.getElementById('serviceDescriptionText');
+                    if (currentService.description) {
+                        descText.textContent = currentService.description;
+                        descBox.classList.remove('hidden');
+                    } else {
+                        descBox.classList.add('hidden');
+                    }
+                    showStep(4);
+                }
             });
             
             document.getElementById('backToStep3').addEventListener('click', () => showStep(3));
