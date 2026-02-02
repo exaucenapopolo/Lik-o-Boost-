@@ -531,11 +531,11 @@
             <div class="balance-label">Votre solde</div>
         </div>
         <nav class="menu-nav">
-            <a href="dashboard.html" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
-            <a href="historique-commandes.html" class="menu-item"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
+            <a href="#" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
+            <a href="#" class="menu-item"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
             <a href="depot.html" class="menu-item"><i class="fas fa-wallet"></i>Depot</a>
             <a href="#" class="menu-item"><i class="fas fa-history"></i>Historique</a>
-            <a href="historique-commandes.html" class="menu-item"><i class="fas fa-user"></i>Mon profil</a>
+            <a href="#" class="menu-item"><i class="fas fa-user"></i>Mon profil</a>
             <a href="#" class="menu-item"><i class="fas fa-headset"></i>Support</a>
             <a href="#" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Deconnexion</a>
         </nav>
@@ -655,6 +655,12 @@
                         <div style="text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--primary-blue);">
                             Total: <span id="totalPreview">0 XAF</span>
                         </div>
+                        
+                        <div id="customCommentsSection" class="form-group hidden" style="margin-top: 20px;">
+                            <label for="customComments">Commentaires personnalises (un par ligne) *</label>
+                            <textarea id="customComments" class="form-control" rows="5" placeholder="Commentaire 1&#10;Commentaire 2&#10;Commentaire 3"></textarea>
+                            <small style="color: var(--text-light); font-size: 0.85rem;">Entrez vos commentaires personnalises, un par ligne. Le nombre de commentaires determine la quantite.</small>
+                        </div>
                     </div>
                     <div class="flow-navigation">
                         <button class="btn btn-secondary" id="backToStep2"><i class="fas fa-arrow-left"></i> Retour</button>
@@ -669,7 +675,7 @@
                             <input type="url" id="orderLink" class="form-control" placeholder="https://..." required>
                         </div>
                         <div class="form-group">
-                            <label for="orderRemarks">Notes (optionnel)</label>
+                            <label for="orderRemarks">Remarques (optionnel)</label>
                             <textarea id="orderRemarks" class="form-control" placeholder="Instructions speciales..."></textarea>
                             <small style="color: var(--text-light); font-size: 0.85rem;">Pour les abonnes: veuillez fournir un lien de profil public. Pour les likes/commentaires: lien direct du post.</small>
                         </div>
@@ -691,8 +697,7 @@
                 <div id="orderSuccess" class="order-success">
                     <i class="fas fa-check-circle"></i>
                     <h2>Commande confirmee!</h2>
-                    <p>Votre commande a ete passee avec succes et envoyee a notre fournisseur.</p>
-                    <p class="exo-order-id" id="exoOrderId"></p>
+                    <p>Votre commande a ete passee avec succes. Vous recevrez vos engagements dans les plus brefs delais.</p>
                     <button class="btn btn-primary" id="newOrderBtn">Nouvelle commande</button>
                 </div>
             </section>
@@ -910,20 +915,26 @@
         }
 
         // Envoyer commande a ExoSupplier
-        async function sendOrderToExoSupplier(serviceId, link, quantity, serviceName, platform, price) {
+        async function sendOrderToExoSupplier(serviceId, link, quantity, serviceName, platform, price, comments = null) {
             try {
                 const headers = await getAuthHeaders();
+                const body = {
+                    service: serviceId,
+                    link: link,
+                    quantity: quantity,
+                    serviceName: serviceName || '',
+                    platform: platform || ''
+                };
+                
+                // Ajouter les commentaires personnalises si presents
+                if (comments) {
+                    body.comments = comments;
+                }
+                
                 const response = await fetch(API_BASE_URL + '/api/exo/order', {
                     method: 'POST',
                     headers: headers,
-                    body: JSON.stringify({
-                        service: serviceId,
-                        link: link,
-                        quantity: quantity,
-                        serviceName: serviceName || '',
-                        platform: platform || '',
-                        price: price || 0
-                    })
+                    body: JSON.stringify(body)
                 });
                 
                 // Verifier que la reponse est OK avant de parser le JSON
@@ -1067,7 +1078,7 @@
                 
                 item.innerHTML = `
                     <div class="service-name">${service.name}</div>
-                    <div class="service-desc">ID: ${service.exoId} | Min: ${service.min} | Max: ${formatNumber(service.max)}</div>
+                    <div class="service-desc">Min: ${service.min} | Max: ${formatNumber(service.max)}</div>
                     <div style="font-size: 0.9rem; color: var(--primary-blue); margin-top: 5px;">
                         ${formatNumber(service.pricePerK)} XAF/1K
                     </div>
@@ -1083,6 +1094,25 @@
                     document.getElementById('quantityInput').value = currentQuantity;
                     document.getElementById('quantityInput').min = service.min;
                     document.getElementById('quantityInput').max = service.max;
+                    
+                    // Afficher le champ de commentaires si c'est un service de commentaires personnalises
+                    const isCustomComments = service.name.toLowerCase().includes('custom') || 
+                                            service.name.toLowerCase().includes('personnalis') ||
+                                            service.name.toLowerCase().includes('your text');
+                    const commentsSection = document.getElementById('customCommentsSection');
+                    const quantityInput = document.getElementById('quantityInput');
+                    const quantityBtns = document.querySelector('.quantity-input');
+                    
+                    if (isCustomComments) {
+                        commentsSection.classList.remove('hidden');
+                        quantityInput.disabled = true;
+                        quantityBtns.style.opacity = '0.5';
+                        document.getElementById('customComments').value = '';
+                    } else {
+                        commentsSection.classList.add('hidden');
+                        quantityInput.disabled = false;
+                        quantityBtns.style.opacity = '1';
+                    }
                     
                     document.getElementById('nextToStep3').disabled = false;
                     updatePriceDisplay();
@@ -1143,10 +1173,6 @@
                     <span class="summary-value">${currentService.name}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">ID ExoSupplier:</span>
-                    <span class="summary-value">${currentService.exoId}</span>
-                </div>
-                <div class="summary-item">
                     <span class="summary-label">Quantite:</span>
                     <span class="summary-value">${formatNumber(currentQuantity)} unites</span>
                 </div>
@@ -1175,6 +1201,27 @@
             if (!currentUser || !userData || !currentPlatform || !currentService || !currentLink) {
                 showNotification('error', 'Erreur', 'Informations incompletes');
                 return;
+            }
+            
+            // Verifier si c'est un service de commentaires personnalises
+            const isCustomComments = currentService.name.toLowerCase().includes('custom') || 
+                                    currentService.name.toLowerCase().includes('personnalis') ||
+                                    currentService.name.toLowerCase().includes('your text');
+            
+            let customCommentsText = null;
+            if (isCustomComments) {
+                customCommentsText = document.getElementById('customComments').value.trim();
+                if (!customCommentsText) {
+                    showNotification('error', 'Erreur', 'Veuillez entrer vos commentaires personnalises');
+                    return;
+                }
+                // Compter les commentaires (lignes non vides)
+                const commentsArray = customCommentsText.split('\n').filter(c => c.trim());
+                if (commentsArray.length === 0) {
+                    showNotification('error', 'Erreur', 'Veuillez entrer au moins un commentaire');
+                    return;
+                }
+                currentQuantity = commentsArray.length;
             }
             
             // Verifier la quantite minimum
@@ -1207,7 +1254,8 @@
                         currentQuantity,
                         currentService.name,
                         currentPlatform.name,
-                        total
+                        total,
+                        customCommentsText
                     );
                     
                     if (exoResult.order) {
@@ -1264,13 +1312,10 @@
                 successDiv.style.display = 'block';
                 
                 if (exoOrderId) {
-                    document.getElementById('exoOrderId').textContent = `ID Commande: #${exoOrderId}`;
-                    showNotification('success', 'Commande envoyee!', `Votre commande #${exoOrderId} a ete envoyee au fournisseur`);
+                    showNotification('success', 'Commande envoyee!', 'Votre commande a ete placee avec succes');
                 } else if (exoOrderError) {
-                    document.getElementById('exoOrderId').textContent = `Erreur: ${exoOrderError}`;
-                    showNotification('warning', 'Commande en attente', 'La commande sera traitee manuellement');
+                    showNotification('warning', 'Commande en attente', 'Votre commande sera traitee sous peu');
                 } else {
-                    document.getElementById('exoOrderId').textContent = '';
                     showNotification('success', 'Commande enregistree!', 'Votre commande a ete passee avec succes');
                 }
                 
@@ -1288,10 +1333,13 @@
             currentLink = '';
             
             document.getElementById('quantityInput').value = '100';
+            document.getElementById('quantityInput').disabled = false;
+            document.querySelector('.quantity-input').style.opacity = '1';
             document.getElementById('orderLink').value = '';
             document.getElementById('orderRemarks').value = '';
+            document.getElementById('customComments').value = '';
+            document.getElementById('customCommentsSection').classList.add('hidden');
             document.getElementById('orderSuccess').style.display = 'none';
-            document.getElementById('exoOrderId').textContent = '';
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
             
@@ -1407,7 +1455,15 @@
             // Quantite
             const quantityInput = document.getElementById('quantityInput');
             
+            // Fonction pour verifier si c'est un service de commentaires personnalises
+            function isCustomCommentsService() {
+                if (!currentService) return false;
+                const name = currentService.name.toLowerCase();
+                return name.includes('custom') || name.includes('personnalis') || name.includes('your text');
+            }
+            
             document.getElementById('decreaseQty').addEventListener('click', () => {
+                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
                 const minQty = currentService?.min || 10;
                 if (currentQuantity > minQty) {
                     currentQuantity -= 100;
@@ -1418,15 +1474,26 @@
             });
             
             document.getElementById('increaseQty').addEventListener('click', () => {
+                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
                 currentQuantity += 100;
                 quantityInput.value = currentQuantity;
                 updateTotal();
             });
             
             quantityInput.addEventListener('input', function() {
+                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
                 const val = parseInt(this.value) || 1;
                 const minQty = currentService?.min || 1;
                 currentQuantity = Math.max(minQty, val);
+                updateTotal();
+            });
+            
+            // Ecouteur pour les commentaires personnalises
+            document.getElementById('customComments').addEventListener('input', function() {
+                const comments = this.value.split('\n').filter(c => c.trim());
+                const count = comments.length;
+                currentQuantity = count;
+                document.getElementById('quantityInput').value = count;
                 updateTotal();
             });
         });
