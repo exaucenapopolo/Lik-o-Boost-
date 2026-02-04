@@ -199,7 +199,8 @@
             color: var(--text-dark);
         }
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -210,7 +211,8 @@
             background-color: var(--white);
         }
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-blue);
         }
@@ -218,6 +220,46 @@
             font-size: 0.85rem;
             color: var(--text-light);
             margin-top: 5px;
+        }
+        .form-group .form-error {
+            font-size: 0.85rem;
+            color: var(--error-red);
+            margin-top: 5px;
+            display: none;
+        }
+
+        .currency-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+        }
+
+        .phone-group {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+        .phone-prefix {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            font-weight: 500;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .min-amount-info {
+            background: var(--light-blue);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px dashed var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        .min-amount-info strong {
+            color: var(--dark-blue);
         }
 
         .payment-summary {
@@ -261,12 +303,45 @@
             line-height: 1.5;
         }
 
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        .loading-overlay.hidden { display: none; }
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-text {
+            margin-top: 15px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (min-width: 768px) {
             .container { max-width: 600px; }
         }
     </style>
 </head>
 <body>
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Chargement...</div>
+    </div>
+
     <header class="mobile-header">
         <div class="container">
             <div class="mobile-header-content">
@@ -290,10 +365,11 @@
                 <h3><i class="fas fa-info-circle"></i> Comment ça marche ?</h3>
                 <p>Pour effectuer un dépôt depuis un autre pays africain, veuillez remplir ce formulaire avec vos informations de paiement. Une fois le formulaire soumis :</p>
                 <ul>
-                    <li>Vous serez redirigé vers WhatsApp</li>
-                    <li>Un message pré-rempli avec vos informations sera généré</li>
-                    <li>Notre équipe vous contactera pour finaliser le paiement</li>
-                    <li>Votre compte sera crédité dans les plus brefs délais</li>
+                    <li>Vous serez redirigé vers WhatsApp avec un message pré-rempli</li>
+                    <li>Notre équipe vous répondra rapidement pour vous expliquer la procédure</li>
+                    <li>Nous créerons un lien de paiement personnalisé pour vous</li>
+                    <li>Vous recevrez le lien de paiement par WhatsApp ou email</li>
+                    <li>Après paiement, votre solde sera crédité dans les plus brefs délais</li>
                 </ul>
                 <p><strong>Numéro WhatsApp : +237 654 49 46 84</strong></p>
             </div>
@@ -303,88 +379,162 @@
 
                 <form id="paymentForm">
                     <div class="form-group">
-                        <label for="amount">Montant à déposer (XAF)</label>
-                        <input type="number" id="amount" min="100" required placeholder="Ex: 5000">
-                        <div class="form-note">Montant minimum : 100 XAF</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="country">Pays</label>
+                        <label for="country">Pays *</label>
                         <select id="country" required>
                             <option value="">Sélectionnez votre pays</option>
+                            <!-- Afrique de l'Ouest -->
                             <option value="benin">Bénin</option>
                             <option value="burkina-faso">Burkina Faso</option>
                             <option value="cote-ivoire">Côte d'Ivoire</option>
-                            <option value="gabon">Gabon</option>
+                            <option value="gambie">Gambie</option>
+                            <option value="ghana">Ghana</option>
                             <option value="guinee">Guinée</option>
+                            <option value="guinee-bissau">Guinée-Bissau</option>
+                            <option value="liberia">Libéria</option>
                             <option value="mali">Mali</option>
                             <option value="niger">Niger</option>
-                            <option value="rdc">République Démocratique du Congo</option>
+                            <option value="nigeria">Nigeria</option>
                             <option value="senegal">Sénégal</option>
+                            <option value="sierra-leone">Sierra Leone</option>
                             <option value="togo">Togo</option>
-                            <option value="autres">Autre pays africain</option>
+                            
+                            <!-- Afrique Centrale -->
+                            <option value="gabon">Gabon</option>
+                            <option value="guinee-equatoriale">Guinée Équatoriale</option>
+                            <option value="rdc">République Démocratique du Congo</option>
+                            <option value="republique-centrafricaine">République Centrafricaine</option>
+                            <option value="republique-congo">République du Congo</option>
+                            <option value="tchad">Tchad</option>
+                            
+                            <!-- Afrique de l'Est -->
+                            <option value="burundi">Burundi</option>
+                            <option value="djibouti">Djibouti</option>
+                            <option value="erythree">Érythrée</option>
+                            <option value="ethiopie">Éthiopie</option>
+                            <option value="kenya">Kenya</option>
+                            <option value="rwanda">Rwanda</option>
+                            <option value="somalie">Somalie</option>
+                            <option value="soudan">Soudan</option>
+                            <option value="soudan-sud">Soudan du Sud</option>
+                            <option value="tanzanie">Tanzanie</option>
+                            <option value="uganda">Ouganda</option>
+                            
+                            <!-- Afrique Australe -->
+                            <option value="angola">Angola</option>
+                            <option value="botswana">Botswana</option>
+                            <option value="comores">Comores</option>
+                            <option value="lesotho">Lesotho</option>
+                            <option value="madagascar">Madagascar</option>
+                            <option value="malawi">Malawi</option>
+                            <option value="ile-maurice">Île Maurice</option>
+                            <option value="mozambique">Mozambique</option>
+                            <option value="namibie">Namibie</option>
+                            <option value="seychelles">Seychelles</option>
+                            <option value="afrique-sud">Afrique du Sud</option>
+                            <option value="swaziland">Eswatini (Swaziland)</option>
+                            <option value="zambie">Zambie</option>
+                            <option value="zimbabwe">Zimbabwe</option>
                         </select>
+                        <div class="form-note">Sélectionnez votre pays de résidence</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="paymentMethod">Méthode de paiement</label>
+                        <label for="paymentMethod">Méthode de paiement *</label>
                         <select id="paymentMethod" required>
-                            <option value="">Sélectionnez votre méthode</option>
-                            <option value="orange-money">Orange Money</option>
-                            <option value="mtn-momo">MTN Mobile Money</option>
-                            <option value="wave">Wave</option>
-                            <option value="free-money">Free Money</option>
-                            <option value="moov-money">Moov Money</option>
-                            <option value="airtel-money">Airtel Money</option>
-                            <option value="voda-money">Vodacom M-Pesa</option>
-                            <option value="autres">Autre méthode</option>
+                            <option value="">Sélectionnez d'abord votre pays</option>
+                            <!-- Les options seront ajoutées dynamiquement par JavaScript -->
                         </select>
                         <div class="form-note">Sélectionnez le service mobile money disponible dans votre pays</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="phoneNumber">Numéro de téléphone</label>
-                        <input type="tel" id="phoneNumber" required placeholder="Ex: +229 01 23 45 67">
-                        <div class="form-note">Format international avec l'indicatif du pays</div>
+                        <label>Montant à déposer *</label>
+                        <div class="currency-group">
+                            <select id="currency" required>
+                                <option value="">Devise</option>
+                                <option value="XAF">Franc CFA (XAF)</option>
+                                <option value="XOF">Franc CFA Ouest (XOF)</option>
+                                <option value="CDF">Franc Congolais (CDF)</option>
+                                <option value="USD">Dollar US ($)</option>
+                                <option value="EUR">Euro (€)</option>
+                                <option value="GBP">Livre Sterling (£)</option>
+                                <option value="GHS">Cedi Ghanéen (₵)</option>
+                                <option value="KES">Shilling Kenyan (KSh)</option>
+                                <option value="NGN">Naira Nigérian (₦)</option>
+                                <option value="RWF">Franc Rwandais (FRw)</option>
+                                <option value="TZS">Shilling Tanzanien (TSh)</option>
+                                <option value="UGX">Shilling Ougandais (USh)</option>
+                                <option value="ZAR">Rand Sud-Africain (R)</option>
+                                <option value="ZMW">Kwacha Zambien (ZK)</option>
+                                <option value="MGA">Ariary Malgache (Ar)</option>
+                                <option value="MUR">Roupie Mauricienne (₨)</option>
+                                <option value="SCR">Roupie Seychelloise (₨)</option>
+                            </select>
+                            <input type="number" id="amount" min="1" required placeholder="Montant">
+                        </div>
+                        <div class="min-amount-info">
+                            <strong>Montant minimum : <span id="minAmountDisplay">1000 XAF</span></strong>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="userEmail">Adresse email (optionnel)</label>
-                        <input type="email" id="userEmail" placeholder="Ex: votrenom@email.com">
-                        <div class="form-note">Pour recevoir la confirmation de paiement</div>
+                        <label for="phoneNumber">Numéro de téléphone *</label>
+                        <div class="phone-group">
+                            <div class="phone-prefix" id="phonePrefix">+229</div>
+                            <input type="tel" id="phoneNumber" required placeholder="Ex: 01 23 45 67">
+                        </div>
+                        <div class="form-note">Format : indicatif du pays + numéro</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="additionalInfo">Informations supplémentaires</label>
-                        <textarea id="additionalInfo" rows="3" placeholder="Précisez votre opérateur, nom complet, ou autres détails utiles..."></textarea>
+                        <label for="userEmail">Adresse email *</label>
+                        <input type="email" id="userEmail" required placeholder="Ex: votrenom@email.com">
+                        <div class="form-note">L'adresse email utilisée pour votre compte Likeo Boost</div>
+                        <div class="form-error" id="emailError">Cette adresse email n'est pas valide</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur *</label>
+                        <input type="text" id="username" required placeholder="Votre nom d'utilisateur sur Likeo Boost">
+                        <div class="form-note">Le nom d'utilisateur que vous utilisez pour vous connecter</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalInfo">Informations supplémentaires *</label>
+                        <textarea id="additionalInfo" rows="5" required placeholder="Précisez votre opérateur, nom complet, adresse, ou autres détails utiles pour le paiement..."></textarea>
+                        <div class="form-note">Ces informations nous aident à traiter votre demande rapidement</div>
                     </div>
 
                     <div class="payment-summary">
                         <div class="row">
                             <span class="label">Montant</span>
-                            <span id="displayAmount">0 XAF</span>
+                            <span id="displayAmount">0</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Devise</span>
+                            <span id="displayCurrency">-</span>
                         </div>
                         <div class="row">
                             <span class="label">Pays</span>
-                            <span id="displayCountry">Non sélectionné</span>
+                            <span id="displayCountry">-</span>
                         </div>
                         <div class="row">
                             <span class="label">Méthode</span>
-                            <span id="displayMethod">Non sélectionné</span>
+                            <span id="displayMethod">-</span>
                         </div>
                         <div class="row">
                             <span class="label">Total à payer</span>
-                            <span id="displayTotal">0 XAF</span>
+                            <span id="displayTotal">0</span>
                         </div>
                     </div>
 
                     <div class="whatsapp-note">
                         <i class="fab fa-whatsapp"></i>
-                        <p>Après avoir cliqué sur le bouton, vous serez redirigé vers WhatsApp avec un message pré-rempli. Envoyez le message pour initier le paiement.</p>
+                        <p>Après avoir cliqué sur le bouton, vous serez redirigé vers WhatsApp avec un message pré-rempli. Notre équipe vous répondra rapidement pour vous expliquer la procédure et vous envoyer votre lien de paiement personnalisé.</p>
                     </div>
 
                     <button type="button" class="btn btn-whatsapp" id="submitBtn">
-                        <i class="fab fa-whatsapp"></i> Envoyer sur WhatsApp
+                        <i class="fab fa-whatsapp"></i> Envoyer la demande sur WhatsApp
                     </button>
                 </form>
             </div>
@@ -403,133 +553,384 @@
             measurementId: "G-RV38D7VYF5"
         };
 
-        // Initialiser Firebase si non déjà initialisé
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            const auth = firebase.auth();
+        // Données des pays avec indicatifs et méthodes de paiement
+        const countriesData = {
+            // Afrique de l'Ouest
+            'benin': { prefix: '+229', methods: ['MTN Mobile Money', 'Moov Money'] },
+            'burkina-faso': { prefix: '+226', methods: ['Orange Money', 'Moov Money'] },
+            'cote-ivoire': { prefix: '+225', methods: ['Orange Money', 'MTN Mobile Money', 'Moov Money', 'Wave'] },
+            'gambie': { prefix: '+220', methods: ['QMoney', 'AfriMoney'] },
+            'ghana': { prefix: '+233', methods: ['MTN Mobile Money', 'Vodafone Cash', 'AirtelTigo Money'] },
+            'guinee': { prefix: '+224', methods: ['Orange Money', 'MTN Mobile Money'] },
+            'guinee-bissau': { prefix: '+245', methods: ['MTN Mobile Money'] },
+            'liberia': { prefix: '+231', methods: ['Lonestar Cell MTN Mobile Money', 'Orange Money'] },
+            'mali': { prefix: '+223', methods: ['Orange Money', 'Malitel Money'] },
+            'niger': { prefix: '+227', methods: ['Orange Money', 'Moov Money'] },
+            'nigeria': { prefix: '+234', methods: ['Paga', 'Flutterwave', 'Paystack', 'Quickteller'] },
+            'senegal': { prefix: '+221', methods: ['Orange Money', 'Free Money', 'Wave'] },
+            'sierra-leone': { prefix: '+232', methods: ['Orange Money', 'Africell Money'] },
+            'togo': { prefix: '+228', methods: ['Moov Money', 'Togocel Money'] },
             
-            // Vérifier l'authentification
-            auth.onAuthStateChanged(user => {
-                if (!user) {
+            // Afrique Centrale
+            'gabon': { prefix: '+241', methods: ['Airtel Money', 'Moov Money'] },
+            'guinee-equatoriale': { prefix: '+240', methods: ['Orange Money'] },
+            'rdc': { prefix: '+243', methods: ['Orange Money', 'Vodacom M-Pesa', 'Airtel Money'] },
+            'republique-centrafricaine': { prefix: '+236', methods: ['Orange Money'] },
+            'republique-congo': { prefix: '+242', methods: ['MTN Mobile Money', 'Airtel Money'] },
+            'tchad': { prefix: '+235', methods: ['Airtel Money', 'Tigo Money'] },
+            
+            // Afrique de l'Est
+            'burundi': { prefix: '+257', methods: ['Lumicash', 'EcoCash'] },
+            'djibouti': { prefix: '+253', methods: ['Evax Money', 'Sahal Money'] },
+            'erythree': { prefix: '+291', methods: ['Hallas Money'] },
+            'ethiopie': { prefix: '+251', methods: ['M-Birr', 'HelloCash'] },
+            'kenya': { prefix: '+254', methods: ['M-Pesa', 'Airtel Money', 'Equitel'] },
+            'rwanda': { prefix: '+250', methods: ['MTN Mobile Money', 'Airtel Money'] },
+            'somalie': { prefix: '+252', methods: ['EVC Plus', 'Zaad', 'Sahal Money'] },
+            'soudan': { prefix: '+249', methods: ['MTN Mobile Money', 'Zain Cash'] },
+            'soudan-sud': { prefix: '+211', methods: ['MTN Mobile Money', 'Zain Cash'] },
+            'tanzanie': { prefix: '+255', methods: ['M-Pesa', 'Tigo Pesa', 'Airtel Money'] },
+            'uganda': { prefix: '+256', methods: ['MTN Mobile Money', 'Airtel Money'] },
+            
+            // Afrique Australe
+            'angola': { prefix: '+244', methods: ['Unitel Money'] },
+            'botswana': { prefix: '+267', methods: ['Orange Money', 'Mascom MyZaka'] },
+            'comores': { prefix: '+269', methods: ['Halo Money'] },
+            'lesotho': { prefix: '+266', methods: ['EcoCash', 'M-Pesa'] },
+            'madagascar': { prefix: '+261', methods: ['MVola', 'Airtel Money'] },
+            'malawi': { prefix: '+265', methods: ['Airtel Money', 'TNM Mpamba'] },
+            'ile-maurice': { prefix: '+230', methods: ['My.t Money'] },
+            'mozambique': { prefix: '+258', methods: ['M-Pesa', 'E-mola'] },
+            'namibie': { prefix: '+264', methods: ['M-Pesa'] },
+            'seychelles': { prefix: '+248', methods: ['Seychelles Savings Bank Mobile'] },
+            'afrique-sud': { prefix: '+27', methods: ['FNB eWallet', 'Standard Bank Mobile Banking'] },
+            'swaziland': { prefix: '+268', methods: ['Econet Eazy Money'] },
+            'zambie': { prefix: '+260', methods: ['Airtel Money', 'MTN Mobile Money'] },
+            'zimbabwe': { prefix: '+263', methods: ['EcoCash', 'OneMoney'] }
+        };
+
+        // Taux de change par rapport à XAF (Franc CFA)
+        const exchangeRates = {
+            'XAF': 1,           // 1 XAF = 1 XAF
+            'XOF': 1,           // 1 XOF = 1 XAF (parité)
+            'CDF': 2.5,         // 1 XAF = 2.5 CDF (exemple)
+            'USD': 0.0016,      // 1 XAF = 0.0016 USD (environ 600 XAF = 1 USD)
+            'EUR': 0.0015,      // 1 XAF = 0.0015 EUR (environ 655 XAF = 1 EUR)
+            'GBP': 0.0013,      // 1 XAF = 0.0013 GBP
+            'GHS': 0.012,       // 1 XAF = 0.012 GHS
+            'KES': 0.24,        // 1 XAF = 0.24 KES
+            'NGN': 1.0,         // 1 XAF = 1 NGN (approximation)
+            'RWF': 1.8,         // 1 XAF = 1.8 RWF
+            'TZS': 3.8,         // 1 XAF = 3.8 TZS
+            'UGX': 3.2,         // 1 XAF = 3.2 UGX
+            'ZAR': 0.025,       // 1 XAF = 0.025 ZAR
+            'ZMW': 0.035,       // 1 XAF = 0.035 ZMW
+            'MGA': 7.5,         // 1 XAF = 7.5 MGA
+            'MUR': 0.055,       // 1 XAF = 0.055 MUR
+            'SCR': 0.020        // 1 XAF = 0.020 SCR
+        };
+
+        // Symboles des devises
+        const currencySymbols = {
+            'XAF': 'FCFA',
+            'XOF': 'FCFA',
+            'CDF': 'FC',
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+            'GHS': '₵',
+            'KES': 'KSh',
+            'NGN': '₦',
+            'RWF': 'FRw',
+            'TZS': 'TSh',
+            'UGX': 'USh',
+            'ZAR': 'R',
+            'ZMW': 'ZK',
+            'MGA': 'Ar',
+            'MUR': '₨',
+            'SCR': '₨'
+        };
+
+        // Noms complets des pays
+        const countryNames = {
+            'benin': 'Bénin',
+            'burkina-faso': 'Burkina Faso',
+            'cote-ivoire': 'Côte d\'Ivoire',
+            'gambie': 'Gambie',
+            'ghana': 'Ghana',
+            'guinee': 'Guinée',
+            'guinee-bissau': 'Guinée-Bissau',
+            'liberia': 'Libéria',
+            'mali': 'Mali',
+            'niger': 'Niger',
+            'nigeria': 'Nigeria',
+            'senegal': 'Sénégal',
+            'sierra-leone': 'Sierra Leone',
+            'togo': 'Togo',
+            'gabon': 'Gabon',
+            'guinee-equatoriale': 'Guinée Équatoriale',
+            'rdc': 'République Démocratique du Congo',
+            'republique-centrafricaine': 'République Centrafricaine',
+            'republique-congo': 'République du Congo',
+            'tchad': 'Tchad',
+            'burundi': 'Burundi',
+            'djibouti': 'Djibouti',
+            'erythree': 'Érythrée',
+            'ethiopie': 'Éthiopie',
+            'kenya': 'Kenya',
+            'rwanda': 'Rwanda',
+            'somalie': 'Somalie',
+            'soudan': 'Soudan',
+            'soudan-sud': 'Soudan du Sud',
+            'tanzanie': 'Tanzanie',
+            'uganda': 'Ouganda',
+            'angola': 'Angola',
+            'botswana': 'Botswana',
+            'comores': 'Comores',
+            'lesotho': 'Lesotho',
+            'madagascar': 'Madagascar',
+            'malawi': 'Malawi',
+            'ile-maurice': 'Île Maurice',
+            'mozambique': 'Mozambique',
+            'namibie': 'Namibie',
+            'seychelles': 'Seychelles',
+            'afrique-sud': 'Afrique du Sud',
+            'swaziland': 'Eswatini (Swaziland)',
+            'zambie': 'Zambie',
+            'zimbabwe': 'Zimbabwe'
+        };
+
+        // Variables globales
+        let currentUser = null;
+        let userData = null;
+        let selectedCurrency = 'XAF';
+
+        // Initialiser Firebase
+        function initializeFirebase() {
+            try {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                return firebase;
+            } catch (error) {
+                console.error("Erreur Firebase:", error);
+                return null;
+            }
+        }
+
+        // Charger les données de l'utilisateur
+        async function loadUserData() {
+            const firebaseApp = initializeFirebase();
+            if (!firebaseApp) return;
+            
+            const auth = firebaseApp.auth();
+            const db = firebaseApp.firestore();
+            
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    
+                    // Pré-remplir l'email avec celui de Firebase Auth
+                    document.getElementById('userEmail').value = user.email || '';
+                    
+                    try {
+                        // Essayer de récupérer les données utilisateur depuis Firestore
+                        const doc = await db.collection('users').doc(user.uid).get();
+                        if (doc.exists) {
+                            userData = doc.data();
+                            // Pré-remplir le nom d'utilisateur
+                            if (userData.username) {
+                                document.getElementById('username').value = userData.username;
+                            } else if (userData.displayName) {
+                                document.getElementById('username').value = userData.displayName;
+                            } else if (user.email) {
+                                // Utiliser la partie avant @ de l'email comme nom d'utilisateur
+                                document.getElementById('username').value = user.email.split('@')[0];
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Erreur chargement données:', error);
+                    }
+                    
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                } else {
+                    // Rediriger vers la page de connexion si non connecté
                     window.location.href = 'connexion.html';
                 }
             });
-        } catch (error) {
-            console.error("Erreur Firebase:", error);
         }
 
-        // Mettre à jour le résumé en temps réel
+        // Mettre à jour l'indicatif du téléphone
+        function updatePhonePrefix() {
+            const country = document.getElementById('country').value;
+            const phonePrefix = document.getElementById('phonePrefix');
+            
+            if (country && countriesData[country]) {
+                phonePrefix.textContent = countriesData[country].prefix;
+            } else {
+                phonePrefix.textContent = '+229'; // Valeur par défaut (Bénin)
+            }
+        }
+
+        // Mettre à jour les méthodes de paiement disponibles
+        function updatePaymentMethods() {
+            const country = document.getElementById('country').value;
+            const methodSelect = document.getElementById('paymentMethod');
+            
+            methodSelect.innerHTML = '<option value="">Sélectionnez d\'abord votre pays</option>';
+            
+            if (country && countriesData[country]) {
+                countriesData[country].methods.forEach(method => {
+                    const option = document.createElement('option');
+                    option.value = method;
+                    option.textContent = method;
+                    methodSelect.appendChild(option);
+                });
+                
+                // Ajouter l'option "Autre" si nécessaire
+                const otherOption = document.createElement('option');
+                otherOption.value = 'autre';
+                otherOption.textContent = 'Autre méthode de paiement';
+                methodSelect.appendChild(otherOption);
+            }
+        }
+
+        // Calculer le montant minimum dans la devise sélectionnée
+        function calculateMinAmount() {
+            const currency = document.getElementById('currency').value;
+            const minAmountXAF = 1000; // Montant minimum en XAF
+            
+            if (currency && exchangeRates[currency]) {
+                const rate = exchangeRates[currency];
+                let minAmount;
+                
+                if (rate < 1) {
+                    // Pour les devises plus fortes (USD, EUR, etc.)
+                    minAmount = Math.ceil(minAmountXAF * rate);
+                } else {
+                    // Pour les devises plus faibles (CDF, RWF, etc.)
+                    minAmount = Math.ceil(minAmountXAF * rate);
+                }
+                
+                // S'assurer que le minimum est au moins 1
+                minAmount = Math.max(minAmount, 1);
+                
+                // Mettre à jour l'affichage
+                const symbol = currencySymbols[currency] || currency;
+                document.getElementById('minAmountDisplay').textContent = `${minAmount} ${symbol}`;
+                
+                // Mettre à jour la validation
+                const amountInput = document.getElementById('amount');
+                amountInput.min = minAmount;
+                amountInput.placeholder = `Minimum: ${minAmount}`;
+                
+                return minAmount;
+            }
+            
+            return 1000; // Valeur par défaut
+        }
+
+        // Mettre à jour le résumé
         function updateSummary() {
-            const amount = document.getElementById('amount').value || 0;
             const country = document.getElementById('country').value;
             const method = document.getElementById('paymentMethod').value;
+            const currency = document.getElementById('currency').value;
+            const amount = document.getElementById('amount').value || 0;
             
-            // Formater les affichages
-            document.getElementById('displayAmount').textContent = `${parseInt(amount).toLocaleString('fr-FR')} XAF`;
-            document.getElementById('displayTotal').textContent = `${parseInt(amount).toLocaleString('fr-FR')} XAF`;
+            // Mettre à jour les affichages
+            if (country) {
+                document.getElementById('displayCountry').textContent = countryNames[country] || country;
+            } else {
+                document.getElementById('displayCountry').textContent = '-';
+            }
             
-            // Afficher le pays
-            const countryNames = {
-                'benin': 'Bénin',
-                'burkina-faso': 'Burkina Faso',
-                'cote-ivoire': 'Côte d\'Ivoire',
-                'gabon': 'Gabon',
-                'guinee': 'Guinée',
-                'mali': 'Mali',
-                'niger': 'Niger',
-                'rdc': 'République Démocratique du Congo',
-                'senegal': 'Sénégal',
-                'togo': 'Togo',
-                'autres': 'Autre pays africain'
-            };
-            document.getElementById('displayCountry').textContent = countryNames[country] || 'Non sélectionné';
+            if (method) {
+                document.getElementById('displayMethod').textContent = method;
+            } else {
+                document.getElementById('displayMethod').textContent = '-';
+            }
             
-            // Afficher la méthode
-            const methodNames = {
-                'orange-money': 'Orange Money',
-                'mtn-momo': 'MTN Mobile Money',
-                'wave': 'Wave',
-                'free-money': 'Free Money',
-                'moov-money': 'Moov Money',
-                'airtel-money': 'Airtel Money',
-                'voda-money': 'Vodacom M-Pesa',
-                'autres': 'Autre méthode'
-            };
-            document.getElementById('displayMethod').textContent = methodNames[method] || 'Non sélectionné';
+            if (currency) {
+                const symbol = currencySymbols[currency] || currency;
+                document.getElementById('displayCurrency').textContent = symbol;
+                document.getElementById('displayAmount').textContent = `${parseInt(amount).toLocaleString('fr-FR')} ${symbol}`;
+                document.getElementById('displayTotal').textContent = `${parseInt(amount).toLocaleString('fr-FR')} ${symbol}`;
+            } else {
+                document.getElementById('displayCurrency').textContent = '-';
+                document.getElementById('displayAmount').textContent = '0';
+                document.getElementById('displayTotal').textContent = '0';
+            }
             
-            // Activer/désactiver le bouton
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = !(amount >= 100 && country && method && document.getElementById('phoneNumber').value);
+            // Valider le formulaire
+            validateForm();
         }
 
-        // Écouter les changements dans le formulaire
-        document.getElementById('amount').addEventListener('input', updateSummary);
-        document.getElementById('country').addEventListener('change', updateSummary);
-        document.getElementById('paymentMethod').addEventListener('change', updateSummary);
-        document.getElementById('phoneNumber').addEventListener('input', updateSummary);
-        document.getElementById('userEmail').addEventListener('input', updateSummary);
+        // Valider le formulaire
+        function validateForm() {
+            const country = document.getElementById('country').value;
+            const method = document.getElementById('paymentMethod').value;
+            const currency = document.getElementById('currency').value;
+            const amount = document.getElementById('amount').value;
+            const phone = document.getElementById('phoneNumber').value;
+            const email = document.getElementById('userEmail').value;
+            const username = document.getElementById('username').value;
+            const additionalInfo = document.getElementById('additionalInfo').value;
+            const minAmount = calculateMinAmount();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const emailError = document.getElementById('emailError');
+            
+            // Validation de l'email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                emailError.style.display = 'block';
+            } else {
+                emailError.style.display = 'none';
+            }
+            
+            // Activer/désactiver le bouton
+            const isValid = country && method && currency && 
+                          amount && parseInt(amount) >= minAmount && 
+                          phone && email && emailRegex.test(email) && 
+                          username && additionalInfo;
+            
+            submitBtn.disabled = !isValid;
+        }
 
         // Gérer la soumission du formulaire
-        document.getElementById('submitBtn').addEventListener('click', function() {
-            const amount = document.getElementById('amount').value;
+        function handleSubmit() {
             const country = document.getElementById('country').value;
-            const paymentMethod = document.getElementById('paymentMethod').value;
+            const method = document.getElementById('paymentMethod').value;
+            const currency = document.getElementById('currency').value;
+            const amount = document.getElementById('amount').value;
+            const phonePrefix = document.getElementById('phonePrefix').textContent;
             const phoneNumber = document.getElementById('phoneNumber').value;
-            const userEmail = document.getElementById('userEmail').value;
+            const email = document.getElementById('userEmail').value;
+            const username = document.getElementById('username').value;
             const additionalInfo = document.getElementById('additionalInfo').value;
             
-            // Validation basique
-            if (amount < 100) {
-                alert('Le montant minimum est de 100 XAF');
-                return;
-            }
-            
-            if (!country || !paymentMethod || !phoneNumber) {
-                alert('Veuillez remplir tous les champs obligatoires');
-                return;
-            }
-            
-            // Récupérer les noms affichables
-            const countryNames = {
-                'benin': 'Bénin',
-                'burkina-faso': 'Burkina Faso',
-                'cote-ivoire': 'Côte d\'Ivoire',
-                'gabon': 'Gabon',
-                'guinee': 'Guinée',
-                'mali': 'Mali',
-                'niger': 'Niger',
-                'rdc': 'République Démocratique du Congo',
-                'senegal': 'Sénégal',
-                'togo': 'Togo',
-                'autres': 'Autre pays africain'
-            };
-            
-            const methodNames = {
-                'orange-money': 'Orange Money',
-                'mtn-momo': 'MTN Mobile Money',
-                'wave': 'Wave',
-                'free-money': 'Free Money',
-                'moov-money': 'Moov Money',
-                'airtel-money': 'Airtel Money',
-                'voda-money': 'Vodacom M-Pesa',
-                'autres': 'Autre méthode'
-            };
-            
-            const displayCountry = countryNames[country] || country;
-            const displayMethod = methodNames[paymentMethod] || paymentMethod;
+            const fullPhone = `${phonePrefix} ${phoneNumber}`;
+            const symbol = currencySymbols[currency] || currency;
             
             // Créer le message WhatsApp
-            const message = `Bonjour, je souhaite effectuer un dépôt sur Likeo Boost.
+            const message = `Bonjour, je souhaite effectuer un dépôt sur Likeo Boost depuis un autre pays africain.
 
-📋 **Informations du dépôt :**
-• Montant : ${parseInt(amount).toLocaleString('fr-FR')} XAF
-• Pays : ${displayCountry}
-• Méthode de paiement : ${displayMethod}
-• Numéro de téléphone : ${phoneNumber}
-• Email : ${userEmail || 'Non renseigné'}
-• Informations supplémentaires : ${additionalInfo || 'Aucune'}
+📋 **INFORMATIONS DU DÉPÔT :**
+• Nom d'utilisateur : ${username}
+• Email : ${email}
+• Montant : ${parseInt(amount).toLocaleString('fr-FR')} ${symbol}
+• Devise : ${currency}
+• Pays : ${countryNames[country] || country}
+• Méthode de paiement : ${method}
+• Numéro de téléphone : ${fullPhone}
+• Informations supplémentaires : ${additionalInfo}
+
+💡 **PROCÉDURE ATTENDUE :**
+1. Veuillez me confirmer les étapes à suivre pour le paiement
+2. Créez mon lien de paiement personnalisé
+3. Envoyez-moi le lien de paiement par WhatsApp ou email
+4. Je procéderai au paiement via la méthode choisie
+5. Mon solde sera crédité après confirmation du paiement
 
 Merci de me guider pour finaliser le paiement.`;
             
@@ -541,10 +942,90 @@ Merci de me guider pour finaliser le paiement.`;
             
             // Rediriger vers WhatsApp
             window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
-        });
+            
+            // Sauvegarder les données dans localStorage (optionnel)
+            const formData = {
+                country,
+                method,
+                currency,
+                amount,
+                phone: fullPhone,
+                email,
+                username,
+                additionalInfo,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('lastPaymentForm', JSON.stringify(formData));
+        }
 
-        // Initialiser le résumé
-        document.addEventListener('DOMContentLoaded', updateSummary);
+        // Initialiser l'application
+        function initializeApp() {
+            // Charger les données utilisateur
+            loadUserData();
+            
+            // Mettre à jour l'indicatif du téléphone quand le pays change
+            document.getElementById('country').addEventListener('change', function() {
+                updatePhonePrefix();
+                updatePaymentMethods();
+                updateSummary();
+            });
+            
+            // Mettre à jour les méthodes de paiement
+            document.getElementById('paymentMethod').addEventListener('change', updateSummary);
+            
+            // Mettre à jour la devise et le montant minimum
+            document.getElementById('currency').addEventListener('change', function() {
+                selectedCurrency = this.value;
+                calculateMinAmount();
+                updateSummary();
+            });
+            
+            // Mettre à jour le résumé quand le montant change
+            document.getElementById('amount').addEventListener('input', updateSummary);
+            
+            // Mettre à jour le résumé quand les autres champs changent
+            document.getElementById('phoneNumber').addEventListener('input', updateSummary);
+            document.getElementById('userEmail').addEventListener('input', updateSummary);
+            document.getElementById('username').addEventListener('input', updateSummary);
+            document.getElementById('additionalInfo').addEventListener('input', updateSummary);
+            
+            // Gérer la soumission
+            document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+            
+            // Initialiser les valeurs par défaut
+            updatePhonePrefix();
+            calculateMinAmount();
+            updateSummary();
+            
+            // Charger les données sauvegardées (optionnel)
+            const savedData = localStorage.getItem('lastPaymentForm');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.country) document.getElementById('country').value = data.country;
+                    if (data.method) document.getElementById('paymentMethod').value = data.method;
+                    if (data.currency) document.getElementById('currency').value = data.currency;
+                    if (data.amount) document.getElementById('amount').value = data.amount;
+                    if (data.email) document.getElementById('userEmail').value = data.email;
+                    if (data.username) document.getElementById('username').value = data.username;
+                    if (data.additionalInfo) document.getElementById('additionalInfo').value = data.additionalInfo;
+                    
+                    // Mettre à jour après chargement
+                    setTimeout(() => {
+                        updatePhonePrefix();
+                        updatePaymentMethods();
+                        calculateMinAmount();
+                        updateSummary();
+                    }, 100);
+                } catch (e) {
+                    console.error('Erreur chargement données sauvegardées:', e);
+                }
+            }
+        }
+
+        // Démarrer l'application quand la page est chargée
+        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
