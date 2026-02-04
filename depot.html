@@ -78,6 +78,19 @@
         .btn-success { background-color: var(--success-green); color: var(--white); }
         .btn-success:hover { background-color: #3d8b40; }
 
+        .btn-african {
+            background-color: var(--dark-blue);
+            color: var(--white);
+            font-weight: 700;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .btn-african:hover {
+            background-color: #2A3C6C;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(42, 60, 108, 0.3);
+        }
+
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -402,6 +415,7 @@
             border-radius: 20px;
             padding: 25px;
             box-shadow: var(--shadow);
+            margin-bottom: 25px;
         }
 
         .transaction-item {
@@ -464,6 +478,26 @@
             font-size: 3rem;
             margin-bottom: 15px;
             opacity: 0.5;
+        }
+
+        .other-countries-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-top: 20px;
+        }
+        .other-countries-section .info-text {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .other-countries-section .flag-icon {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-orange);
         }
 
         @media (min-width: 768px) {
@@ -592,6 +626,21 @@
                         <p>Aucun depot effectue</p>
                     </div>
                 </div>
+            </div>
+
+            <!-- Section pour les autres pays africains -->
+            <div class="other-countries-section">
+                <div class="flag-icon">
+                    <i class="fas fa-globe-africa"></i>
+                </div>
+                <h3 class="section-title">Vous n'êtes pas au Cameroun ?</h3>
+                <p class="info-text">
+                    Si vous êtes dans un autre pays africain et que vous ne pouvez pas utiliser MTN Mobile Money ou Orange Money Cameroun, 
+                    cliquez sur le bouton ci-dessous pour accéder à notre système de paiement adapté à votre pays.
+                </p>
+                <a href="pays-africains.html" class="btn btn-african">
+                    <i class="fas fa-flag"></i> Autres pays africains
+                </a>
             </div>
         </div>
     </main>

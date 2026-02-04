@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Paiement Autres Pays Africains - Likeo Boost</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --primary-blue: #2A5EE8;
+            --primary-orange: #FF7A00;
+            --dark-blue: #1A1F3C;
+            --light-blue: #F0F5FF;
+            --light-gray: #F8F9FA;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --white: #FFFFFF;
+            --success-green: #4CAF50;
+            --error-red: #f44336;
+            --warning-orange: #ff9800;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f5f7ff;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .container { width: 100%; max-width: 100%; margin: 0 auto; padding: 0 15px; }
+
+        .btn {
+            display: inline-block; padding: 12px 24px;
+            border-radius: 50px; text-decoration: none;
+            font-weight: 600; font-size: 0.95rem;
+            transition: var(--transition); cursor: pointer;
+            border: none; text-align: center; white-space: nowrap;
+        }
+
+        .btn-primary { background-color: var(--primary-blue); color: var(--white); }
+        .btn-primary:hover {
+            background-color: var(--primary-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 122, 0, 0.2);
+        }
+
+        .btn-yellow {
+            background-color: var(--primary-yellow);
+            color: var(--dark-blue);
+            font-weight: 700;
+        }
+        .btn-yellow:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-success { background-color: var(--success-green); color: var(--white); }
+        .btn-success:hover { background-color: #3d8b40; }
+
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: var(--white);
+            font-weight: 700;
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1da851;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .mobile-header {
+            background-color: var(--white); padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky; top: 0; z-index: 100; width: 100%;
+        }
+
+        .mobile-header-content { display: flex; justify-content: space-between; align-items: center; }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.5rem;
+            color: var(--dark-blue); text-decoration: none;
+            display: flex; align-items: center;
+        }
+        .logo span { color: var(--primary-blue); }
+        .logo .dot { color: var(--primary-orange); font-size: 1.8rem; line-height: 1; }
+        .logo .yellow { color: var(--primary-yellow); }
+
+        .back-btn {
+            background: none; border: none;
+            font-size: 1.2rem; color: var(--primary-blue);
+            cursor: pointer; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: var(--transition);
+            text-decoration: none;
+        }
+        .back-btn:hover { background-color: rgba(42, 94, 232, 0.1); }
+
+        .main-content { padding: 20px 0 40px; }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+        .page-title p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .deposit-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--dark-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i {
+            color: var(--primary-blue);
+        }
+
+        .info-box {
+            background: var(--light-blue);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary-orange);
+        }
+        .info-box h3 {
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .info-box p {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .info-box ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .info-box li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+        .form-group .form-note {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .payment-summary {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .payment-summary .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .payment-summary .row:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .payment-summary .label {
+            color: var(--text-light);
+        }
+
+        .whatsapp-note {
+            background: rgba(37, 211, 102, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid rgba(37, 211, 102, 0.3);
+        }
+        .whatsapp-note i {
+            color: #25D366;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .whatsapp-note p {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        @media (min-width: 768px) {
+            .container { max-width: 600px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="mobile-header">
+        <div class="container">
+            <div class="mobile-header-content">
+                <a href="depot.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <a href="dashboard.html" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
+                <div style="width: 40px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h1><i class="fas fa-globe-africa"></i> Paiement Autres Pays</h1>
+                <p>Formulaire de paiement pour les autres pays africains</p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> Comment ça marche ?</h3>
+                <p>Pour effectuer un dépôt depuis un autre pays africain, veuillez remplir ce formulaire avec vos informations de paiement. Une fois le formulaire soumis :</p>
+                <ul>
+                    <li>Vous serez redirigé vers WhatsApp</li>
+                    <li>Un message pré-rempli avec vos informations sera généré</li>
+                    <li>Notre équipe vous contactera pour finaliser le paiement</li>
+                    <li>Votre compte sera crédité dans les plus brefs délais</li>
+                </ul>
+                <p><strong>Numéro WhatsApp : +237 654 49 46 84</strong></p>
+            </div>
+
+            <div class="deposit-section">
+                <h3 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Formulaire de Paiement</h3>
+
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label for="amount">Montant à déposer (XAF)</label>
+                        <input type="number" id="amount" min="100" required placeholder="Ex: 5000">
+                        <div class="form-note">Montant minimum : 100 XAF</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="country">Pays</label>
+                        <select id="country" required>
+                            <option value="">Sélectionnez votre pays</option>
+                            <option value="benin">Bénin</option>
+                            <option value="burkina-faso">Burkina Faso</option>
+                            <option value="cote-ivoire">Côte d'Ivoire</option>
+                            <option value="gabon">Gabon</option>
+                            <option value="guinee">Guinée</option>
+                            <option value="mali">Mali</option>
+                            <option value="niger">Niger</option>
+                            <option value="rdc">République Démocratique du Congo</option>
+                            <option value="senegal">Sénégal</option>
+                            <option value="togo">Togo</option>
+                            <option value="autres">Autre pays africain</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMethod">Méthode de paiement</label>
+                        <select id="paymentMethod" required>
+                            <option value="">Sélectionnez votre méthode</option>
+                            <option value="orange-money">Orange Money</option>
+                            <option value="mtn-momo">MTN Mobile Money</option>
+                            <option value="wave">Wave</option>
+                            <option value="free-money">Free Money</option>
+                            <option value="moov-money">Moov Money</option>
+                            <option value="airtel-money">Airtel Money</option>
+                            <option value="voda-money">Vodacom M-Pesa</option>
+                            <option value="autres">Autre méthode</option>
+                        </select>
+                        <div class="form-note">Sélectionnez le service mobile money disponible dans votre pays</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Numéro de téléphone</label>
+                        <input type="tel" id="phoneNumber" required placeholder="Ex: +229 01 23 45 67">
+                        <div class="form-note">Format international avec l'indicatif du pays</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail">Adresse email (optionnel)</label>
+                        <input type="email" id="userEmail" placeholder="Ex: votrenom@email.com">
+                        <div class="form-note">Pour recevoir la confirmation de paiement</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalInfo">Informations supplémentaires</label>
+                        <textarea id="additionalInfo" rows="3" placeholder="Précisez votre opérateur, nom complet, ou autres détails utiles..."></textarea>
+                    </div>
+
+                    <div class="payment-summary">
+                        <div class="row">
+                            <span class="label">Montant</span>
+                            <span id="displayAmount">0 XAF</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Pays</span>
+                            <span id="displayCountry">Non sélectionné</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Méthode</span>
+                            <span id="displayMethod">Non sélectionné</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Total à payer</span>
+                            <span id="displayTotal">0 XAF</span>
+                        </div>
+                    </div>
+
+                    <div class="whatsapp-note">
+                        <i class="fab fa-whatsapp"></i>
+                        <p>Après avoir cliqué sur le bouton, vous serez redirigé vers WhatsApp avec un message pré-rempli. Envoyez le message pour initier le paiement.</p>
+                    </div>
+
+                    <button type="button" class="btn btn-whatsapp" id="submitBtn">
+                        <i class="fab fa-whatsapp"></i> Envoyer sur WhatsApp
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
+            authDomain: "likeo-5e3e9.firebaseapp.com",
+            projectId: "likeo-5e3e9",
+            storageBucket: "likeo-5e3e9.firebasestorage.app",
+            messagingSenderId: "1071170297332",
+            appId: "1:1071170297332:web:fa5e60f75848b986712da1",
+            measurementId: "G-RV38D7VYF5"
+        };
+
+        // Initialiser Firebase si non déjà initialisé
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const auth = firebase.auth();
+            
+            // Vérifier l'authentification
+            auth.onAuthStateChanged(user => {
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                }
+            });
+        } catch (error) {
+            console.error("Erreur Firebase:", error);
+        }
+
+        // Mettre à jour le résumé en temps réel
+        function updateSummary() {
+            const amount = document.getElementById('amount').value || 0;
+            const country = document.getElementById('country').value;
+            const method = document.getElementById('paymentMethod').value;
+            
+            // Formater les affichages
+            document.getElementById('displayAmount').textContent = `${parseInt(amount).toLocaleString('fr-FR')} XAF`;
+            document.getElementById('displayTotal').textContent = `${parseInt(amount).toLocaleString('fr-FR')} XAF`;
+            
+            // Afficher le pays
+            const countryNames = {
+                'benin': 'Bénin',
+                'burkina-faso': 'Burkina Faso',
+                'cote-ivoire': 'Côte d\'Ivoire',
+                'gabon': 'Gabon',
+                'guinee': 'Guinée',
+                'mali': 'Mali',
+                'niger': 'Niger',
+                'rdc': 'République Démocratique du Congo',
+                'senegal': 'Sénégal',
+                'togo': 'Togo',
+                'autres': 'Autre pays africain'
+            };
+            document.getElementById('displayCountry').textContent = countryNames[country] || 'Non sélectionné';
+            
+            // Afficher la méthode
+            const methodNames = {
+                'orange-money': 'Orange Money',
+                'mtn-momo': 'MTN Mobile Money',
+                'wave': 'Wave',
+                'free-money': 'Free Money',
+                'moov-money': 'Moov Money',
+                'airtel-money': 'Airtel Money',
+                'voda-money': 'Vodacom M-Pesa',
+                'autres': 'Autre méthode'
+            };
+            document.getElementById('displayMethod').textContent = methodNames[method] || 'Non sélectionné';
+            
+            // Activer/désactiver le bouton
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = !(amount >= 100 && country && method && document.getElementById('phoneNumber').value);
+        }
+
+        // Écouter les changements dans le formulaire
+        document.getElementById('amount').addEventListener('input', updateSummary);
+        document.getElementById('country').addEventListener('change', updateSummary);
+        document.getElementById('paymentMethod').addEventListener('change', updateSummary);
+        document.getElementById('phoneNumber').addEventListener('input', updateSummary);
+        document.getElementById('userEmail').addEventListener('input', updateSummary);
+
+        // Gérer la soumission du formulaire
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const amount = document.getElementById('amount').value;
+            const country = document.getElementById('country').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const userEmail = document.getElementById('userEmail').value;
+            const additionalInfo = document.getElementById('additionalInfo').value;
+            
+            // Validation basique
+            if (amount < 100) {
+                alert('Le montant minimum est de 100 XAF');
+                return;
+            }
+            
+            if (!country || !paymentMethod || !phoneNumber) {
+                alert('Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+            
+            // Récupérer les noms affichables
+            const countryNames = {
+                'benin': 'Bénin',
+                'burkina-faso': 'Burkina Faso',
+                'cote-ivoire': 'Côte d\'Ivoire',
+                'gabon': 'Gabon',
+                'guinee': 'Guinée',
+                'mali': 'Mali',
+                'niger': 'Niger',
+                'rdc': 'République Démocratique du Congo',
+                'senegal': 'Sénégal',
+                'togo': 'Togo',
+                'autres': 'Autre pays africain'
+            };
+            
+            const methodNames = {
+                'orange-money': 'Orange Money',
+                'mtn-momo': 'MTN Mobile Money',
+                'wave': 'Wave',
+                'free-money': 'Free Money',
+                'moov-money': 'Moov Money',
+                'airtel-money': 'Airtel Money',
+                'voda-money': 'Vodacom M-Pesa',
+                'autres': 'Autre méthode'
+            };
+            
+            const displayCountry = countryNames[country] || country;
+            const displayMethod = methodNames[paymentMethod] || paymentMethod;
+            
+            // Créer le message WhatsApp
+            const message = `Bonjour, je souhaite effectuer un dépôt sur Likeo Boost.
+
+📋 **Informations du dépôt :**
+• Montant : ${parseInt(amount).toLocaleString('fr-FR')} XAF
+• Pays : ${displayCountry}
+• Méthode de paiement : ${displayMethod}
+• Numéro de téléphone : ${phoneNumber}
+• Email : ${userEmail || 'Non renseigné'}
+• Informations supplémentaires : ${additionalInfo || 'Aucune'}
+
+Merci de me guider pour finaliser le paiement.`;
+            
+            // Encoder le message pour l'URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Numéro WhatsApp
+            const whatsappNumber = '237654494684';
+            
+            // Rediriger vers WhatsApp
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+        });
+
+        // Initialiser le résumé
+        document.addEventListener('DOMContentLoaded', updateSummary);
+    </script>
+</body>
+</html>
