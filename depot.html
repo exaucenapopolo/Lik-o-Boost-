@@ -78,19 +78,6 @@
         .btn-success { background-color: var(--success-green); color: var(--white); }
         .btn-success:hover { background-color: #3d8b40; }
 
-        .btn-african {
-            background-color: var(--dark-blue);
-            color: var(--white);
-            font-weight: 700;
-            margin-top: 20px;
-            width: 100%;
-        }
-        .btn-african:hover {
-            background-color: #2A3C6C;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(42, 60, 108, 0.3);
-        }
-
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -415,7 +402,6 @@
             border-radius: 20px;
             padding: 25px;
             box-shadow: var(--shadow);
-            margin-bottom: 25px;
         }
 
         .transaction-item {
@@ -478,26 +464,6 @@
             font-size: 3rem;
             margin-bottom: 15px;
             opacity: 0.5;
-        }
-
-        .other-countries-section {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            margin-top: 20px;
-        }
-        .other-countries-section .info-text {
-            color: var(--text-light);
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .other-countries-section .flag-icon {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: var(--primary-orange);
         }
 
         @media (min-width: 768px) {
@@ -576,25 +542,66 @@
                 <h3 class="section-title"><i class="fas fa-mobile-alt"></i> Mode de paiement</h3>
 
                 <div class="payment-methods">
-                    <div class="payment-method selected" data-method="momo" data-testid="button-method-momo">
+                    <div class="payment-method selected" data-method="fapshi" data-testid="button-method-fapshi">
                         <div class="method-icon mtn">
                             <i class="fas fa-mobile-alt"></i>
                         </div>
                         <div class="method-info">
-                            <h4>MTN Mobile Money</h4>
-                            <p>Paiement instantane via MTN MoMo</p>
+                            <h4>Mobile Money Cameroun</h4>
+                            <p>MTN MoMo &amp; Orange Money (Cameroun)</p>
                         </div>
                         <i class="fas fa-check-circle check-icon"></i>
                     </div>
-                    <div class="payment-method" data-method="orange" data-testid="button-method-orange">
-                        <div class="method-icon orange">
-                            <i class="fas fa-mobile-alt"></i>
+                    <div class="payment-method" data-method="accountpe" data-testid="button-method-accountpe">
+                        <div class="method-icon" style="background: linear-gradient(135deg, #6C47FF, #A855F7); color: #fff;">
+                            <i class="fas fa-globe"></i>
                         </div>
                         <div class="method-info">
-                            <h4>Orange Money</h4>
-                            <p>Paiement instantane via Orange Money</p>
+                            <h4>AccountPe — Paiement International</h4>
+                            <p>Mobile Money multi-pays, cartes, Wave…</p>
                         </div>
                         <i class="fas fa-check-circle check-icon"></i>
+                    </div>
+                </div>
+
+                <!-- AccountPe country + phone fields (hidden by default) -->
+                <div id="accountpeFields" style="display:none;">
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
+                            <i class="fas fa-flag" style="color:var(--primary-blue);margin-right:6px;"></i>Pays
+                        </label>
+                        <select id="accountpeCountry" data-testid="select-accountpe-country"
+                            style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;background:#fff;cursor:pointer;">
+                            <option value="CM">🇨🇲 Cameroun (XAF)</option>
+                            <option value="SN">🇸🇳 Senegal (XOF)</option>
+                            <option value="CI">🇨🇮 Cote d'Ivoire (XOF)</option>
+                            <option value="GH">🇬🇭 Ghana (GHS)</option>
+                            <option value="NG">🇳🇬 Nigeria (NGN)</option>
+                            <option value="KE">🇰🇪 Kenya (KES)</option>
+                            <option value="TZ">🇹🇿 Tanzanie (TZS)</option>
+                            <option value="UG">🇺🇬 Ouganda (UGX)</option>
+                            <option value="RW">🇷🇼 Rwanda (RWF)</option>
+                            <option value="ET">🇪🇹 Ethiopie (ETB)</option>
+                            <option value="ZM">🇿🇲 Zambie (ZMW)</option>
+                            <option value="BF">🇧🇫 Burkina Faso (XOF)</option>
+                            <option value="ML">🇲🇱 Mali (XOF)</option>
+                            <option value="GN">🇬🇳 Guinee (GNF)</option>
+                            <option value="CD">🇨🇩 RD Congo (CDF)</option>
+                            <option value="MZ">🇲🇿 Mozambique (MZN)</option>
+                            <option value="ZW">🇿🇼 Zimbabwe (ZWL)</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
+                            <i class="fas fa-phone" style="color:var(--primary-blue);margin-right:6px;"></i>Numero de telephone (optionnel)
+                        </label>
+                        <input type="tel" id="accountpePhone" data-testid="input-accountpe-phone"
+                            placeholder="Ex: 6XXXXXXXX"
+                            style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;">
+                    </div>
+                    <div style="background:linear-gradient(135deg,#f0ebff,#e8f4ff);border-radius:12px;padding:14px;margin-bottom:15px;border-left:4px solid #6C47FF;">
+                        <p style="font-size:0.85rem;color:#5b35d5;margin:0;"><i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                        Vous serez redirige vers une page de paiement securisee AccountPe. Apres paiement, votre solde sera mis a jour automatiquement.</p>
                     </div>
                 </div>
 
@@ -626,21 +633,6 @@
                         <p>Aucun depot effectue</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Section pour les autres pays africains -->
-            <div class="other-countries-section">
-                <div class="flag-icon">
-                    <i class="fas fa-globe-africa"></i>
-                </div>
-                <h3 class="section-title">Vous n'êtes pas au Cameroun ?</h3>
-                <p class="info-text">
-                    Si vous êtes dans un autre pays africain et que vous ne pouvez pas utiliser MTN Mobile Money ou Orange Money Cameroun, 
-                    cliquez sur le bouton ci-dessous pour accéder à notre système de paiement adapté à votre pays.
-                </p>
-                <a href="pays-africains.html" class="btn btn-african">
-                    <i class="fas fa-flag"></i> Autres pays africains
-                </a>
             </div>
         </div>
     </main>
@@ -674,7 +666,7 @@
         let currentUser = null;
         let userData = null;
         let selectedAmount = 0;
-        let selectedMethod = 'momo';
+        let selectedMethod = 'fapshi';
 
         function formatNumber(num) {
             return num.toLocaleString('fr-FR');
@@ -746,49 +738,73 @@
                 document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
                 method.classList.add('selected');
                 selectedMethod = method.dataset.method;
+                // Show/hide AccountPe-specific fields
+                const apFields = document.getElementById('accountpeFields');
+                if (selectedMethod === 'accountpe') {
+                    apFields.style.display = 'block';
+                } else {
+                    apFields.style.display = 'none';
+                }
             });
         });
 
         document.getElementById('depositBtn').addEventListener('click', async () => {
-            if (selectedAmount < 100) {
-                showNotification('error', 'Erreur', 'Le montant minimum est de 100 XAF');
+            const minAmount = selectedMethod === 'accountpe' ? 500 : 100;
+            if (selectedAmount < minAmount) {
+                showNotification('error', 'Erreur', `Le montant minimum est de ${minAmount} XAF`);
                 return;
             }
 
             showLoading('Preparation du paiement...');
 
             try {
-                const transactionId = `dep-${Date.now()}`;
-                
                 const authHeaders = await getAuthHeaders();
-                const response = await fetch(API_BASE_URL + '/api/fapshi/initiate', {
-                    method: 'POST',
-                    headers: authHeaders,
-                    body: JSON.stringify({
-                        amount: selectedAmount,
-                        email: userData?.email || currentUser.email || '',
-                        externalId: transactionId
-                    })
-                });
 
-                const data = await response.json();
-                console.log('Fapshi response:', data);
+                if (selectedMethod === 'accountpe') {
+                    // ---- AccountPe flow ----
+                    const country = document.getElementById('accountpeCountry').value || 'CM';
+                    const phone = document.getElementById('accountpePhone').value || '';
 
-                if (data.error) {
-                    throw new Error(data.error);
-                }
+                    const response = await fetch(API_BASE_URL + '/api/accountpe/create-payment', {
+                        method: 'POST',
+                        headers: authHeaders,
+                        body: JSON.stringify({ amount: selectedAmount, country, phone })
+                    });
+                    const data = await response.json();
+                    console.log('AccountPe response:', data);
 
-                if (data.link && data.transId) {
-                    // Le backend stocke deja la transaction dans pending_payments
-                    // On redirige simplement vers la page de paiement Fapshi
+                    if (!data.success) throw new Error(data.error || 'Erreur AccountPe');
+
                     hideLoading();
-                    
-                    localStorage.setItem('pendingTransId', data.transId);
-                    localStorage.setItem('pendingAmount', selectedAmount.toString());
-                    
-                    window.location.href = data.link;
+                    localStorage.setItem('pendingAccountPeId', data.transactionId);
+                    localStorage.setItem('pendingAccountPeAmount', selectedAmount.toString());
+                    window.location.href = data.checkoutUrl;
+
                 } else {
-                    throw new Error('Reponse invalide du serveur');
+                    // ---- Fapshi flow (MTN / Orange Cameroun) ----
+                    const transactionId = `dep-${Date.now()}`;
+                    const response = await fetch(API_BASE_URL + '/api/fapshi/initiate', {
+                        method: 'POST',
+                        headers: authHeaders,
+                        body: JSON.stringify({
+                            amount: selectedAmount,
+                            email: userData?.email || currentUser.email || '',
+                            externalId: transactionId
+                        })
+                    });
+                    const data = await response.json();
+                    console.log('Fapshi response:', data);
+
+                    if (data.error) throw new Error(data.error);
+
+                    if (data.link && data.transId) {
+                        hideLoading();
+                        localStorage.setItem('pendingTransId', data.transId);
+                        localStorage.setItem('pendingAmount', selectedAmount.toString());
+                        window.location.href = data.link;
+                    } else {
+                        throw new Error('Reponse invalide du serveur');
+                    }
                 }
 
             } catch (error) {
@@ -868,12 +884,22 @@
 
                 container.innerHTML = '';
                 data.deposits.forEach(tx => {
-                    const statusClass = tx.status === 'completed' ? 'success' : 
-                                       tx.status === 'pending' ? 'pending' : 'failed';
-                    const statusIcon = tx.status === 'completed' ? 'check' : 
-                                      tx.status === 'pending' ? 'clock' : 'times';
-                    const statusText = tx.status === 'completed' ? 'Reussi' : 
-                                      tx.status === 'pending' ? 'En attente' : 'Echoue';
+                    const isPaid = tx.status === 'completed' || tx.status === 'paid';
+                    const isPending = tx.status === 'pending' || tx.status === 'created';
+                    const statusClass = isPaid ? 'success' : isPending ? 'pending' : 'failed';
+                    const statusIcon = isPaid ? 'check' : isPending ? 'clock' : 'times';
+                    const statusText = isPaid ? 'Reussi' : isPending ? 'En attente' : 
+                                      tx.status === 'expired' ? 'Expire' : 'Echoue';
+
+                    const isAccountPe = tx.method === 'AccountPe';
+                    const methodLabel = isAccountPe ? 'Depot AccountPe' : 'Depot Mobile Money';
+                    const methodIconHtml = isAccountPe 
+                        ? `<div class="transaction-icon ${statusClass}" style="background:${isPaid ? 'rgba(108,71,255,0.1)' : ''};color:${isPaid ? '#6C47FF' : ''}">
+                               <i class="fas fa-globe"></i>
+                           </div>`
+                        : `<div class="transaction-icon ${statusClass}">
+                               <i class="fas fa-${statusIcon}"></i>
+                           </div>`;
 
                     let date = 'Date inconnue';
                     if (tx.createdAt && tx.createdAt._seconds) {
@@ -882,14 +908,12 @@
 
                     container.innerHTML += `
                         <div class="transaction-item" data-testid="transaction-item-${tx.transId}">
-                            <div class="transaction-icon ${statusClass}">
-                                <i class="fas fa-${statusIcon}"></i>
-                            </div>
+                            ${methodIconHtml}
                             <div class="transaction-info">
-                                <h4>Depot Mobile Money</h4>
-                                <p>${date} - ${statusText}</p>
+                                <h4>${methodLabel}</h4>
+                                <p>${date} — ${statusText}</p>
                             </div>
-                            <div class="transaction-amount ${tx.status === 'pending' ? 'pending' : ''}">
+                            <div class="transaction-amount ${isPending ? 'pending' : ''}">
                                 +${formatNumber(tx.amount)} XAF
                             </div>
                         </div>
@@ -913,6 +937,39 @@
             }
         }
 
+        // ---- AccountPe: check payment status after redirect back ----
+        async function checkAccountPeStatus(transactionId, attempts = 0) {
+            if (attempts >= 30) {
+                showNotification('warning', 'Timeout', 'Verification expiree. Votre solde sera mis a jour automatiquement sous peu.');
+                loadTransactions();
+                return;
+            }
+            try {
+                const authHeaders = await getAuthHeaders();
+                const response = await fetch(API_BASE_URL + `/api/accountpe/confirm/${transactionId}`, {
+                    headers: authHeaders
+                });
+                const data = await response.json();
+                console.log('AccountPe confirm:', data);
+
+                if (data.isPaid) {
+                    const newBalance = data.newBalance || (userData?.balance || 0);
+                    userData = userData || {};
+                    userData.balance = newBalance;
+                    document.getElementById('currentBalance').textContent = `${formatNumber(newBalance)} XAF`;
+                    showNotification('success', 'Depot confirme!', `Votre solde a ete credite avec succes.`);
+                    localStorage.removeItem('pendingAccountPeId');
+                    localStorage.removeItem('pendingAccountPeAmount');
+                    await loadTransactions();
+                } else {
+                    setTimeout(() => checkAccountPeStatus(transactionId, attempts + 1), 4000);
+                }
+            } catch (error) {
+                console.error('AccountPe confirm error:', error);
+                setTimeout(() => checkAccountPeStatus(transactionId, attempts + 1), 4000);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.onAuthStateChanged(async user => {
                 if (user) {
@@ -921,12 +978,20 @@
                     await loadTransactions();
                     hideLoading();
                     
+                    // Check Fapshi pending payment
                     const pendingTransId = localStorage.getItem('pendingTransId');
                     if (pendingTransId) {
-                        showNotification('info', 'Verification', 'Verification du paiement en cours...');
+                        showNotification('info', 'Verification', 'Verification du paiement Fapshi en cours...');
                         localStorage.removeItem('pendingTransId');
                         localStorage.removeItem('pendingAmount');
                         checkPaymentStatus(pendingTransId);
+                    }
+
+                    // Check AccountPe pending payment
+                    const pendingAccountPeId = localStorage.getItem('pendingAccountPeId');
+                    if (pendingAccountPeId) {
+                        showNotification('info', 'Verification', 'Verification de votre paiement AccountPe...');
+                        checkAccountPeStatus(pendingAccountPeId);
                     }
                 } else {
                     window.location.href = 'connexion.html';
