@@ -243,7 +243,6 @@ app.post('/api/exo/order', async (req, res) => {
 });
 
 // GET /api/orders/:uid
-// Modifiée pour trier en mémoire et éviter de requérir un index composite sur Firestore
 app.get('/api/orders/:uid', async (req, res) => {
     try {
         const uid = req.params.uid;
@@ -252,7 +251,6 @@ app.get('/api/orders/:uid', async (req, res) => {
             return res.status(403).json({ error: 'Accès refusé' });
         }
 
-        // On enlève le .orderBy() de Firestore pour contourner la création forcée d'index composite
         const ordersSnapshot = await db.collection('commandes')
             .where('userId', '==', uid)
             .get();
@@ -280,7 +278,6 @@ app.get('/api/orders/:uid', async (req, res) => {
                         remains = exoStatus.remains !== undefined ? exoStatus.remains : remains;
                         startCount = exoStatus.start_count !== undefined ? exoStatus.start_count : startCount;
 
-                        // Mise à jour asynchrone dans Firestore en tâche de fond
                         db.collection('commandes').doc(doc.id).update({
                             status: status,
                             remains: remains,
@@ -313,7 +310,6 @@ app.get('/api/orders/:uid', async (req, res) => {
             });
         }
 
-        // Tri en mémoire Node.js (du plus récent au plus ancien)
         orders.sort((a, b) => {
             const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
             const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
@@ -463,6 +459,124 @@ app.post('/api/exo/cancel', async (req, res) => {
     } catch (error) {
         console.error('Erreur POST /api/exo/cancel:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+// ==========================================
+// NOUVELLES ROUTES FAPSHI (DÉPÔTS)
+// ==========================================
+
+// 1. Initialiser le paiement
+app.post('/api/create-fapshi-checkout', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const { amount, description, email, name } = req.body;
+        
+        if (!process.env.FAPSHI_API_USER || !process.env.FAPSHI_API_KEY) {
+            throw new Error('Identifiants API Fapshi manquants dans les variables d\'environnement');
+        }
+
+        const txRef = db.collection('fapshiTransactions').doc();
+        
+        const fapshiHeaders = {
+            'apiuser': process.env.FAPSHI_API_USER,
+            'apikey': process.env.FAPSHI_API_KEY,
+            'Content-Type': 'application/json'
+        };
+        
+        const fapshiBody = {
+            amount: amount,
+            email: email || 'client@likeoboost.com',
+            externalId: txRef.id,
+            redirectUrl: req.headers.origin + '/depot.html' // Assure-toi que cette page existe côté front !
+        };
+        
+        const fapshiRes = await fetch('https://live.fapshi.com/initiate-pay', {
+            method: 'POST',
+            headers: fapshiHeaders,
+            body: JSON.stringify(fapshiBody)
+        });
+        
+        const fapshiData = await fapshiRes.json();
+        
+        if (!fapshiRes.ok || !fapshiData.link) {
+            console.error('Erreur Fapshi:', fapshiData);
+            throw new Error('Erreur de communication avec l\'API Fapshi.');
+        }
+        
+        await txRef.set({
+            userId: decoded.uid,
+            amount: amount,
+            description: description || 'Recharge de solde Likéo Boost',
+            status: 'PENDING',
+            dateInitiated: admin.firestore.FieldValue.serverTimestamp(),
+            transId: fapshiData.transId,
+            checkoutUrl: fapshiData.link
+        });
+        
+        res.status(200).json({ checkoutUrl: fapshiData.link, transId: fapshiData.transId });
+    } catch (err) {
+        console.error('Erreur create-fapshi-checkout:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. Vérification manuelle et automatique du statut Fapshi
+app.post('/api/fapshi/verify-transaction', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const { transId } = req.body;
+        
+        const txSnapshot = await db.collection('fapshiTransactions').where('transId', '==', transId).get();
+        if (txSnapshot.empty) {
+            return res.status(404).json({ error: 'Transaction introuvable dans la base de données.' });
+        }
+        
+        const txDoc = txSnapshot.docs[0];
+        const txData = txDoc.data();
+        
+        if (txData.userId !== decoded.uid) {
+            return res.status(403).json({ error: 'Accès refusé' });
+        }
+        
+        if (txData.status === 'CONFIRMED') {
+            return res.status(200).json({ success: true, status: 'CONFIRMED' });
+        }
+        
+        const fapshiHeaders = {
+            'apiuser': process.env.FAPSHI_API_USER,
+            'apikey': process.env.FAPSHI_API_KEY
+        };
+        
+        const fapshiRes = await fetch(`https://live.fapshi.com/payment-status/${transId}`, {
+            headers: fapshiHeaders
+        });
+        const fapshiData = await fapshiRes.json();
+        
+        if (fapshiData.status === 'SUCCESSFUL') {
+            await db.runTransaction(async (t) => {
+                const userRef = db.collection('users').doc(decoded.uid);
+                const userDoc = await t.get(userRef);
+                const currentBalance = userDoc.data().balance || 0;
+                
+                t.update(userRef, { balance: currentBalance + txData.amount });
+                t.update(txDoc.ref, { 
+                    status: 'CONFIRMED', 
+                    dateConfirmed: admin.firestore.FieldValue.serverTimestamp() 
+                });
+            });
+            return res.status(200).json({ success: true, status: 'CONFIRMED' });
+            
+        } else if (fapshiData.status === 'FAILED' || fapshiData.status === 'EXPIRED') {
+            await txDoc.ref.update({ status: 'FAILED' });
+            return res.status(200).json({ success: true, status: 'FAILED' });
+        } else {
+            return res.status(200).json({ success: true, status: 'PENDING' });
+        }
+    } catch (err) {
+        console.error('Erreur verify-transaction:', err);
+        res.status(500).json({ error: err.message });
     }
 });
 
