@@ -585,7 +585,7 @@
             }
         }
 
-        // Vérification manuelle du paiement via le bouton de l'historique (Supporte maintenant Fapshi ET Swychr)
+        // Vérification manuelle du paiement via le bouton de l'historique
         window.verifySinglePayment = async function(transId, type, btnElement) {
             const originalHtml = btnElement.innerHTML;
             btnElement.disabled = true;
@@ -619,17 +619,14 @@
             }
         };
 
-        // Chargement en temps réel des activités et mise à jour du solde
+        // Chargement en temps réel des activités et mise à jour du solde SANS index composite
         function loadRecentActivities(userId) {
             if (unsubscribeActivities) unsubscribeActivities();
             const container = document.getElementById('transactionsContainer');
 
-            // On écoute la collection générale des transactions (ou fapshi selon ta DB)
-            // Note: Si tes transactions Swychr sont dans la collection 'transactions', tu devras ajuster ceci.
+            // On retire le '.orderBy()' pour éviter l'erreur d'index composite
             unsubscribeActivities = db.collection('transactions')
                 .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
-                .limit(10)
                 .onSnapshot(snapshot => {
                     if (snapshot.empty) {
                         container.innerHTML = `
@@ -641,10 +638,27 @@
                         return;
                     }
 
-                    container.innerHTML = '';
+                    // 1. Extraire les documents dans un tableau
+                    let transactionsList = [];
                     snapshot.forEach(doc => {
-                        const tx = doc.data();
-                        const id = doc.id;
+                        transactionsList.push({ id: doc.id, data: doc.data() });
+                    });
+
+                    // 2. Trier manuellement en JavaScript par date (du plus récent au plus ancien)
+                    transactionsList.sort((a, b) => {
+                        const dateA = a.data.createdAt ? (typeof a.data.createdAt.toDate === 'function' ? a.data.createdAt.toDate() : new Date(a.data.createdAt)) : new Date(0);
+                        const dateB = b.data.createdAt ? (typeof b.data.createdAt.toDate === 'function' ? b.data.createdAt.toDate() : new Date(b.data.createdAt)) : new Date(0);
+                        return dateB - dateA;
+                    });
+
+                    // 3. Ne conserver que les 10 transactions les plus récentes
+                    const recentTransactions = transactionsList.slice(0, 10);
+
+                    // 4. Afficher le rendu
+                    container.innerHTML = '';
+                    recentTransactions.forEach(item => {
+                        const tx = item.data;
+                        const id = item.id;
                         
                         const isPaid = tx.status === 'completed' || tx.status === 'CONFIRMED';
                         const isPending = tx.status === 'pending' || tx.status === 'PENDING';
