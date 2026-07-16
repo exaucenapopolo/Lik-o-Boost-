@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        /* Les styles originaux sont conservés intacts */
         :root {
             --primary-yellow: #FFD700;
             --primary-blue: #2A5EE8;
@@ -182,7 +181,6 @@
                     </div>
                 </div>
 
-                <!-- AccountPe champs cachés avec la liste complète des pays intégrée -->
                 <div id="accountpeFields" style="display:none; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #eee;">
                     <div style="margin-bottom:15px;">
                         <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
@@ -302,7 +300,7 @@
             console.error("Erreur Firebase:", error);
         }
 
-        const API_BASE_URL = '';
+        const API_BASE_URL = ''; // Laisse vide si hébergé au même endroit
 
         let currentUser = null;
         let userData = null;
@@ -311,7 +309,6 @@
         let selectedMethod = 'fapshi';
         let activeCountryCode = 'CM'; 
 
-        // --- INTÉGRATION DE LA CONFIGURATION DES DEVISES ---
         const CURRENCY_CONFIG = {
             'cm': { code:'XAF', symbol:'XAF', rate:1 },
             'ga': { code:'XAF', symbol:'XAF', rate:1 },
@@ -605,18 +602,36 @@
         };
 
         // ==========================================
-        // LE NOYAU DU CORRECTIF - SANS INDEX COMPOSITE 
+        // GESTION AMÉLIORÉE DES ERREURS D'HISTORIQUE
         // ==========================================
-        let allTransactions = { swychr: [], fapshi: [] };
+        let allTransactions = { 
+            swychr: [], 
+            fapshi: [], 
+            isLoadingSwychr: true, 
+            isLoadingFapshi: true,
+            errorSwychr: false,
+            errorFapshi: false
+        };
         let unsubSwychr = null;
         let unsubFapshi = null;
 
         function renderTransactions() {
             const container = document.getElementById('transactionsContainer');
-            // On combine les deux listes de données 
+            
+            // Si les deux sont en erreur, on affiche un message global.
+            if (allTransactions.errorSwychr && allTransactions.errorFapshi) {
+                container.innerHTML = `
+                    <div class="empty-state" style="color: var(--error-red);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Impossible de charger l'historique.<br>Veuillez vérifier vos permissions Firestore.</p>
+                    </div>`;
+                return;
+            }
+
             let combined = [...allTransactions.swychr, ...allTransactions.fapshi];
             
-            if (combined.length === 0) {
+            // Affichage de l'état vide seulement quand les chargements sont terminés
+            if (combined.length === 0 && !allTransactions.isLoadingSwychr && !allTransactions.isLoadingFapshi) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-receipt"></i>
@@ -626,13 +641,20 @@
                 return;
             }
 
-            // On trie toutes les transactions par date en utilisant JavaScript (Ce qui évite l'index Firestore)
+            // On trie toutes les transactions par date
             combined.sort((a, b) => b.date - a.date);
-            
-            // On garde seulement les 10 dernières 
             const recent = combined.slice(0, 10);
 
-            container.innerHTML = '';
+            let htmlContent = '';
+
+            // Si un des services a échoué (mais pas les deux), on l'indique discrètement.
+            if (allTransactions.errorSwychr || allTransactions.errorFapshi) {
+                let errorSource = allTransactions.errorSwychr ? 'Swychr' : 'Fapshi';
+                htmlContent += `<div style="font-size: 0.8rem; color: var(--warning-orange); text-align: center; margin-bottom: 10px;">
+                    ⚠️ L'historique ${errorSource} est temporairement indisponible.
+                </div>`;
+            }
+
             recent.forEach(item => {
                 const tx = item.data;
                 const id = item.id;
@@ -665,7 +687,7 @@
 
                 const amountDisplay = tx.amountXAF || tx.amount || 0;
 
-                container.innerHTML += `
+                htmlContent += `
                     <div class="transaction-item">
                         <div class="transaction-icon ${statusClass}">
                             <i class="fas fa-${statusIcon}"></i>
@@ -681,49 +703,53 @@
                     </div>
                 `;
             });
+
+            // Ne met à jour l'interface que s'il y a des données ou si le chargement est terminé
+            if (htmlContent !== '') {
+                container.innerHTML = htmlContent;
+            }
         }
 
         function loadRecentActivities(userId) {
-            // Nettoyage des anciennes connexions
             if (unsubSwychr) unsubSwychr();
             if (unsubFapshi) unsubFapshi();
 
-            const container = document.getElementById('transactionsContainer');
-            
-            // On s'assure d'écouter les 2 sources de payement SIMPLEMENT pour éviter les erreurs d'index composites
-            
             // 1. Écoute des transactions Swychr
             unsubSwychr = db.collection('transactions')
                 .where('userId', '==', userId)
                 .onSnapshot(snapshot => {
+                    allTransactions.isLoadingSwychr = false;
+                    allTransactions.errorSwychr = false; // Reset l'erreur si succès
                     allTransactions.swychr = snapshot.docs.map(doc => {
                         let data = doc.data();
-                        let date = data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate() : new Date(data.createdAt)) : new Date(0);
+                        let date = data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate() : new Date(data.createdAt)) : new Date();
                         return { id: doc.id, data, date, type: 'Swychr' };
                     });
                     renderTransactions();
                 }, err => {
                     console.error('Erreur chargement Swychr:', err);
-                    if(container.innerHTML.includes('fa-spinner')) {
-                        container.innerHTML = '<div class="empty-state" style="color: var(--error-red);"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement (Swychr).</p></div>';
-                    }
+                    allTransactions.isLoadingSwychr = false;
+                    allTransactions.errorSwychr = true; // Flag d'erreur
+                    renderTransactions(); // Raffraichir l'UI
                 });
 
             // 2. Écoute des transactions Fapshi
             unsubFapshi = db.collection('fapshiTransactions')
                 .where('userId', '==', userId)
                 .onSnapshot(snapshot => {
+                    allTransactions.isLoadingFapshi = false;
+                    allTransactions.errorFapshi = false; // Reset l'erreur si succès
                     allTransactions.fapshi = snapshot.docs.map(doc => {
                         let data = doc.data();
-                        let date = data.dateInitiated ? (typeof data.dateInitiated.toDate === 'function' ? data.dateInitiated.toDate() : new Date(data.dateInitiated)) : new Date(0);
+                        let date = data.dateInitiated ? (typeof data.dateInitiated.toDate === 'function' ? data.dateInitiated.toDate() : new Date(data.dateInitiated)) : new Date();
                         return { id: doc.id, data, date, type: 'Fapshi' };
                     });
                     renderTransactions();
                 }, err => {
                     console.error('Erreur chargement Fapshi:', err);
-                    if(container.innerHTML.includes('fa-spinner')) {
-                        container.innerHTML = '<div class="empty-state" style="color: var(--error-red);"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement (Fapshi).</p></div>';
-                    }
+                    allTransactions.isLoadingFapshi = false;
+                    allTransactions.errorFapshi = true; // Flag d'erreur
+                    renderTransactions(); // Raffraichir l'UI
                 });
         }
 
