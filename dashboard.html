@@ -13,6 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
+        /* --- TOUT LE CSS RESTE IDENTIQUE --- */
         :root {
             --primary-yellow: #FFD700;
             --primary-blue: #2A5EE8;
@@ -708,7 +709,7 @@
     </main>
 
     <script>
-        // Configuration Firebase - Nouveau projet
+        // --- Configuration Firebase (inchangée) ---
         const firebaseConfig = {
             apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
@@ -729,6 +730,7 @@
             console.error("Erreur Firebase:", error);
         }
 
+        // --- Variables globales ---
         let currentUser = null;
         let userData = null;
         let currentPlatform = null;
@@ -740,15 +742,14 @@
         let servicesLoaded = false;
         let userLoaded = false;
 
-        // Taux de conversion USD vers XAF
+        // Taux de conversion USD -> XAF (identique à l'API)
         const USD_TO_XAF = 615;
-        
-        // URL de base de l'API (utiliser Replit en production)
-        const API_BASE_URL = window.location.hostname.includes('replit') 
-            ? '' 
-            : 'https://likeo-boost.replit.app';
 
-        // Configuration des plateformes
+        // --- Base URL de l'API (relative) ---
+        // On utilise toujours le chemin /api/... via l'origine du site
+        const API_BASE_URL = '';
+
+        // --- Configuration des plateformes (inchangée) ---
         const platformConfig = {
             'TikTok': { icon: 'fab fa-tiktok', color: '#000000' },
             'Instagram': { icon: 'fab fa-instagram', color: '#E1306C' },
@@ -760,14 +761,13 @@
             'Autres': { icon: 'fas fa-globe', color: '#6c757d' }
         };
 
-        // Decoder les entites HTML
+        // --- Fonctions utilitaires (inchangées) ---
         function decodeHtml(text) {
             const txt = document.createElement('textarea');
             txt.innerHTML = text;
             return txt.value;
         }
 
-        // Detecter la plateforme d'un service
         function detectPlatform(category) {
             const cat = category.toLowerCase();
             if (cat.includes('tiktok') || cat.includes('tik tok')) return 'TikTok';
@@ -780,14 +780,11 @@
             return 'Autres';
         }
 
-        // Organiser les services par plateforme
         function organizeServicesByPlatform(services) {
             const platforms = {};
-            
             services.forEach(service => {
                 const category = decodeHtml(service.category || '');
                 const platform = detectPlatform(category);
-                
                 if (!platforms[platform]) {
                     platforms[platform] = {
                         id: platform.toLowerCase(),
@@ -797,10 +794,7 @@
                         services: []
                     };
                 }
-                
-                // Convertir le prix USD en XAF (prix pour 1000 unites)
                 const pricePerK = parseFloat(service.rate) * USD_TO_XAF;
-                
                 platforms[platform].services.push({
                     exoId: service.service,
                     name: decodeHtml(service.name),
@@ -813,8 +807,6 @@
                     cancel: service.cancel
                 });
             });
-            
-            // Convertir en tableau et trier
             return Object.values(platforms).sort((a, b) => {
                 const order = ['TikTok', 'Instagram', 'Facebook', 'YouTube', 'Twitter', 'Telegram', 'WhatsApp', 'Autres'];
                 return order.indexOf(a.name) - order.indexOf(b.name);
@@ -822,34 +814,26 @@
         }
 
         function formatNumber(num) {
-            return num.toLocaleString('fr-FR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            });
+            return num.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
         }
 
         function showNotification(type, title, message, duration = 4000) {
             const container = document.getElementById('notificationContainer');
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            
-            let icon = type === 'success' ? 'fas fa-check-circle' : 
+            let icon = type === 'success' ? 'fas fa-check-circle' :
                        type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-exclamation-triangle';
-            
             notification.innerHTML = `
                 <div class="notification-icon"><i class="${icon}"></i></div>
                 <div class="notification-content"><h4>${title}</h4><p>${message}</p></div>
                 <button class="notification-close"><i class="fas fa-times"></i></button>
             `;
-            
             container.appendChild(notification);
             setTimeout(() => notification.classList.add('show'), 10);
-            
             notification.querySelector('.notification-close').addEventListener('click', () => {
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 400);
             });
-            
             if (duration > 0) {
                 setTimeout(() => {
                     notification.classList.remove('show');
@@ -866,41 +850,31 @@
             document.getElementById('loadingOverlay').classList.remove('hidden');
         }
 
-        // Fonction pour charger les plateformes quand tout est pret
         function tryLoadPlatforms() {
-            console.log('tryLoadPlatforms called - servicesLoaded:', servicesLoaded, 'userLoaded:', userLoaded, 'platformsData:', platformsData.length);
             if (servicesLoaded && userLoaded) {
-                console.log('Loading platforms now...');
                 loadPlatforms();
             }
         }
 
-        // Charger les services ExoSupplier et organiser par plateforme
+        // --- Chargement des services depuis notre API (plus Replit) ---
         async function loadExoServices() {
             console.log('loadExoServices started...');
             try {
-                const response = await fetch(API_BASE_URL + '/api/exo/services');
-                console.log('API response status:', response.status, 'ok:', response.ok);
+                const response = await fetch(`${API_BASE_URL}/api/exo/services`);
                 if (response.ok) {
                     const contentType = response.headers.get('content-type');
-                    console.log('Content-Type:', contentType);
                     if (contentType && contentType.includes('application/json')) {
                         exoServices = await response.json();
                         console.log('ExoSupplier services loaded:', exoServices.length);
-                        
-                        // Organiser les services par plateforme
                         platformsData = organizeServicesByPlatform(exoServices);
-                        console.log('Platforms organized:', platformsData.map(p => p.name + ' (' + p.services.length + ')'));
-                        
                         servicesLoaded = true;
-                        console.log('Services loaded, calling tryLoadPlatforms...');
                         tryLoadPlatforms();
                     } else {
-                        console.warn('ExoSupplier services response is not JSON');
-                        showNotification('error', 'Erreur', 'Impossible de charger les services');
+                        showNotification('error', 'Erreur', 'Format de réponse invalide');
                     }
                 } else {
-                    console.warn('ExoSupplier services request failed:', response.status);
+                    const errText = await response.text();
+                    console.warn('Erreur chargement services:', response.status, errText);
                     showNotification('error', 'Erreur', 'Impossible de charger les services');
                 }
             } catch (error) {
@@ -909,8 +883,9 @@
             }
         }
 
-        // Helper function to get auth headers with Firebase token
+        // --- Fonction pour obtenir les headers d'authentification ---
         async function getAuthHeaders() {
+            if (!currentUser) throw new Error('Utilisateur non connecté');
             const token = await currentUser.getIdToken();
             return {
                 'Content-Type': 'application/json',
@@ -918,7 +893,7 @@
             };
         }
 
-        // Envoyer commande au serveur (qui verifie le solde et envoie au fournisseur)
+        // --- Envoi de la commande à notre API (plus Replit) ---
         async function sendOrderToExoSupplier(serviceId, link, quantity, serviceName, platform, price, comments = null) {
             try {
                 const headers = await getAuthHeaders();
@@ -928,21 +903,16 @@
                     quantity: quantity,
                     serviceName: serviceName || '',
                     platform: platform || '',
-                    price: price // Prix calcule cote frontend (deja x3)
+                    price: price
                 };
-                
-                // Ajouter les commentaires personnalises si presents
                 if (comments) {
                     body.comments = comments;
                 }
-                
-                const response = await fetch(API_BASE_URL + '/api/exo/order', {
+                const response = await fetch(`${API_BASE_URL}/api/exo/order`, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body)
                 });
-                
-                // Parser la reponse JSON avec gestion d'erreur robuste
                 let data;
                 try {
                     data = await response.json();
@@ -950,14 +920,9 @@
                     console.error('Failed to parse response:', parseError);
                     return { error: 'Erreur serveur', message: 'Une erreur est survenue. Veuillez reessayer.' };
                 }
-                
-                // Si reponse non OK, retourner les details de l'erreur
                 if (!response.ok) {
-                    console.error('Order API error:', response.status, data);
-                    return data; // Retourner l'erreur avec le message
+                    return data;
                 }
-                
-                console.log('Order response:', data);
                 return data;
             } catch (error) {
                 console.error('Error sending order:', error);
@@ -965,35 +930,27 @@
             }
         }
 
+        // --- Récupération / création des données utilisateur (Firestore) ---
         async function getOrCreateUserData(user) {
             console.log("Recuperation/creation donnees pour:", user.uid);
-            
             try {
                 const userRef = db.collection('users').doc(user.uid);
                 const userDoc = await userRef.get();
-                
                 if (userDoc.exists) {
-                    console.log("Document utilisateur trouve");
                     const data = userDoc.data();
-                    
                     const updates = {};
                     if (data.balance === undefined) updates.balance = 0;
                     if (data.totalOrders === undefined) updates.totalOrders = 0;
                     if (data.activeOrders === undefined) updates.activeOrders = 0;
                     if (data.totalSpent === undefined) updates.totalSpent = 0;
-                    
                     if (Object.keys(updates).length > 0) {
                         updates.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                         await userRef.update(updates);
                     }
-                    
                     return { ...data, ...updates };
                 } else {
-                    console.log("Creation du document utilisateur...");
-                    
                     const storedName = localStorage.getItem('userName');
                     const username = storedName || user.displayName || user.email.split('@')[0];
-                    
                     const newUserData = {
                         uid: user.uid,
                         username: username,
@@ -1007,13 +964,11 @@
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
-                    
                     await userRef.set(newUserData);
                     return newUserData;
                 }
             } catch (error) {
                 console.error("Erreur getOrCreateUserData:", error);
-                
                 const fallbackName = localStorage.getItem('userName') || user.email.split('@')[0];
                 return {
                     uid: user.uid,
@@ -1027,45 +982,35 @@
             }
         }
 
+        // --- Mise à jour de l'interface utilisateur ---
         function updateUserInfo() {
             if (!currentUser || !userData) return;
-            
             const userName = userData.username || currentUser.email.split('@')[0];
             const initial = userName.charAt(0).toUpperCase();
-            
             document.getElementById('userAvatar').textContent = initial;
             document.getElementById('userName').textContent = userName;
             document.getElementById('userEmail').textContent = currentUser.email;
             document.getElementById('welcomeUserName').textContent = userName;
-            
             const balance = userData.balance || 0;
             document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('totalOrders').textContent = userData.totalOrders || 0;
-            // activeOrders will be updated by loadRealActiveOrdersCount()
             document.getElementById('activeOrders').textContent = '...';
             document.getElementById('totalSpent').textContent = `${formatNumber(userData.totalSpent || 0)} XAF`;
         }
 
-        // Load real count of "in progress" orders from API
+        // --- Chargement du nombre de commandes actives depuis l'API ---
         async function loadRealActiveOrdersCount() {
             try {
                 const headers = await getAuthHeaders();
-                const response = await fetch(API_BASE_URL + `/api/orders/${currentUser.uid}`, {
-                    headers: headers
-                });
+                const response = await fetch(`${API_BASE_URL}/api/orders/${currentUser.uid}`, { headers });
                 const data = await response.json();
-                
                 if (data.orders && data.orders.length > 0) {
-                    // Count orders with status "In progress", "processing", "partial" (all active states)
                     const activeCount = data.orders.filter(order => {
                         const status = (order.status || '').toLowerCase().replace(/[_-]/g, ' ');
-                        return status === 'in progress' || 
-                               status === 'inprogress' || 
-                               status === 'processing' || 
-                               status === 'partial';
+                        return status === 'in progress' || status === 'inprogress' ||
+                               status === 'processing' || status === 'partial';
                     }).length;
-                    
                     document.getElementById('activeOrders').textContent = activeCount;
                 } else {
                     document.getElementById('activeOrders').textContent = '0';
@@ -1076,15 +1021,14 @@
             }
         }
 
+        // --- Affichage des plateformes ---
         function loadPlatforms() {
             const container = document.getElementById('platformsContainer');
             container.innerHTML = '';
-            
             if (platformsData.length === 0) {
                 container.innerHTML = '<p style="text-align:center;color:var(--text-light);">Chargement des services...</p>';
                 return;
             }
-            
             platformsData.forEach(platform => {
                 const card = document.createElement('div');
                 card.className = 'platform-card';
@@ -1095,29 +1039,25 @@
                     <div class="platform-name">${platform.name}</div>
                     <div style="font-size: 0.75rem; color: var(--text-light);">${platform.services.length} services</div>
                 `;
-                
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
                     currentPlatform = platform;
                     document.getElementById('nextToStep2').disabled = false;
                 });
-                
                 container.appendChild(card);
             });
         }
 
+        // --- Affichage des services d'une plateforme ---
         function loadServices(platformId) {
             const container = document.getElementById('servicesContainer');
             container.innerHTML = '';
-            
             const platform = platformsData.find(p => p.id === platformId);
             if (!platform) return;
-            
             platform.services.forEach(service => {
                 const item = document.createElement('div');
                 item.className = 'service-item';
-                
                 item.innerHTML = `
                     <div class="service-name">${service.name}</div>
                     <div class="service-desc">Min: ${service.min} | Max: ${formatNumber(service.max)}</div>
@@ -1125,27 +1065,22 @@
                         ${formatNumber(service.pricePerK)} XAF/1K
                     </div>
                 `;
-                
                 item.addEventListener('click', () => {
                     document.querySelectorAll('.service-item').forEach(s => s.classList.remove('selected'));
                     item.classList.add('selected');
                     currentService = service;
-                    
-                    // Mettre a jour la quantite minimum
                     currentQuantity = Math.max(service.min, 100);
                     document.getElementById('quantityInput').value = currentQuantity;
                     document.getElementById('quantityInput').min = service.min;
                     document.getElementById('quantityInput').max = service.max;
-                    
-                    // Afficher le champ de commentaires si c'est un service de commentaires personnalises
-                    const isCustomComments = service.name.toLowerCase().includes('custom') || 
-                                            service.name.toLowerCase().includes('personnalis') ||
-                                            service.name.toLowerCase().includes('your text') ||
-                                            service.name.toLowerCase().includes('commentaire');
+
+                    const isCustomComments = service.name.toLowerCase().includes('custom') ||
+                                             service.name.toLowerCase().includes('personnalis') ||
+                                             service.name.toLowerCase().includes('your text') ||
+                                             service.name.toLowerCase().includes('commentaire');
                     const commentsSection = document.getElementById('customCommentsSection');
                     const quantityInput = document.getElementById('quantityInput');
                     const quantityBtns = document.querySelector('.quantity-input');
-                    
                     if (isCustomComments) {
                         commentsSection.classList.remove('hidden');
                         quantityInput.disabled = true;
@@ -1156,11 +1091,9 @@
                         quantityInput.disabled = false;
                         quantityBtns.style.opacity = '1';
                     }
-                    
                     document.getElementById('nextToStep3').disabled = false;
                     updatePriceDisplay();
                 });
-                
                 container.appendChild(item);
             });
         }
@@ -1186,10 +1119,8 @@
                 const stepEl = document.getElementById(`step${i}`);
                 if (stepEl) stepEl.classList.add('hidden');
             }
-            
             const targetStep = document.getElementById(`step${stepNum}`);
             if (targetStep) targetStep.classList.remove('hidden');
-            
             document.querySelectorAll('.step').forEach((step, i) => {
                 step.classList.remove('active', 'completed');
                 if (i + 1 < stepNum) step.classList.add('completed');
@@ -1199,11 +1130,9 @@
 
         function generateSummary() {
             if (!currentPlatform || !currentService) return;
-            
             const unitPrice = currentService.pricePerK / 1000;
             const total = unitPrice * currentQuantity;
             const link = document.getElementById('orderLink').value;
-            
             document.getElementById('orderSummary').innerHTML = `
                 <div class="summary-header"><h3>Recapitulatif</h3></div>
                 <div class="summary-item">
@@ -1233,18 +1162,17 @@
             `;
         }
 
+        // --- Confirmation de la commande ---
         async function confirmOrder() {
             if (!currentUser || !userData || !currentPlatform || !currentService || !currentLink) {
                 showNotification('error', 'Erreur', 'Informations incompletes');
                 return;
             }
-            
-            // Verifier si c'est un service de commentaires personnalises
-            const isCustomComments = currentService.name.toLowerCase().includes('custom') || 
-                                    currentService.name.toLowerCase().includes('personnalis') ||
-                                    currentService.name.toLowerCase().includes('your text') ||
-                                    currentService.name.toLowerCase().includes('commentaire');
-            
+
+            const isCustomComments = currentService.name.toLowerCase().includes('custom') ||
+                                     currentService.name.toLowerCase().includes('personnalis') ||
+                                     currentService.name.toLowerCase().includes('your text') ||
+                                     currentService.name.toLowerCase().includes('commentaire');
             let customCommentsText = null;
             if (isCustomComments) {
                 customCommentsText = document.getElementById('customComments').value.trim();
@@ -1252,7 +1180,6 @@
                     showNotification('error', 'Erreur', 'Veuillez entrer vos commentaires personnalises');
                     return;
                 }
-                // Compter les commentaires (lignes non vides)
                 const commentsArray = customCommentsText.split('\n').filter(c => c.trim());
                 if (commentsArray.length === 0) {
                     showNotification('error', 'Erreur', 'Veuillez entrer au moins un commentaire');
@@ -1260,95 +1187,67 @@
                 }
                 currentQuantity = commentsArray.length;
             }
-            
-            // Verifier la quantite minimum
+
             if (currentQuantity < currentService.min) {
                 showNotification('error', 'Quantite invalide', `Minimum requis: ${currentService.min}`);
                 return;
             }
-            
+
             const unitPrice = currentService.pricePerK / 1000;
             const total = unitPrice * currentQuantity;
-            
+
             if (userData.balance < total) {
                 showNotification('error', 'Solde insuffisant', 'Veuillez effectuer un depot pour continuer');
                 return;
             }
-            
+
             try {
                 showLoading();
-                
-                // Utiliser directement l'ID ExoSupplier du service
                 const serviceId = currentService.exoId;
                 let exoOrderId = null;
                 let exoOrderError = null;
-                
-                // Envoyer la commande (le backend verifie le solde, deduit, et envoie au fournisseur)
+
                 try {
                     const exoResult = await sendOrderToExoSupplier(
-                        serviceId, 
-                        currentLink, 
+                        serviceId,
+                        currentLink,
                         currentQuantity,
                         currentService.name,
                         currentPlatform.name,
                         total,
                         customCommentsText
                     );
-                    
                     if (exoResult.order) {
                         exoOrderId = exoResult.order;
-                        console.log('Commande creee:', exoOrderId);
-                        
-                        // Mettre a jour les donnees utilisateur avec la reponse du serveur
-                        if (exoResult.newBalance !== undefined) {
-                            userData.balance = exoResult.newBalance;
-                        }
-                        if (exoResult.totalOrders !== undefined) {
-                            userData.totalOrders = exoResult.totalOrders;
-                        }
-                        if (exoResult.activeOrders !== undefined) {
-                            userData.activeOrders = exoResult.activeOrders;
-                        }
-                        if (exoResult.totalSpent !== undefined) {
-                            userData.totalSpent = exoResult.totalSpent;
-                        }
+                        if (exoResult.newBalance !== undefined) userData.balance = exoResult.newBalance;
+                        if (exoResult.totalOrders !== undefined) userData.totalOrders = exoResult.totalOrders;
+                        if (exoResult.activeOrders !== undefined) userData.activeOrders = exoResult.activeOrders;
+                        if (exoResult.totalSpent !== undefined) userData.totalSpent = exoResult.totalSpent;
                     } else if (exoResult.error) {
                         exoOrderError = exoResult.error;
-                        console.error('Erreur commande:', exoOrderError);
                         hideLoading();
-                        
-                        // Afficher un message specifique pour le solde insuffisant
-                        if (exoResult.message) {
-                            showNotification('error', 'Solde insuffisant', exoResult.message);
-                        } else {
-                            showNotification('error', 'Erreur', exoOrderError);
-                        }
+                        showNotification('error', 'Erreur', exoResult.message || exoOrderError);
                         return;
                     }
                 } catch (exoError) {
                     console.error('Error calling order API:', exoError);
-                    exoOrderError = exoError.message;
                     hideLoading();
                     showNotification('error', 'Erreur', 'Impossible de passer la commande');
                     return;
                 }
-                
+
                 updateUserInfo();
                 hideLoading();
-                
-                // Afficher succes
+
                 document.getElementById('step5').classList.add('hidden');
                 const successDiv = document.getElementById('orderSuccess');
                 successDiv.style.display = 'block';
-                
                 if (exoOrderId) {
                     showNotification('success', 'Commande envoyee!', 'Votre commande a ete placee avec succes');
-                } else if (exoOrderError) {
-                    showNotification('warning', 'Commande en attente', 'Votre commande sera traitee sous peu');
                 } else {
                     showNotification('success', 'Commande enregistree!', 'Votre commande a ete passee avec succes');
                 }
-                
+
             } catch (error) {
                 hideLoading();
                 console.error("Erreur commande:", error);
@@ -1361,7 +1260,6 @@
             currentService = null;
             currentQuantity = 100;
             currentLink = '';
-            
             document.getElementById('quantityInput').value = '100';
             document.getElementById('quantityInput').disabled = false;
             document.querySelector('.quantity-input').style.opacity = '1';
@@ -1372,9 +1270,7 @@
             document.getElementById('orderSuccess').style.display = 'none';
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
-            
             document.querySelectorAll('.platform-card, .service-item').forEach(el => el.classList.remove('selected'));
-            
             showStep(1);
         }
 
@@ -1383,33 +1279,26 @@
             document.getElementById('menuOverlay').classList.remove('active');
         }
 
+        // --- Initialisation au chargement ---
         document.addEventListener('DOMContentLoaded', function() {
             console.log("Dashboard charge, verification auth...");
-            
+
             auth.onAuthStateChanged(async user => {
                 if (user) {
                     console.log("Utilisateur connecte:", user.uid);
                     currentUser = user;
-                    
-                    // Charger les services ExoSupplier seulement si l'utilisateur est connecte
                     loadExoServices();
-                    
                     try {
                         userData = await getOrCreateUserData(user);
                         updateUserInfo();
                         userLoaded = true;
                         tryLoadPlatforms();
                         hideLoading();
-                        
-                        // Load real active orders count from API
                         loadRealActiveOrdersCount();
-                        
                         showNotification('success', 'Bienvenue!', `Bon retour ${userData.username || 'utilisateur'}!`);
-                        
                     } catch (error) {
                         console.error("Erreur chargement donnees:", error);
                         hideLoading();
-                        
                         userData = {
                             username: user.email.split('@')[0],
                             email: user.email,
@@ -1418,7 +1307,6 @@
                             activeOrders: 0,
                             totalSpent: 0
                         };
-                        
                         updateUserInfo();
                         userLoaded = true;
                         tryLoadPlatforms();
@@ -1428,7 +1316,7 @@
                     window.location.href = 'connexion.html';
                 }
             });
-            
+
             // Menu mobile
             document.getElementById('menuBtn').addEventListener('click', function() {
                 document.getElementById('mobileMenu').classList.add('active');
@@ -1436,7 +1324,7 @@
             });
             document.getElementById('menuClose').addEventListener('click', closeMobileMenu);
             document.getElementById('menuOverlay').addEventListener('click', closeMobileMenu);
-            
+
             // Deconnexion
             document.getElementById('logoutBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
@@ -1448,26 +1336,21 @@
                     console.error("Erreur deconnexion:", error);
                 }
             });
-            
-            // Navigation simplifiee: Plateforme -> Service -> Quantite -> Lien -> Confirmation
+
+            // Navigation
             document.getElementById('nextToStep2').addEventListener('click', () => {
                 if (currentPlatform) {
                     loadServices(currentPlatform.id);
                     showStep(2);
                 }
             });
-            
             document.getElementById('backToStep1').addEventListener('click', () => showStep(1));
-            
             document.getElementById('nextToStep3').addEventListener('click', () => {
                 if (currentService) showStep(3);
             });
-            
             document.getElementById('backToStep2').addEventListener('click', () => showStep(2));
-            
             document.getElementById('nextToStep4').addEventListener('click', () => {
                 if (currentService) {
-                    // Afficher la description du service si disponible
                     const descBox = document.getElementById('serviceDescriptionBox');
                     const descText = document.getElementById('serviceDescriptionText');
                     if (currentService.description) {
@@ -1479,9 +1362,7 @@
                     showStep(4);
                 }
             });
-            
             document.getElementById('backToStep3').addEventListener('click', () => showStep(3));
-            
             document.getElementById('nextToStep5').addEventListener('click', () => {
                 currentLink = document.getElementById('orderLink').value.trim();
                 if (!currentLink) {
@@ -1491,23 +1372,21 @@
                 generateSummary();
                 showStep(5);
             });
-            
             document.getElementById('backToStep4').addEventListener('click', () => showStep(4));
             document.getElementById('confirmOrder').addEventListener('click', confirmOrder);
             document.getElementById('newOrderBtn').addEventListener('click', resetOrder);
-            
-            // Quantite
+
+            // Gestion de la quantité
             const quantityInput = document.getElementById('quantityInput');
-            
-            // Fonction pour verifier si c'est un service de commentaires personnalises
+
             function isCustomCommentsService() {
                 if (!currentService) return false;
                 const name = currentService.name.toLowerCase();
                 return name.includes('custom') || name.includes('personnalis') || name.includes('your text');
             }
-            
+
             document.getElementById('decreaseQty').addEventListener('click', () => {
-                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
+                if (isCustomCommentsService()) return;
                 const minQty = currentService?.min || 10;
                 if (currentQuantity > minQty) {
                     currentQuantity -= 100;
@@ -1516,28 +1395,26 @@
                     updateTotal();
                 }
             });
-            
+
             document.getElementById('increaseQty').addEventListener('click', () => {
-                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
+                if (isCustomCommentsService()) return;
                 currentQuantity += 100;
                 quantityInput.value = currentQuantity;
                 updateTotal();
             });
-            
+
             quantityInput.addEventListener('input', function() {
-                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
+                if (isCustomCommentsService()) return;
                 const val = parseInt(this.value) || 1;
                 const minQty = currentService?.min || 1;
                 currentQuantity = Math.max(minQty, val);
                 updateTotal();
             });
-            
-            // Ecouteur pour les commentaires personnalises
+
             document.getElementById('customComments').addEventListener('input', function() {
                 const comments = this.value.split('\n').filter(c => c.trim());
-                const count = comments.length;
-                currentQuantity = count;
-                document.getElementById('quantityInput').value = count;
+                currentQuantity = comments.length;
+                document.getElementById('quantityInput').value = currentQuantity;
                 updateTotal();
             });
         });
