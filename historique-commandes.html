@@ -1,390 +1,1200 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Historique des Commandes - Likéo Boost</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <style>
-        :root {
-            --primary-yellow: #FFD700;
-            --primary-blue: #2A5EE8;
-            --primary-orange: #FF7A00;
-            --dark-blue: #1A1F3C;
-            --light-blue: #F0F5FF;
-            --light-gray: #F8F9FA;
-            --text-dark: #333333;
-            --text-light: #777777;
-            --white: #FFFFFF;
-            --success-green: #4CAF50;
-            --error-red: #f44336;
-            --warning-orange: #ff9800;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s ease;
-        }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+  <meta name="description" content="Mes commandes · Likéo Boost - votre visibilité, notre horizon. Services de croissance de réseaux."/>
+  <title>Mes commandes · Likéo Boost</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: #f5f7ff;
-            min-height: 100vh;
-        }
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-        h1, h2, h3, h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
+  <style>
+    :root {
+      --deep-blue: #0A0F1D;
+      --dark-blue: #111A30;
+      --grad-start: #2A5EE8; /* Likéo Bleu */
+      --grad-end: #FF7A00;   /* Likéo Orange */
+      --btn-blue: #2A5EE8;
+      --light-blue: #5B86F4;
+      --gold: #FFD700;       /* Likéo Or/Jaune */
+      --gold-deep: #D4AF37;
+      --glass-bg: rgba(17, 26, 48, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      --text-white: #FFFFFF;
+      --text-light: rgba(255, 255, 255, 0.8);
+      --font-primary: 'Poppins', sans-serif;
+      --font-display: 'Montserrat', sans-serif;
+      --green: #4CAF50;
+    }
 
-        .container { width: 100%; max-width: 100%; margin: 0 auto; padding: 0 15px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 14px; scroll-behavior: smooth; }
+    @media (min-width: 768px) { html { font-size: 15px; } }
+    @media (max-width: 480px) { html { font-size: 13px; } }
 
-        .btn {
-            display: inline-block; padding: 12px 24px;
-            border-radius: 50px; text-decoration: none;
-            font-weight: 600; font-size: 0.95rem;
-            transition: var(--transition); cursor: pointer;
-            border: none; text-align: center; white-space: nowrap;
-        }
+    body {
+      font-family: var(--font-primary);
+      color: #fff;
+      background: var(--deep-blue);
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .btn-primary { background-color: var(--primary-blue); color: var(--white); }
-        .btn-primary:hover { background-color: var(--primary-orange); transform: translateY(-2px); }
+    /* Fond animé spatial Likéo */
+    .bg-animation {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -2;
+      background: radial-gradient(ellipse at 30% 40%, #152445 0%, #0A0F1D 70%);
+    }
+    .stars {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none;
+      background-image: radial-gradient(2px 2px at 20px 30px, rgba(255,122,0,0.4), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,215,0,0.3), transparent),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(91,134,244,0.5), transparent),
+        radial-gradient(2px 2px at 160px 120px, rgba(255,122,0,0.4), transparent),
+        radial-gradient(1px 1px at 200px 50px, #fff, transparent);
+      background-size: 400px 200px;
+      animation: starsMove 40s linear infinite;
+    }
+    @keyframes starsMove {
+      from { transform: translateY(0); }
+      to { transform: translateY(-200px); }
+    }
 
-        .mobile-header {
-            background-color: var(--white); padding: 15px 0;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            position: sticky; top: 0; z-index: 100; width: 100%;
-        }
+    h1, h2, h3 { font-family: var(--font-display); color: #fff; }
 
-        .mobile-header-content { display: flex; justify-content: space-between; align-items: center; }
+    /* HEADER */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,15,29,0.85);
+      backdrop-filter: blur(20px);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.7rem 1.8rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    @media (max-width: 480px) { header { padding: 0.6rem 1rem; } }
 
-        .logo {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    .logo-link {
+      display: flex; align-items: center; text-decoration: none; gap: 10px;
+    }
+    .logo-text {
+      display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15;
+    }
+    .logo-text .social {
+      font-size: 0.8rem; font-weight: 600; color: #fff; letter-spacing: 1px;
+    }
+    .logo-text .boost {
+      font-size: 1.4rem; font-weight: 800; color: var(--gold); line-height: 1;
+    }
+    @media (max-width: 480px) { .logo-text .boost { font-size: 1.2rem; } }
 
-        .back-btn {
-            display: flex; align-items: center; gap: 8px;
-            color: var(--primary-blue); text-decoration: none;
-            font-weight: 500; font-size: 0.9rem;
-        }
+    .header-actions {
+      display: flex; align-items: center; gap: 15px;
+    }
+    .icon-hamburger {
+      font-size: 1.6rem; cursor: pointer; transition: 0.3s; color: #fff;
+    }
+    .icon-hamburger:hover { color: var(--gold); }
 
-        .page-content { padding: 20px 0; }
+    .mobile-menu {
+      display: none; position: absolute; top: 65px; right: 1.8rem;
+      background: rgba(17,26,48,0.95); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 1.2rem; flex-direction: column;
+      z-index: 200; min-width: 260px; backdrop-filter: blur(20px);
+    }
+    header.open .mobile-menu { display: flex; }
+    .mobile-menu a {
+      color: #fff; padding: 0.7rem 0.9rem; text-decoration: none;
+      border-radius: 8px; transition: 0.3s; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+    }
+    .mobile-menu a:hover { background: rgba(42,94,232,0.5); transform: translateX(5px); }
 
-        .page-title {
-            font-size: 1.5rem; margin-bottom: 20px;
-            color: var(--dark-blue);
-        }
+    /* MAIN */
+    main {
+      flex: 1; max-width: 1200px; margin: 0 auto; padding: 30px 20px 40px; width: 100%;
+    }
 
-        .orders-container { display: flex; flex-direction: column; gap: 15px; }
+    .page-title {
+      text-align: center; margin-bottom: 30px;
+    }
+    .page-title h1 {
+      font-size: 2rem; background: linear-gradient(135deg, var(--light-blue), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    @media (max-width: 480px) { .page-title h1 { font-size: 1.6rem; } }
 
-        .order-card {
-            background: var(--white); border-radius: 15px;
-            padding: 20px; box-shadow: var(--shadow);
-        }
+    /* Grille Statistiques */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px; margin-bottom: 25px;
+    }
+    .stat-card {
+      background: var(--glass-bg); backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border); border-radius: 20px;
+      padding: 20px; text-align: center; transition: all 0.3s;
+      box-shadow: var(--card-shadow);
+    }
+    .stat-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+    .stat-card i { font-size: 1.5rem; margin-bottom: 8px; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; font-family: var(--font-display); }
+    .stat-label { font-size: 0.8rem; color: var(--text-light); }
+    .stat-total i { color: var(--light-blue); }
+    .stat-completed i { color: var(--green); }
+    .stat-processing i { color: #FFB800; }
+    .stat-pending i { color: #FF9800; }
+    .stat-cancelled i { color: #FF6B6B; }
+    .stat-amount i { color: var(--gold); }
 
-        .order-header {
-            display: flex; justify-content: space-between;
-            align-items: flex-start; margin-bottom: 15px;
-            flex-wrap: wrap; gap: 10px;
-        }
+    /* Filtres */
+    .controls-bar {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      margin-bottom: 25px; justify-content: space-between;
+    }
+    .filters {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .filter-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+      color: var(--text-light); padding: 8px 16px; border-radius: 20px;
+      cursor: pointer; font-weight: 500; font-size: 0.85rem; transition: 0.3s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(42,94,232,0.15); border-color: var(--light-blue); color: #fff;
+    }
+    .control-group {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .currency-selector select, .limit-selector select, .sort-selector select {
+      background: rgba(17,26,48,0.8); border: 1px solid var(--glass-border);
+      color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem;
+      cursor: pointer; font-family: var(--font-primary);
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      color: #fff; padding: 10px 20px; border: none; border-radius: 50px;
+      font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.9rem;
+      text-decoration: none; box-shadow: 0 4px 15px rgba(42,94,232,0.3);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(42,94,232,0.5); }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-deep), var(--gold));
+      color: #0A0F1D; box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+    }
+    .btn-gold:hover { box-shadow: 0 8px 25px rgba(255,215,0,0.5); }
 
-        .order-id {
-            font-weight: 700; color: var(--primary-blue);
-            font-size: 0.95rem;
-        }
+    /* Liste des commandes */
+    .orders-list {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .order-card {
+      background: var(--glass-bg); backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border); border-radius: 20px;
+      padding: 20px; transition: all 0.3s; cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .order-card:hover { border-color: var(--light-blue); transform: translateY(-2px); }
+    .order-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .order-id {
+      font-weight: 700; font-size: 1.15rem; color: var(--gold);
+      font-family: var(--font-display);
+      text-shadow: 0 2px 10px rgba(255,215,0,0.3);
+    }
+    .order-meta {
+      display: flex; align-items: center; gap: 15px; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--text-light);
+    }
+    .platform-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255, 255, 255, 0.1); padding: 5px 12px;
+      border-radius: 20px; font-weight: 600; color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .order-status-badge {
+      padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase;
+    }
+    .status-completed { background: rgba(76,175,80,0.2); color: #4CAF50; border: 1px solid rgba(76,175,80,0.3); }
+    .status-processing { background: rgba(255,184,0,0.2); color: #FFB800; border: 1px solid rgba(255,184,0,0.3); }
+    .status-pending { background: rgba(255,152,0,0.2); color: #FF9800; border: 1px solid rgba(255,152,0,0.3); }
+    .status-cancelled { background: rgba(255,107,107,0.2); color: #FF6B6B; border: 1px solid rgba(255,107,107,0.3); }
 
-        .order-status {
-            padding: 5px 12px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 600;
-            text-transform: uppercase;
-        }
+    .progress-bar-container {
+      display: flex; align-items: center; gap: 10px; margin-top: 15px;
+    }
+    .progress-bar {
+      flex: 1; height: 8px; background: rgba(255,255,255,0.08);
+      border-radius: 10px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 10px; transition: width 0.5s ease;
+      background: linear-gradient(90deg, var(--light-blue), var(--gold));
+    }
+    .progress-percent {
+      font-weight: 700; font-size: 0.9rem; min-width: 45px; text-align: right;
+      font-family: var(--font-display);
+    }
 
-        .status-pending { background: #FFF3E0; color: #E65100; }
-        .status-processing, .status-in-progress, .status-partial { background: #E3F2FD; color: #1565C0; }
-        .status-completed { background: #E8F5E9; color: #2E7D32; }
-        .status-canceled, .status-failed { background: #FFEBEE; color: #C62828; }
+    .order-details {
+      display: none; margin-top: 20px; padding-top: 15px;
+      border-top: 1px solid var(--glass-border);
+      animation: fadeSlide 0.3s ease;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .order-details.open { display: block; }
+    .details-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 15px;
+    }
+    .detail-item {
+      background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px;
+      position: relative;
+    }
+    .detail-label {
+      font-size: 0.7rem; color: var(--text-light); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 4px;
+    }
+    .detail-value { font-weight: 500; font-size: 0.9rem; word-break: break-word; display: flex; align-items: center; gap: 5px; }
+    .detail-value a { color: var(--light-blue); text-decoration: none; }
+    .detail-value a:hover { text-decoration: underline; }
+    .copy-btn {
+      background: none; border: none; color: var(--text-light); cursor: pointer;
+      padding: 2px 5px; font-size: 0.8rem; opacity: 0.6; transition: 0.2s;
+      display: inline-flex; align-items: center;
+    }
+    .copy-btn:hover { opacity: 1; color: var(--gold); }
+    .copied-tooltip {
+      position: absolute; top: -25px; right: 0; background: var(--gold);
+      color: #000; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
+      pointer-events: none; opacity: 0; transition: opacity 0.2s;
+    }
 
-        .order-details { display: grid; gap: 10px; }
+    .comments-section {
+      background: rgba(76,175,80,0.05); border: 1px solid rgba(76,175,80,0.2);
+      border-radius: 12px; padding: 12px; margin-top: 12px;
+    }
+    .comments-title {
+      font-weight: 600; color: var(--green); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .comments-content { font-style: italic; color: var(--text-light); font-size: 0.9rem; }
 
-        .order-row {
-            display: flex; justify-content: space-between;
-            font-size: 0.9rem; padding: 5px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
+    /* Partage de commande */
+    .share-section {
+      margin-top: 15px; padding-top: 15px;
+      border-top: 1px solid var(--glass-border);
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #fff; padding: 10px 18px; border: none; border-radius: 50px;
+      cursor: pointer; font-weight: 600; font-size: 0.85rem;
+      transition: 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    }
+    .share-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 211, 102, 0.5); }
+    .share-btn.facebook {
+      background: linear-gradient(135deg, #1877F2, #0C5DC7);
+      box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);
+    }
+    .share-btn.copy-share {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      box-shadow: 0 4px 15px rgba(42,94,232,0.3);
+    }
 
-        .order-row:last-child { border-bottom: none; }
+    /* Actions commandes */
+    .exo-actions {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;
+    }
+    .exo-btn {
+      padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
+      font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; gap: 6px;
+      transition: 0.3s; color: #fff;
+    }
+    .exo-btn:hover { transform: translateY(-2px); }
+    .exo-btn.status { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+    .exo-btn.refill { background: linear-gradient(135deg, #10B981, #059669); }
+    .exo-btn.cancel { background: linear-gradient(135deg, #EF4444, #DC2626); }
 
-        .order-label { color: var(--text-light); }
-        .order-value { font-weight: 500; color: var(--text-dark); text-align: right; max-width: 60%; word-break: break-all; }
+    .load-more { text-align: center; margin-top: 20px; }
 
-        .order-link {
-            font-size: 0.8rem; color: var(--primary-blue);
-            text-decoration: none; word-break: break-all;
-        }
+    /* Modal Commander */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+      z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: linear-gradient(135deg, #0d1527, #172440);
+      border: 1px solid var(--gold);
+      border-radius: 24px; padding: 30px; max-width: 450px; width: 100%;
+      animation: modalIn 0.3s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-box h3 {
+      color: var(--gold); margin-bottom: 20px; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .modal-option {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+      border-radius: 14px; padding: 16px 18px; margin-bottom: 10px;
+      cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px;
+      text-decoration: none; color: #fff;
+    }
+    .modal-option:hover {
+      background: rgba(255,215,0,0.1); border-color: var(--gold);
+      transform: translateX(5px);
+    }
+    .modal-option i { font-size: 1.5rem; color: var(--gold); width: 30px; text-align: center; }
+    .modal-option .option-text h4 { margin: 0; font-size: 1rem; }
+    .modal-option .option-text p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
+    .modal-close-btn {
+      display: block; width: 100%; margin-top: 15px; background: transparent;
+      border: 1px solid rgba(255,255,255,0.2); color: #fff;
+      padding: 10px; border-radius: 50px; cursor: pointer; font-weight: 600;
+      transition: 0.3s;
+    }
+    .modal-close-btn:hover { background: rgba(255,255,255,0.05); }
 
-        .empty-state {
-            text-align: center; padding: 60px 20px;
-            color: var(--text-light);
-        }
+    /* Overlay de chargement initial */
+    .loading-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(10,15,29,0.9); display: flex;
+        justify-content: center; align-items: center; z-index: 2000;
+        transition: opacity 0.3s;
+    }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .spinner {
+        width: 50px; height: 50px;
+        border: 4px solid rgba(255,255,255,0.1);
+        border-top: 4px solid var(--grad-start);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
-        .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
-        .empty-state h3 { margin-bottom: 10px; color: var(--text-dark); }
+    footer {
+      background: rgba(10,15,29,0.9); border-top: 1px solid var(--glass-border);
+      padding: 18px; text-align: center; font-size: 0.8rem; color: var(--text-light);
+      margin-top: auto;
+    }
 
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.9); display: flex;
-            justify-content: center; align-items: center; z-index: 1000;
-        }
-
-        .loading-overlay.hidden { display: none; }
-
-        .spinner {
-            width: 50px; height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .refresh-btn {
-            background: var(--primary-blue); color: white;
-            border: none; padding: 10px 20px; border-radius: 25px;
-            cursor: pointer; display: flex; align-items: center;
-            gap: 8px; font-weight: 500; margin-bottom: 20px;
-        }
-
-        .refresh-btn:hover { background: var(--primary-orange); }
-    </style>
+    @media (max-width: 600px) {
+      .order-card { padding: 15px; }
+      .details-grid { grid-template-columns: 1fr 1fr; }
+      .share-section { flex-direction: column; align-items: stretch; }
+      .share-btn { justify-content: center; }
+    }
+  </style>
 </head>
 <body>
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="bg-animation"></div>
+  <div class="stars"></div>
+
+  <header>
+    <a href="dashboard.html" class="logo-link">
+      <div class="logo-text">
+        <span class="social">LIKÉO</span>
+        <span class="boost">BOOST</span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="btn" id="openOrderModalBtn" style="padding:8px 16px; font-size:0.8rem;"><i class="fas fa-plus"></i> Commander</button>
+      <i class="fa-solid fa-bars icon-hamburger" id="hamburgerBtn"></i>
+    </div>
+    <div class="mobile-menu">
+      <a href="dashboard.html"><i class="fa-solid fa-house"></i> Accueil</a>
+      <a href="portefeuille.html"><i class="fa-solid fa-wallet"></i> Portefeuille</a>
+      <a href="historique.html"><i class="fa-solid fa-list-check"></i> Mes commandes</a>
+      <a href="services.html"><i class="fa-solid fa-rocket"></i> Services</a>
+      <a href="profil.html"><i class="fa-solid fa-user"></i> Profil</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-title" data-aos="fade-up">
+      <h1><i class="fas fa-clipboard-list" style="margin-right:10px;"></i>Mes commandes</h1>
     </div>
 
-    <header class="mobile-header">
-        <div class="container">
-            <div class="mobile-header-content">
-                <a href="dashboard.html" class="back-btn" data-testid="link-back-dashboard">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour
-                </a>
-                <div class="logo">Likéo</div>
-            </div>
+    <!-- Grille Statistiques -->
+    <div class="stats-grid" data-aos="fade-up" data-aos-delay="100">
+      <div class="stat-card stat-total">
+        <i class="fas fa-shopping-cart"></i>
+        <div class="stat-value" id="totalOrders">0</div>
+        <div class="stat-label">Total commandes</div>
+      </div>
+      <div class="stat-card stat-completed">
+        <i class="fas fa-check-circle"></i>
+        <div class="stat-value" id="completedOrders">0</div>
+        <div class="stat-label">Terminées</div>
+      </div>
+      <div class="stat-card stat-processing">
+        <i class="fas fa-sync-alt"></i>
+        <div class="stat-value" id="processingOrders">0</div>
+        <div class="stat-label">En cours</div>
+      </div>
+      <div class="stat-card stat-pending">
+        <i class="fas fa-clock"></i>
+        <div class="stat-value" id="pendingOrders">0</div>
+        <div class="stat-label">En attente</div>
+      </div>
+      <div class="stat-card stat-cancelled">
+        <i class="fas fa-times-circle"></i>
+        <div class="stat-value" id="cancelledOrders">0</div>
+        <div class="stat-label">Annulées</div>
+      </div>
+      <div class="stat-card stat-amount">
+        <i class="fas fa-coins"></i>
+        <div class="stat-value" id="totalAmount">0</div>
+        <div class="stat-label">Total dépensé</div>
+      </div>
+    </div>
+
+    <!-- Filtres et outils -->
+    <div class="controls-bar" data-aos="fade-up">
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">Toutes</button>
+        <button class="filter-btn" data-filter="completed">Terminées</button>
+        <button class="filter-btn" data-filter="processing">En cours</button>
+        <button class="filter-btn" data-filter="pending">En attente</button>
+        <button class="filter-btn" data-filter="cancelled">Annulées</button>
+      </div>
+      <div class="control-group">
+        <div class="sort-selector">
+          <select id="sortSelect">
+            <option value="date-desc" selected>Date (récent en premier)</option>
+            <option value="date-asc">Date (ancien en premier)</option>
+            <option value="amount-desc">Montant (élevé en premier)</option>
+            <option value="amount-asc">Montant (faible en premier)</option>
+            <option value="status">Statut</option>
+          </select>
         </div>
-    </header>
-
-    <main class="page-content">
-        <div class="container">
-            <h1 class="page-title"><i class="fas fa-history"></i> Historique des Commandes</h1>
-            
-            <button class="refresh-btn" id="refreshBtn" data-testid="button-refresh-orders">
-                <i class="fas fa-sync-alt"></i>
-                Actualiser
-            </button>
-
-            <div class="orders-container" id="ordersContainer">
-                <div class="empty-state">
-                    <i class="fas fa-shopping-bag"></i>
-                    <h3>Chargement...</h3>
-                </div>
-            </div>
+        <div class="currency-selector">
+          <select id="currencySelect">
+            <option value="CM">Cameroun (FCFA)</option>
+            <option value="SN">Sénégal (FCFA)</option>
+            <option value="CI">Côte d'Ivoire (FCFA)</option>
+            <option value="BF">Burkina Faso (FCFA)</option>
+            <option value="ML">Mali (FCFA)</option>
+            <option value="BJ">Bénin (FCFA)</option>
+            <option value="TG">Togo (FCFA)</option>
+            <option value="NE">Niger (FCFA)</option>
+            <option value="GA">Gabon (FCFA)</option>
+            <option value="CG">Congo (FCFA)</option>
+            <option value="CD">RD Congo (CDF)</option>
+            <option value="GH">Ghana (GHS)</option>
+            <option value="NG">Nigeria (NGN)</option>
+            <option value="KE">Kenya (KES)</option>
+            <option value="UG">Ouganda (UGX)</option>
+            <option value="TZ">Tanzanie (TZS)</option>
+            <option value="RW">Rwanda (RWF)</option>
+            <option value="ZM">Zambie (ZMW)</option>
+          </select>
         </div>
-    </main>
+        <div class="limit-selector">
+          <select id="limitSelect">
+            <option value="10">10 par page</option>
+            <option value="15">15 par page</option>
+            <option value="20">20 par page</option>
+            <option value="30">30 par page</option>
+            <option value="50" selected>50 par page</option>
+          </select>
+        </div>
+        <button id="refreshBtn" class="btn"><i class="fas fa-sync-alt"></i> Actualiser</button>
+      </div>
+    </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
-            authDomain: "likeo-5e3e9.firebaseapp.com",
-            projectId: "likeo-5e3e9",
-            storageBucket: "likeo-5e3e9.firebasestorage.app",
-            messagingSenderId: "1071170297332",
-            appId: "1:1071170297332:web:fa5e60f75848b986712da1",
-            measurementId: "G-RV38D7VYF5"
-        };
+    <!-- Liste des commandes -->
+    <div class="orders-list" id="ordersList" data-aos="fade-up" data-aos-delay="200">
+      <div style="text-align:center;padding:40px;">
+        <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--light-blue);"></i>
+        <p style="margin-top:10px;">Chargement de vos commandes...</p>
+      </div>
+    </div>
 
-        let app, auth, db;
-        try {
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-            console.log("Firebase initialise");
-        } catch (error) {
-            console.error("Erreur Firebase:", error);
-        }
+    <div class="load-more" id="loadMoreContainer" style="display:none;">
+      <button id="loadMoreBtn" class="btn btn-gold"><i class="fas fa-chevron-down"></i> Voir plus</button>
+    </div>
+  </main>
 
-        const API_BASE_URL = window.location.hostname.includes('replit') 
-            ? '' 
-            : 'https://likeo-boost.replit.app';
+  <!-- Modale Commander standard -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-box">
+      <h3><i class="fas fa-rocket"></i> Type de commande</h3>
+      <a class="modal-option" href="dashboard.html">
+        <i class="fas fa-shopping-cart"></i>
+        <div class="option-text">
+          <h4>Commande Standard</h4>
+          <p>Lancer une commande de visibilité</p>
+        </div>
+      </a>
+      <a class="modal-option" href="dashboard.html">
+        <i class="fas fa-robot"></i>
+        <div class="option-text">
+          <h4>Commande Automatique</h4>
+          <p>Livraison instantanée supervisée</p>
+        </div>
+      </a>
+      <button class="modal-close-btn" id="closeOrderModal">Annuler</button>
+    </div>
+  </div>
 
-        let currentUser = null;
+  <footer>
+    <p>© 2026 Likéo Boost · votre visibilité, notre horizon · visibilité|croissance|impact. Tous droits réservés.</p>
+  </footer>
 
-        function formatNumber(num) {
-            return num.toLocaleString('fr-FR');
-        }
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <!-- SDK Compatibilité Firebase 9 -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-        // Helper function to get auth headers with Firebase token
-        async function getAuthHeaders() {
-            const token = await currentUser.getIdToken();
-            return {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
-        }
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (typeof AOS !== 'undefined') {
+        AOS.init({ duration: 800, once: true, offset: 100 });
+      }
 
-        function getStatusClass(status) {
-            const statusLower = (status || 'pending').toLowerCase();
-            if (statusLower === 'completed') return 'status-completed';
-            if (statusLower === 'pending') return 'status-pending';
-            if (statusLower === 'processing' || statusLower === 'in progress' || statusLower === 'partial') return 'status-processing';
-            if (statusLower === 'canceled' || statusLower === 'cancelled' || statusLower === 'failed') return 'status-canceled';
-            return 'status-pending';
-        }
-
-        function getStatusText(status) {
-            const statusLower = (status || 'pending').toLowerCase();
-            if (statusLower === 'completed') return 'Termine';
-            if (statusLower === 'pending') return 'En attente';
-            if (statusLower === 'processing' || statusLower === 'in progress') return 'En cours';
-            if (statusLower === 'partial') return 'Partiel';
-            if (statusLower === 'canceled' || statusLower === 'cancelled') return 'Annule';
-            if (statusLower === 'failed') return 'Echoue';
-            return status || 'En attente';
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.add('hidden');
-        }
-
-        async function loadOrders() {
-            const container = document.getElementById('ordersContainer');
-            
-            try {
-                const headers = await getAuthHeaders();
-                const response = await fetch(API_BASE_URL + `/api/orders/${currentUser.uid}`, {
-                    headers: headers
-                });
-                const data = await response.json();
-
-                if (!data.orders || data.orders.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-shopping-bag"></i>
-                            <h3>Aucune commande</h3>
-                            <p>Vous n'avez pas encore passe de commande</p>
-                            <a href="dashboard.html" class="btn btn-primary" style="margin-top: 20px;">
-                                Passer une commande
-                            </a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = '';
-                data.orders.forEach((order, index) => {
-                    let date = 'N/A';
-                    if (order.createdAt && order.createdAt._seconds) {
-                        date = new Date(order.createdAt._seconds * 1000).toLocaleString('fr-FR');
-                    }
-
-                    const statusClass = getStatusClass(order.status);
-                    const statusText = getStatusText(order.status);
-                    // Use sequential order number if available, fallback to old format
-                    const orderRef = order.orderNumber || `LKB-${String(order.orderId).slice(-6)}`;
-
-                    container.innerHTML += `
-                        <div class="order-card" data-testid="order-card-${index}">
-                            <div class="order-header">
-                                <span class="order-id">${orderRef}</span>
-                                <span class="order-status ${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="order-details">
-                                <div class="order-row">
-                                    <span class="order-label">Plateforme</span>
-                                    <span class="order-value">${order.platform || 'N/A'}</span>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Service</span>
-                                    <span class="order-value">${order.serviceName || 'N/A'}</span>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Quantite</span>
-                                    <span class="order-value">${formatNumber(order.quantity || 0)}</span>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Quantite restante</span>
-                                    <span class="order-value">${order.remains !== undefined ? formatNumber(order.remains) : 'N/A'}</span>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Compte de depart</span>
-                                    <span class="order-value">${order.startCount !== null && order.startCount !== undefined ? formatNumber(order.startCount) : 'N/A'}</span>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Prix</span>
-                                    <span class="order-value">${formatNumber(order.price || 0)} XAF</span>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Lien</span>
-                                    <a href="${order.link}" target="_blank" class="order-link order-value">${order.link || 'N/A'}</a>
-                                </div>
-                                <div class="order-row">
-                                    <span class="order-label">Date</span>
-                                    <span class="order-value">${date}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-            } catch (error) {
-                console.error('Error loading orders:', error);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Erreur de chargement</h3>
-                        <p>Impossible de charger vos commandes</p>
-                    </div>
-                `;
-            }
-        }
-
-        document.getElementById('refreshBtn').addEventListener('click', async () => {
-            document.getElementById('loadingOverlay').classList.remove('hidden');
-            await loadOrders();
-            hideLoading();
+      // --- HAMBURGER MENU ---
+      const header = document.querySelector("header");
+      const hamburger = document.getElementById("hamburgerBtn");
+      if (header && hamburger) {
+        hamburger.addEventListener("click", () => header.classList.toggle("open"));
+        document.addEventListener("click", (e) => {
+          if (!header.contains(e.target) && header.classList.contains("open")) header.classList.remove("open");
         });
+      }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            auth.onAuthStateChanged(async user => {
-                if (user) {
-                    currentUser = user;
-                    await loadOrders();
-                    hideLoading();
-                } else {
-                    window.location.href = 'connexion.html';
-                }
+      // --- MODAL COMMANDER ---
+      const orderModal = document.getElementById('orderModal');
+      const openOrderModalBtn = document.getElementById('openOrderModalBtn');
+      const closeOrderModalBtn = document.getElementById('closeOrderModal');
+
+      if (openOrderModalBtn && orderModal) {
+        openOrderModalBtn.addEventListener('click', () => orderModal.classList.add('active'));
+        closeOrderModalBtn.addEventListener('click', () => orderModal.classList.remove('active'));
+        orderModal.addEventListener('click', (e) => { if (e.target === orderModal) orderModal.classList.remove('active'); });
+      }
+
+      // --- INITIALISATION FIREBASE ---
+      const firebaseConfig = {
+          apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
+          authDomain: "likeo-5e3e9.firebaseapp.com",
+          projectId: "likeo-5e3e9",
+          storageBucket: "likeo-5e3e9.firebasestorage.app",
+          messagingSenderId: "1071170297332",
+          appId: "1:1071170297332:web:fa5e60f75848b986712da1",
+          measurementId: "G-RV38D7VYF5"
+      };
+
+      if (typeof firebase === 'undefined') { 
+        console.error("Firebase SDK non disponible."); 
+        return; 
+      }
+      
+      let app, auth, db;
+      try {
+        app = firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        console.log("Firebase connecté avec succès");
+      } catch(e) {
+        console.error("Échec Firebase :", e);
+      }
+
+      const API_BASE_URL = window.location.hostname.includes('replit') 
+          ? '' 
+          : 'https://likeo-boost.replit.app';
+
+      // --- CONFIGURATION DEVISES & CONVERSIONS ---
+      const COUNTRIES_CONFIG = {
+        CM: { symbol: 'FCFA', rate: 1 },
+        SN: { symbol: 'FCFA', rate: 1 },
+        CI: { symbol: 'FCFA', rate: 1 },
+        BF: { symbol: 'FCFA', rate: 1 },
+        ML: { symbol: 'FCFA', rate: 1 },
+        BJ: { symbol: 'FCFA', rate: 1 },
+        TG: { symbol: 'FCFA', rate: 1 },
+        NE: { symbol: 'FCFA', rate: 1 },
+        GA: { symbol: 'FCFA', rate: 1 },
+        CG: { symbol: 'FCFA', rate: 1 },
+        CD: { symbol: 'CDF', rate: 4.35 },
+        GH: { symbol: 'GHS', rate: 0.025 },
+        NG: { symbol: 'NGN', rate: 2.65 },
+        KE: { symbol: 'KES', rate: 0.22 },
+        UG: { symbol: 'UGX', rate: 6.25 },
+        TZ: { symbol: 'TZS', rate: 4.2 },
+        RW: { symbol: 'RWF', rate: 2.15 },
+        ZM: { symbol: 'ZMW', rate: 0.045 }
+      };
+
+      let selectedCountry = 'CM';
+      const currencySelect = document.getElementById('currencySelect');
+      
+      function convertFromXAF(amountXAF) {
+        const config = COUNTRIES_CONFIG[selectedCountry];
+        if (!config) return amountXAF;
+        return Math.round(amountXAF * config.rate);
+      }
+      
+      function getCurrencySymbol() {
+        return COUNTRIES_CONFIG[selectedCountry]?.symbol || 'FCFA';
+      }
+      
+      function formatAmount(amountXAF) {
+        const converted = convertFromXAF(amountXAF);
+        const symbol = getCurrencySymbol();
+        return `${converted.toLocaleString('fr-FR')} ${symbol}`;
+      }
+
+      // --- FILTRES & TRIS ---
+      const refreshBtn = document.getElementById('refreshBtn');
+      const ordersList = document.getElementById('ordersList');
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const limitSelect = document.getElementById('limitSelect');
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const loadMoreContainer = document.getElementById('loadMoreContainer');
+      const sortSelect = document.getElementById('sortSelect');
+      
+      const totalOrdersElem = document.getElementById('totalOrders');
+      const completedOrdersElem = document.getElementById('completedOrders');
+      const processingOrdersElem = document.getElementById('processingOrders');
+      const pendingOrdersElem = document.getElementById('pendingOrders');
+      const cancelledOrdersElem = document.getElementById('cancelledOrders');
+      const totalAmountElem = document.getElementById('totalAmount');
+
+      let currentUser = null;
+      let allOrders = [];
+      let displayedOrders = [];
+      let currentDisplayLimit = 50;
+      let currentFilter = 'all';
+      let currentSort = 'date-desc';
+
+      // --- SURVEILLANCE CONNEXION AUTH ---
+      auth.onAuthStateChanged(async user => {
+        if (!user) { 
+          window.location.href = 'connexion.html'; 
+        } else { 
+          currentUser = user; 
+          await fetchOrders(); 
+          document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+      });
+
+      // Actions Filtres
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          currentFilter = this.getAttribute('data-filter');
+          filterOrders(currentFilter);
+        });
+      });
+
+      if (currencySelect) {
+        currencySelect.addEventListener('change', function() {
+          selectedCountry = this.value;
+          displayOrders();
+          updateTotalAmount();
+        });
+      }
+
+      if (limitSelect) {
+        limitSelect.addEventListener('change', function() {
+          currentDisplayLimit = parseInt(this.value);
+          displayOrders();
+        });
+      }
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+          currentSort = this.value;
+          applySortAndDisplay();
+        });
+      }
+
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+          currentDisplayLimit += parseInt(limitSelect.value);
+          displayOrders();
+        });
+      }
+
+      function applySortAndDisplay() {
+        sortOrders(currentSort);
+        displayOrders();
+        updateTotalAmount();
+      }
+
+      function filterOrders(filter) {
+        if (!ordersList) return;
+        if (filter === 'all') {
+          displayedOrders = [...allOrders];
+        } else {
+          displayedOrders = allOrders.filter(order => {
+            const status = (order.status || '').toLowerCase();
+            if (filter === 'completed') return status.includes('succes') || status.includes('succès');
+            if (filter === 'processing') return status.includes('en cours');
+            if (filter === 'pending') return status.includes('en attente');
+            if (filter === 'cancelled') return status.includes('annul') || status.includes('rembours');
+            return false;
+          });
+        }
+        applySortAndDisplay();
+      }
+
+      function sortOrders(sortOption) {
+        if (!displayedOrders) return;
+        switch (sortOption) {
+          case 'date-desc':
+            displayedOrders.sort((a, b) => {
+              const da = a.createdAt ? new Date(a.createdAt) : new Date(0);
+              const db = b.createdAt ? new Date(b.createdAt) : new Date(0);
+              return db - da;
             });
+            break;
+          case 'date-asc':
+            displayedOrders.sort((a, b) => {
+              const da = a.createdAt ? new Date(a.createdAt) : new Date(0);
+              const db = b.createdAt ? new Date(b.createdAt) : new Date(0);
+              return da - db;
+            });
+            break;
+          case 'amount-desc':
+            displayedOrders.sort((a, b) => (b.cost || 0) - (a.cost || 0));
+            break;
+          case 'amount-asc':
+            displayedOrders.sort((a, b) => (a.cost || 0) - (b.cost || 0));
+            break;
+          case 'status':
+            const priority = { 'succès': 1, 'en cours': 2, 'en attente': 3, 'annulée': 4 };
+            displayedOrders.sort((a, b) => {
+              const sA = getStatusText(a.status || '').toLowerCase();
+              const sB = getStatusText(b.status || '').toLowerCase();
+              return (priority[sA] || 99) - (priority[sB] || 99);
+            });
+            break;
+        }
+      }
+
+      function calculateProgress(order) {
+        const status = (order.status || '').toLowerCase();
+        if (status.includes('succes') || status.includes('succès')) return 100;
+        if (status.includes('annul') || status.includes('rembours')) return 0;
+        const qty = order.quantity || 0;
+        const remains = order.remains !== undefined ? order.remains : qty;
+        if (qty > 0) return Math.min(100, Math.round(((qty - remains) / qty) * 100));
+        return 0;
+      }
+
+      function getStatusClass(status) {
+        const s = (status || '').toLowerCase();
+        if (s.includes('succes') || s.includes('succès')) return 'status-completed';
+        if (s.includes('en cours')) return 'status-processing';
+        if (s.includes('en attente')) return 'status-pending';
+        if (s.includes('annul') || s.includes('rembours')) return 'status-cancelled';
+        return 'status-pending';
+      }
+
+      function getStatusText(status) {
+        const s = (status || '').toLowerCase();
+        if (s.includes('succes') || s.includes('succès')) return 'Terminée';
+        if (s.includes('en cours')) return 'En cours';
+        if (s.includes('en attente')) return 'En attente';
+        if (s.includes('annul') || s.includes('rembours')) return 'Annulée';
+        return status || 'En attente';
+      }
+
+      function updateTotalAmount() {
+        if (!totalAmountElem) return;
+        const targetList = currentFilter === 'all' ? allOrders : displayedOrders;
+        const totalXAF = targetList.reduce((sum, order) => sum + Number(order.cost || 0), 0);
+        totalAmountElem.textContent = formatAmount(totalXAF);
+      }
+
+      function guessPlatform(serviceName, linkUrl) {
+          const nameLower = (serviceName || '').toLowerCase();
+          const linkLower = (linkUrl || '').toLowerCase();
+          
+          if (nameLower.includes('facebook') || linkLower.includes('facebook.com')) return 'Facebook';
+          if (nameLower.includes('instagram') || linkLower.includes('instagram.com')) return 'Instagram';
+          if (nameLower.includes('tiktok') || linkLower.includes('tiktok.com')) return 'TikTok';
+          if (nameLower.includes('twitter') || nameLower.includes('x.com') || linkLower.includes('twitter.com')) return 'X (Twitter)';
+          if (nameLower.includes('youtube') || linkLower.includes('youtube.com') || linkLower.includes('youtu.be')) return 'YouTube';
+          if (nameLower.includes('telegram') || linkLower.includes('t.me')) return 'Telegram';
+          if (nameLower.includes('spotify') || linkLower.includes('spotify.com')) return 'Spotify';
+          return 'Autre';
+      }
+
+      // --- RENDU DES CARTES COMMANDES ---
+      function displayOrders() {
+        if (!ordersList) return;
+        const ordersToShow = displayedOrders.slice(0, currentDisplayLimit);
+        
+        if (ordersToShow.length === 0) {
+          ordersList.innerHTML = `
+            <div style="text-align:center;padding:40px;color:var(--text-light);">
+              <i class="fas fa-inbox" style="font-size:3rem;opacity:0.3;margin-bottom:15px;"></i>
+              <p>Aucune commande trouvée</p>
+            </div>`;
+          loadMoreContainer.style.display = 'none';
+          updateTotalAmount();
+          return;
+        }
+
+        let html = '';
+        ordersToShow.forEach(order => {
+          const docId = order.id;
+          const displayOrderId = order.orderId;
+          const dateStr = order.createdAt 
+            ? new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+            : 'N/A';
+
+          const service = order.serviceName || 'N/A';
+          const link = order.link || '';
+          const platform = order.platform || guessPlatform(service, link);
+          
+          // Icônes des plateformes
+          let platformIcon = 'fas fa-globe';
+          const pf = platform.toLowerCase();
+          if (pf.includes("instagram")) platformIcon = "fab fa-instagram";
+          else if (pf.includes("facebook")) platformIcon = "fab fa-facebook";
+          else if (pf.includes("tiktok")) platformIcon = "fab fa-tiktok";
+          else if (pf.includes("youtube")) platformIcon = "fab fa-youtube";
+          else if (pf.includes("twitter") || pf.includes("x (twitter)")) platformIcon = "fab fa-x-twitter"; 
+          else if (pf.includes("telegram")) platformIcon = "fab fa-telegram";
+          else if (pf.includes("spotify")) platformIcon = "fab fa-spotify";
+
+          const quantity = Number(order.quantity || 0);
+          const totalCost = Number(order.cost || 0);
+          const remains = order.remains !== undefined ? Number(order.remains) : quantity;
+          const progress = calculateProgress(order);
+          const statusClass = getStatusClass(order.status);
+          const statusLabel = getStatusText(order.status);
+          const formattedAmount = formatAmount(totalCost);
+          const delivered = quantity - remains;
+
+          // Message formaté pour le bouton de partage WhatsApp / réseaux
+          const shareMsg = `📋 *Commande Likéo Boost : ${displayOrderId}*\n` +
+                           `📅 Date : ${dateStr}\n` +
+                           `🌐 Plateforme : ${platform}\n` +
+                           `🛠 Service : ${service}\n` +
+                           `📊 Quantité : ${quantity.toLocaleString('fr-FR')}\n` +
+                           `💰 Montant : ${formattedAmount}\n` +
+                           `📌 Statut : ${statusLabel}\n` +
+                           `🔗 Lien : ${link}\n\n` +
+                           `🚀 Propulsé par Likeo Boost`;
+          const encodedMsg = encodeURIComponent(shareMsg);
+
+          html += `
+            <div class="order-card" data-docid="${docId}">
+              <div class="order-card-header">
+                <span class="order-id">${displayOrderId}</span>
+                <div class="order-meta">
+                  <span class="platform-badge"><i class="${platformIcon}"></i> ${platform}</span>
+                  <span style="font-weight: 500;">${service}</span>
+                  <span class="order-status-badge ${statusClass}">${statusLabel}</span>
+                </div>
+                <span style="color:var(--text-light); font-size:0.8rem;">${dateStr}</span>
+              </div>
+              
+              <div class="progress-bar-container">
+                <span style="font-size:0.8rem; color:var(--text-light);">${quantity.toLocaleString('fr-FR')} commandés · ${delivered.toLocaleString('fr-FR')} livrés</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:${progress}%;"></div>
+                </div>
+                <span class="progress-percent">${progress}%</span>
+                <span style="font-weight:600; color:var(--gold);">${formattedAmount}</span>
+                <i class="fas fa-chevron-down toggle-icon" style="cursor:pointer; margin-left:10px;"></i>
+              </div>
+
+              <div class="order-details">
+                <div class="details-grid">
+                  <div class="detail-item">
+                    <div class="detail-label">ID Commande</div>
+                    <div class="detail-value">
+                      ${displayOrderId}
+                      <button class="copy-btn" onclick="event.stopPropagation(); navigator.clipboard.writeText('${displayOrderId}').then(() => showToastCopy(this))"><i class="far fa-copy"></i></button>
+                      <span class="copied-tooltip">Copié !</span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Date de soumission</div>
+                    <div class="detail-value">${dateStr}</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Plateforme cible</div>
+                    <div class="detail-value">${platform}</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Quantité demandée</div>
+                    <div class="detail-value">${quantity.toLocaleString('fr-FR')}</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Coût de la transaction</div>
+                    <div class="detail-value" style="color:var(--gold); font-weight:700;">${formattedAmount}</div>
+                  </div>
+                  <div class="detail-item">
+                    <div class="detail-label">Reste à livrer</div>
+                    <div class="detail-value">${remains.toLocaleString('fr-FR')}</div>
+                  </div>
+                  ${link ? `
+                  <div class="detail-item" style="grid-column: span 2;">
+                    <div class="detail-label">Lien ciblé</div>
+                    <div class="detail-value">
+                      <a href="${link}" target="_blank" onclick="event.stopPropagation();" style="word-break:break-all;">${link}</a>
+                      <button class="copy-btn" onclick="event.stopPropagation(); navigator.clipboard.writeText('${link}').then(() => showToastCopy(this))"><i class="far fa-copy"></i></button>
+                      <span class="copied-tooltip">Copié !</span>
+                    </div>
+                  </div>` : ''}
+                  ${order.startCount !== null ? `
+                  <div class="detail-item">
+                    <div class="detail-label">Compteur de départ</div>
+                    <div class="detail-value">${Number(order.startCount).toLocaleString('fr-FR')}</div>
+                  </div>` : ''}
+                </div>
+
+                ${order.comments ? `
+                <div class="comments-section">
+                  <div class="comments-title"><i class="fas fa-comment"></i> Instructions particulières</div>
+                  <div class="comments-content">${order.comments}</div>
+                </div>` : ''}
+
+                <!-- Module de partage -->
+                <div class="share-section">
+                  <button class="share-btn" onclick="event.stopPropagation(); window.open('https://api.whatsapp.com/send?text=${encodedMsg}', '_blank')">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                  </button>
+                  <button class="share-btn facebook" onclick="event.stopPropagation(); window.open('https://www.facebook.com/sharer/sharer.php?u=https://likeo-boost.replit.app&quote=${encodedMsg}', '_blank')">
+                    <i class="fab fa-facebook"></i> Facebook
+                  </button>
+                  <button class="share-btn copy-share" onclick="event.stopPropagation(); navigator.clipboard.writeText(\`${shareMsg.replace(/`/g, '\\`')}\`).then(() => showNotification('Message copié dans le presse-papier !', 'success'))">
+                    <i class="far fa-copy"></i> Copier la fiche
+                  </button>
+                </div>
+
+                <!-- Actions de commande connectées au backend -->
+                <div class="exo-actions">
+                  <button class="exo-btn status" onclick="event.stopPropagation(); checkExoStatus('${docId}')"><i class="fas fa-search"></i> Actualiser l'état</button>
+                  ${order.exoOrderId ? `
+                  <button class="exo-btn refill" onclick="event.stopPropagation(); requestExoRefill('${docId}')"><i class="fas fa-redo"></i> Demander Refill</button>
+                  ` : ''}
+                  ${(statusLabel !== 'Annulée' && statusLabel !== 'Terminée') ? `
+                  <button class="exo-btn cancel" onclick="event.stopPropagation(); cancelExoOrder('${docId}')"><i class="fas fa-times"></i> Annuler & Rembourser</button>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          `;
         });
-    </script>
+
+        ordersList.innerHTML = html;
+
+        // Configuration du dépliement accordéon des cartes
+        document.querySelectorAll('.order-card').forEach(card => {
+          const icon = card.querySelector('.toggle-icon');
+          const details = card.querySelector('.order-details');
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.copy-btn')) return;
+            details.classList.toggle('open');
+            icon.className = details.classList.contains('open') ? 'fas fa-chevron-up toggle-icon' : 'fas fa-chevron-down toggle-icon';
+          });
+        });
+
+        loadMoreContainer.style.display = displayedOrders.length > currentDisplayLimit ? 'block' : 'none';
+        updateTotalAmount();
+      }
+
+      function updateStats(orders) {
+        const total = orders.length;
+        const completed = orders.filter(o => (o.status||'').toLowerCase().includes('succes') || (o.status||'').toLowerCase().includes('succès')).length;
+        const processing = orders.filter(o => (o.status||'').toLowerCase().includes('en cours')).length;
+        const pending = orders.filter(o => (o.status||'').toLowerCase().includes('en attente')).length;
+        const cancelled = orders.filter(o => (o.status||'').toLowerCase().includes('annul') || (o.status||'').toLowerCase().includes('rembours')).length;
+        
+        totalOrdersElem.textContent = total;
+        completedOrdersElem.textContent = completed;
+        processingOrdersElem.textContent = processing;
+        pendingOrdersElem.textContent = pending;
+        cancelledOrdersElem.textContent = cancelled;
+        updateTotalAmount();
+      }
+
+      // --- CHARGEMENT SÉCURISÉ DE L'HISTORIQUE DEPUIS LE BACKEND ---
+      async function fetchOrders() {
+        if (!currentUser) return;
+        ordersList.innerHTML = `
+          <div style="text-align:center;padding:40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--light-blue);"></i>
+            <p style="margin-top:10px;">Récupération des commandes en cours...</p>
+          </div>`;
+        loadMoreContainer.style.display = 'none';
+        
+        try {
+          const token = await currentUser.getIdToken();
+          const response = await fetch(`${API_BASE_URL}/api/orders/${currentUser.uid}`, {
+              headers: {
+                  'Authorization': `Bearer ${token}`
+              }
+          });
+          const data = await response.json();
+          
+          if (!data.orders || data.orders.length === 0) {
+            ordersList.innerHTML = `
+              <div style="text-align:center;padding:40px;color:var(--text-light);">
+                <i class="fas fa-inbox" style="font-size:3rem;opacity:0.3;margin-bottom:15px;"></i>
+                <p>Aucune commande passée pour l'instant.</p>
+              </div>`;
+            updateStats([]);
+            return;
+          }
+          
+          allOrders = data.orders;
+          displayedOrders = [...allOrders];
+          sortOrders(currentSort);
+          displayOrders();
+          updateStats(allOrders);
+        } catch (err) {
+          console.error("Erreur historique :", err);
+          ordersList.innerHTML = `
+            <div style="text-align:center;padding:40px;color:#FF6B6B;">
+              <i class="fas fa-exclamation-triangle" style="font-size:3rem;margin-bottom:15px;"></i>
+              <p>Impossible de joindre le service : ${err.message}</p>
+            </div>`;
+        }
+      }
+
+      if (refreshBtn) refreshBtn.addEventListener('click', fetchOrders);
+
+      // --- GESTION DES NOTIFICATIONS ---
+      function showNotification(message, type = 'info') {
+        const existing = document.querySelector('.exo-notification');
+        if (existing) existing.remove();
+        const n = document.createElement('div');
+        n.className = 'exo-notification';
+        n.style.cssText = `position:fixed;top:20px;right:20px;padding:15px 25px;border-radius:12px;color:#fff;font-weight:500;z-index:10000;animation:slideIn 0.3s ease;max-width:350px;box-shadow:0 10px 30px rgba(0,0,0,0.3);`;
+        n.style.background = type === 'success' ? 'linear-gradient(135deg,#10B981,#059669)' : type === 'error' ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#2A5EE8,#FF7A00)';
+        n.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}" style="margin-right:10px;"></i>${message}`;
+        document.body.appendChild(n);
+        setTimeout(() => { n.style.animation = 'slideOut 0.3s ease'; setTimeout(() => n.remove(), 300); }, 4000);
+      }
+
+      window.showToastCopy = function(btn) {
+        const tooltip = btn.nextElementSibling;
+        if (tooltip) {
+          tooltip.style.opacity = '1';
+          setTimeout(() => tooltip.style.opacity = '0', 1500);
+        }
+      }
+
+      // --- INTERACTION ACTIONS API BACKEND ---
+      async function checkExoStatus(orderId) {
+        try {
+          showNotification('Interrogation du serveur en cours...', 'info');
+          const token = await auth.currentUser.getIdToken();
+          const response = await fetch(`${API_BASE_URL}/api/exo-status`, { 
+              method: 'POST',
+              headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}` 
+              },
+              body: JSON.stringify({ orderId })
+          });
+          
+          const data = await response.json();
+          if (!data.success) throw new Error(data.error || 'Erreur lors de la synchronisation');
+          
+          showNotification(`Statut actualisé : ${data.status}`, 'success');
+          fetchOrders(); // Rafraîchissement dynamique
+        } catch (error) { 
+          showNotification(error.message, 'error'); 
+        }
+      }
+
+      async function requestExoRefill(orderId) {
+        if (!confirm('Souhaitez-vous lancer une demande de recharge (Refill) pour cette commande ?')) return;
+        try {
+          showNotification('Envoi de la demande de recharge...', 'info');
+          const token = await auth.currentUser.getIdToken();
+          const response = await fetch(`${API_BASE_URL}/api/exo/refill`, { 
+              method: 'POST', 
+              headers: { 
+                  'Content-Type': 'application/json', 
+                  'Authorization': `Bearer ${token}` 
+              }, 
+              body: JSON.stringify({ orderId }) 
+          });
+          const data = await response.json();
+          if (!data.success) throw new Error(data.error || 'Demande rejetée');
+          showNotification('La demande de recharge a bien été transmise !', 'success');
+          fetchOrders();
+        } catch (error) { 
+          showNotification(error.message, 'error'); 
+        }
+      }
+
+      async function cancelExoOrder(orderId) {
+        if (!confirm('Attention : Êtes-vous sûr de vouloir annuler cette commande ? Le coût total restant sera recrédité sur votre portefeuille.')) return;
+        try {
+          showNotification('Annulation de la commande...', 'info');
+          const token = await auth.currentUser.getIdToken();
+          const response = await fetch(`${API_BASE_URL}/api/exo/cancel`, { 
+              method: 'POST', 
+              headers: { 
+                  'Content-Type': 'application/json', 
+                  'Authorization': `Bearer ${token}` 
+              }, 
+              body: JSON.stringify({ orderId }) 
+          });
+          const data = await response.json();
+          if (!data.success) throw new Error(data.error || 'Annulation impossible');
+          
+          const msg = data.refundAmount > 0 
+            ? `Commande annulée. Solde remboursé de ${data.refundAmount.toLocaleString('fr-FR')} FCFA` 
+            : 'Commande annulée avec succès.';
+          showNotification(msg, 'success');
+          fetchOrders();
+        } catch (error) { 
+          showNotification(error.message, 'error'); 
+        }
+      }
+
+      window.checkExoStatus = checkExoStatus;
+      window.requestExoRefill = requestExoRefill;
+      window.cancelExoOrder = cancelExoOrder;
+
+      // Actualisation automatique toutes les 60 secondes en arrière-plan
+      setInterval(() => { if (allOrders.length > 0) displayOrders(); }, 60000);
+    });
+  </script>
 </body>
 </html>
