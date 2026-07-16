@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Depot - Likeo Boost</title>
+    <title>Dépôt - Likéo Boost</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -265,10 +265,6 @@
             background: #ffcc00;
             color: #000;
         }
-        .payment-method .method-icon.orange {
-            background: #ff6600;
-            color: #fff;
-        }
         .payment-method .method-info h4 {
             font-size: 1rem;
             margin-bottom: 2px;
@@ -286,29 +282,6 @@
         }
         .payment-method.selected .check-icon {
             display: block;
-        }
-
-        .phone-input {
-            margin-bottom: 20px;
-        }
-        .phone-input label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-dark);
-        }
-        .phone-input input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: var(--transition);
-        }
-        .phone-input input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
         }
 
         .deposit-btn {
@@ -397,6 +370,7 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Styles pour l'historique et la vérification */
         .transactions-section {
             background: var(--white);
             border-radius: 20px;
@@ -450,9 +424,33 @@
         .transaction-amount {
             font-weight: 700;
             color: var(--success-green);
+            text-align: right;
         }
         .transaction-amount.pending {
             color: var(--warning-orange);
+        }
+        
+        .verify-inline-btn {
+            background: rgba(42, 94, 232, 0.1);
+            border: 1px solid rgba(42, 94, 232, 0.3);
+            color: var(--primary-blue);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: var(--transition);
+            margin-top: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .verify-inline-btn:hover:not(:disabled) {
+            background: rgba(42, 94, 232, 0.2);
+        }
+        .verify-inline-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .empty-state {
@@ -466,6 +464,17 @@
             opacity: 0.5;
         }
 
+        /* Bloc d'instructions */
+        .instruction-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(42, 94, 232, 0.05);
+            border-left: 4px solid var(--primary-blue);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
         @media (min-width: 768px) {
             .container { max-width: 600px; }
             .amount-options { grid-template-columns: repeat(4, 1fr); }
@@ -473,7 +482,7 @@
     </style>
 </head>
 <body>
-    <div id="loadingOverlay" class="loading-overlay">
+    <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="loading-spinner"></div>
         <div class="loading-text">Chargement...</div>
     </div>
@@ -483,7 +492,7 @@
     <header class="mobile-header">
         <div class="container">
             <div class="mobile-header-content">
-                <a href="dashboard.html" class="back-btn" data-testid="link-back-dashboard">
+                <a href="dashboard.html" class="back-btn">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <a href="dashboard.html" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
@@ -495,142 +504,126 @@
     <main class="main-content">
         <div class="container">
             <div class="page-title">
-                <h1><i class="fas fa-wallet"></i> Depot</h1>
+                <h1><i class="fas fa-wallet"></i> Dépôt</h1>
                 <p>Rechargez votre compte pour commander des services</p>
             </div>
 
             <div class="balance-card">
                 <div class="label">Solde actuel</div>
-                <div class="amount" id="currentBalance" data-testid="text-current-balance">0 XAF</div>
+                <div class="amount" id="currentBalance">0 XAF</div>
             </div>
 
             <div class="deposit-section">
-                <h3 class="section-title"><i class="fas fa-coins"></i> Montant du depot</h3>
+                <!-- Bloc d'instruction inspiré de Social Boost Horizon -->
+                <div class="instruction-block">
+                    <strong>⚠️ Important :</strong> Après un paiement par Mobile Money, si votre solde ne s'actualise pas dans la minute, utilisez le bouton <strong>"Vérifier"</strong> dans l'historique ci-dessous.
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-coins"></i> Montant du dépôt</h3>
                 
                 <div class="amount-options">
-                    <div class="amount-option" data-amount="500" data-testid="button-amount-500">
+                    <div class="amount-option selected" data-amount="500">
                         <div class="value">500</div>
                         <div class="label">XAF</div>
                     </div>
-                    <div class="amount-option" data-amount="1000" data-testid="button-amount-1000">
+                    <div class="amount-option" data-amount="1000">
                         <div class="value">1 000</div>
                         <div class="label">XAF</div>
                     </div>
-                    <div class="amount-option" data-amount="2000" data-testid="button-amount-2000">
+                    <div class="amount-option" data-amount="2000">
                         <div class="value">2 000</div>
                         <div class="label">XAF</div>
                     </div>
-                    <div class="amount-option" data-amount="5000" data-testid="button-amount-5000">
+                    <div class="amount-option" data-amount="5000">
                         <div class="value">5 000</div>
                         <div class="label">XAF</div>
                     </div>
-                    <div class="amount-option" data-amount="10000" data-testid="button-amount-10000">
+                    <div class="amount-option" data-amount="10000">
                         <div class="value">10 000</div>
                         <div class="label">XAF</div>
                     </div>
-                    <div class="amount-option" data-amount="20000" data-testid="button-amount-20000">
+                    <div class="amount-option" data-amount="20000">
                         <div class="value">20 000</div>
                         <div class="label">XAF</div>
                     </div>
                 </div>
 
                 <div class="custom-amount">
-                    <label for="customAmount">Ou entrez un montant personnalise</label>
-                    <input type="number" id="customAmount" placeholder="Ex: 3500" min="100" data-testid="input-custom-amount">
+                    <label for="customAmount">Ou entrez un montant personnalisé</label>
+                    <input type="number" id="customAmount" placeholder="Ex: 3500" min="100">
                 </div>
 
                 <h3 class="section-title"><i class="fas fa-mobile-alt"></i> Mode de paiement</h3>
 
                 <div class="payment-methods">
-                    <div class="payment-method selected" data-method="fapshi" data-testid="button-method-fapshi">
+                    <div class="payment-method selected" data-method="fapshi">
                         <div class="method-icon mtn">
                             <i class="fas fa-mobile-alt"></i>
                         </div>
                         <div class="method-info">
                             <h4>Mobile Money Cameroun</h4>
-                            <p>MTN MoMo &amp; Orange Money (Cameroun)</p>
+                            <p>MTN MoMo &amp; Orange Money</p>
                         </div>
                         <i class="fas fa-check-circle check-icon"></i>
                     </div>
-                    <div class="payment-method" data-method="accountpe" data-testid="button-method-accountpe">
+                    <div class="payment-method" data-method="accountpe">
                         <div class="method-icon" style="background: linear-gradient(135deg, #6C47FF, #A855F7); color: #fff;">
                             <i class="fas fa-globe"></i>
                         </div>
                         <div class="method-info">
-                            <h4>AccountPe — Paiement International</h4>
-                            <p>Mobile Money multi-pays, cartes, Wave…</p>
+                            <h4>AccountPe — International</h4>
+                            <p>Multi-pays, Wave, Cartes...</p>
                         </div>
                         <i class="fas fa-check-circle check-icon"></i>
                     </div>
                 </div>
 
-                <!-- AccountPe country + phone fields (hidden by default) -->
+                <!-- AccountPe champs cachés -->
                 <div id="accountpeFields" style="display:none;">
                     <div style="margin-bottom:15px;">
                         <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
                             <i class="fas fa-flag" style="color:var(--primary-blue);margin-right:6px;"></i>Pays
                         </label>
-                        <select id="accountpeCountry" data-testid="select-accountpe-country"
-                            style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;background:#fff;cursor:pointer;">
+                        <select id="accountpeCountry" style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;background:#fff;cursor:pointer;">
                             <option value="CM">🇨🇲 Cameroun (XAF)</option>
                             <option value="SN">🇸🇳 Senegal (XOF)</option>
                             <option value="CI">🇨🇮 Cote d'Ivoire (XOF)</option>
-                            <option value="GH">🇬🇭 Ghana (GHS)</option>
-                            <option value="NG">🇳🇬 Nigeria (NGN)</option>
-                            <option value="KE">🇰🇪 Kenya (KES)</option>
-                            <option value="TZ">🇹🇿 Tanzanie (TZS)</option>
-                            <option value="UG">🇺🇬 Ouganda (UGX)</option>
-                            <option value="RW">🇷🇼 Rwanda (RWF)</option>
-                            <option value="ET">🇪🇹 Ethiopie (ETB)</option>
-                            <option value="ZM">🇿🇲 Zambie (ZMW)</option>
-                            <option value="BF">🇧🇫 Burkina Faso (XOF)</option>
-                            <option value="ML">🇲🇱 Mali (XOF)</option>
-                            <option value="GN">🇬🇳 Guinee (GNF)</option>
-                            <option value="CD">🇨🇩 RD Congo (CDF)</option>
-                            <option value="MZ">🇲🇿 Mozambique (MZN)</option>
-                            <option value="ZW">🇿🇼 Zimbabwe (ZWL)</option>
                         </select>
                     </div>
                     <div style="margin-bottom:15px;">
                         <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
-                            <i class="fas fa-phone" style="color:var(--primary-blue);margin-right:6px;"></i>Numero de telephone (optionnel)
+                            <i class="fas fa-phone" style="color:var(--primary-blue);margin-right:6px;"></i>Numéro (optionnel)
                         </label>
-                        <input type="tel" id="accountpePhone" data-testid="input-accountpe-phone"
-                            placeholder="Ex: 6XXXXXXXX"
-                            style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;">
-                    </div>
-                    <div style="background:linear-gradient(135deg,#f0ebff,#e8f4ff);border-radius:12px;padding:14px;margin-bottom:15px;border-left:4px solid #6C47FF;">
-                        <p style="font-size:0.85rem;color:#5b35d5;margin:0;"><i class="fas fa-info-circle" style="margin-right:6px;"></i>
-                        Vous serez redirige vers une page de paiement securisee AccountPe. Apres paiement, votre solde sera mis a jour automatiquement.</p>
+                        <input type="tel" id="accountpePhone" placeholder="Ex: 6XXXXXXXX" style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;">
                     </div>
                 </div>
 
                 <div class="deposit-summary">
                     <div class="row">
                         <span class="label">Montant</span>
-                        <span id="summaryAmount">0 XAF</span>
+                        <span id="summaryAmount">500 XAF</span>
                     </div>
                     <div class="row">
                         <span class="label">Frais</span>
                         <span id="summaryFees">0 XAF</span>
                     </div>
                     <div class="row">
-                        <span class="label">Total a payer</span>
-                        <span id="summaryTotal">0 XAF</span>
+                        <span class="label">Total à payer</span>
+                        <span id="summaryTotal">500 XAF</span>
                     </div>
                 </div>
 
-                <button class="btn btn-yellow deposit-btn" id="depositBtn" disabled data-testid="button-deposit">
-                    <i class="fas fa-check-circle"></i> Confirmer le depot
+                <button class="btn btn-yellow deposit-btn" id="depositBtn">
+                    <i class="fas fa-check-circle"></i> Confirmer le dépôt
                 </button>
             </div>
 
             <div class="transactions-section">
-                <h3 class="section-title"><i class="fas fa-history"></i> Historique des depots</h3>
+                <h3 class="section-title"><i class="fas fa-history"></i> Historique récent</h3>
                 <div id="transactionsContainer">
                     <div class="empty-state">
-                        <i class="fas fa-receipt"></i>
-                        <p>Aucun depot effectue</p>
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement de l'historique...</p>
                     </div>
                 </div>
             </div>
@@ -638,7 +631,7 @@
     </main>
 
     <script>
-        // Configuration Firebase - Meme config que dashboard.html
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
@@ -651,28 +644,28 @@
 
         let app, auth, db;
         try {
-            app = firebase.initializeApp(firebaseConfig);
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(firebaseConfig);
+            }
             auth = firebase.auth();
             db = firebase.firestore();
-            console.log("Firebase initialise sur depot.html");
         } catch (error) {
             console.error("Erreur Firebase:", error);
         }
 
-        const API_BASE_URL = window.location.hostname.includes('replit') 
-            ? '' 
-            : 'https://likeo-boost.replit.app';
+        // L'API est servie sur le même domaine, on utilise donc des chemins relatifs.
+        const API_BASE_URL = '';
 
         let currentUser = null;
         let userData = null;
-        let selectedAmount = 0;
+        let selectedAmount = 500;
         let selectedMethod = 'fapshi';
+        let unsubscribeActivities = null;
 
         function formatNumber(num) {
-            return num.toLocaleString('fr-FR');
+            return (num || 0).toLocaleString('fr-FR');
         }
 
-        // Helper function to get auth headers with Firebase token
         async function getAuthHeaders() {
             const token = await currentUser.getIdToken();
             return {
@@ -706,17 +699,16 @@
         }
 
         function updateSummary() {
-            const amount = selectedAmount;
+            const amount = selectedAmount || 0;
             const fees = 0;
             const total = amount + fees;
-
             document.getElementById('summaryAmount').textContent = `${formatNumber(amount)} XAF`;
             document.getElementById('summaryFees').textContent = `${formatNumber(fees)} XAF`;
             document.getElementById('summaryTotal').textContent = `${formatNumber(total)} XAF`;
-
             document.getElementById('depositBtn').disabled = amount < 100;
         }
 
+        // Sélecteurs de montant
         document.querySelectorAll('.amount-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
@@ -733,21 +725,17 @@
             updateSummary();
         });
 
+        // Sélecteurs de méthode de paiement
         document.querySelectorAll('.payment-method').forEach(method => {
             method.addEventListener('click', () => {
                 document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
                 method.classList.add('selected');
                 selectedMethod = method.dataset.method;
-                // Show/hide AccountPe-specific fields
-                const apFields = document.getElementById('accountpeFields');
-                if (selectedMethod === 'accountpe') {
-                    apFields.style.display = 'block';
-                } else {
-                    apFields.style.display = 'none';
-                }
+                document.getElementById('accountpeFields').style.display = (selectedMethod === 'accountpe') ? 'block' : 'none';
             });
         });
 
+        // Clic sur "Confirmer le dépôt"
         document.getElementById('depositBtn').addEventListener('click', async () => {
             const minAmount = selectedMethod === 'accountpe' ? 500 : 100;
             if (selectedAmount < minAmount) {
@@ -755,244 +743,174 @@
                 return;
             }
 
-            showLoading('Preparation du paiement...');
+            showLoading('Préparation du paiement...');
 
             try {
                 const authHeaders = await getAuthHeaders();
 
                 if (selectedMethod === 'accountpe') {
-                    // ---- AccountPe flow ----
                     const country = document.getElementById('accountpeCountry').value || 'CM';
                     const phone = document.getElementById('accountpePhone').value || '';
-
                     const response = await fetch(API_BASE_URL + '/api/accountpe/create-payment', {
                         method: 'POST',
                         headers: authHeaders,
                         body: JSON.stringify({ amount: selectedAmount, country, phone })
                     });
                     const data = await response.json();
-                    console.log('AccountPe response:', data);
-
                     if (!data.success) throw new Error(data.error || 'Erreur AccountPe');
 
-                    hideLoading();
                     localStorage.setItem('pendingAccountPeId', data.transactionId);
-                    localStorage.setItem('pendingAccountPeAmount', selectedAmount.toString());
                     window.location.href = data.checkoutUrl;
-
                 } else {
-                    // ---- Fapshi flow (MTN / Orange Cameroun) ----
-                    const transactionId = `dep-${Date.now()}`;
-                    const response = await fetch(API_BASE_URL + '/api/fapshi/initiate', {
+                    // Nouveau flux Fapshi basé sur la configuration de Social Boost Horizon
+                    const response = await fetch(API_BASE_URL + '/api/create-fapshi-checkout', {
                         method: 'POST',
                         headers: authHeaders,
                         body: JSON.stringify({
                             amount: selectedAmount,
+                            description: 'Recharge Likéo Boost',
                             email: userData?.email || currentUser.email || '',
-                            externalId: transactionId
+                            name: userData?.username || currentUser.displayName || 'Client'
                         })
                     });
                     const data = await response.json();
-                    console.log('Fapshi response:', data);
-
                     if (data.error) throw new Error(data.error);
 
-                    if (data.link && data.transId) {
-                        hideLoading();
-                        localStorage.setItem('pendingTransId', data.transId);
-                        localStorage.setItem('pendingAmount', selectedAmount.toString());
-                        window.location.href = data.link;
+                    if (data.checkoutUrl) {
+                        window.location.href = data.checkoutUrl;
                     } else {
-                        throw new Error('Reponse invalide du serveur');
+                        throw new Error('Lien de paiement non reçu.');
                     }
                 }
-
             } catch (error) {
-                console.error('Deposit error:', error);
                 hideLoading();
                 showNotification('error', 'Erreur', error.message || 'Une erreur est survenue');
             }
         });
 
-        async function checkPaymentStatus(transId, attempts = 0) {
-            if (attempts >= 60) {
-                showNotification('warning', 'Timeout', 'Le paiement a expire. Veuillez reessayer.');
-                loadTransactions();
-                return;
-            }
+        // Vérification manuelle du paiement via le bouton de l'historique
+        window.verifySinglePayment = async function(transId, btnElement) {
+            const originalHtml = btnElement.innerHTML;
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérif...';
 
             try {
-                const response = await fetch(API_BASE_URL + '/api/fapshi/verify-and-credit', {
+                const authHeaders = await getAuthHeaders();
+                const res = await fetch(API_BASE_URL + '/api/fapshi/verify-transaction', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        transId: transId,
-                        userId: currentUser.uid
-                    })
+                    headers: authHeaders,
+                    body: JSON.stringify({ transId })
                 });
-                const data = await response.json();
-                console.log('Payment verification:', data);
-
-                if (data.status === 'success' || data.status === 'already_processed') {
-                    const newBalance = data.newBalance || data.balance || (userData.balance || 0) + (data.amount || selectedAmount);
-                    userData.balance = newBalance;
-                    document.getElementById('currentBalance').textContent = `${formatNumber(newBalance)} XAF`;
-
-                    showNotification('success', 'Depot reussi!', `Votre solde a ete mis a jour`);
-                    
-                    selectedAmount = 0;
-                    document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
-                    document.getElementById('customAmount').value = '';
-                    document.getElementById('phoneNumber').value = '';
-                    updateSummary();
-                    
-                    loadTransactions();
-
-                } else if (data.status === 'failed') {
-                    showNotification('error', 'Paiement echoue', 'Le paiement n\'a pas abouti. Veuillez reessayer.');
-                    loadTransactions();
-
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    if (data.status === 'CONFIRMED') {
+                        showNotification('success', 'Succès', 'Paiement confirmé ! Votre solde a été mis à jour.');
+                    } else if (data.status === 'FAILED') {
+                        showNotification('error', 'Échec', 'Ce paiement a échoué ou a expiré.');
+                    } else {
+                        showNotification('info', 'En attente', 'Le paiement est toujours en attente chez l\'opérateur.');
+                    }
                 } else {
-                    setTimeout(() => checkPaymentStatus(transId, attempts + 1), 5000);
+                    showNotification('error', 'Erreur', data.error || 'Impossible de vérifier la transaction.');
                 }
-
-            } catch (error) {
-                console.error('Error checking payment status:', error);
-                setTimeout(() => checkPaymentStatus(transId, attempts + 1), 5000);
+            } catch(e) {
+                console.error("Erreur verify:", e);
+                showNotification('error', 'Erreur réseau', 'Erreur de connexion avec le serveur.');
+            } finally {
+                btnElement.disabled = false;
+                btnElement.innerHTML = originalHtml;
             }
-        }
+        };
 
-        async function loadTransactions() {
-            try {
-                const headers = await getAuthHeaders();
-                const response = await fetch(API_BASE_URL + `/api/deposits/${currentUser.uid}`, {
-                    headers: headers
-                });
-                const data = await response.json();
+        // Chargement en temps réel des activités et mise à jour du solde
+        function loadRecentActivities(userId) {
+            if (unsubscribeActivities) unsubscribeActivities();
 
-                const container = document.getElementById('transactionsContainer');
+            const container = document.getElementById('transactionsContainer');
 
-                if (!data.deposits || data.deposits.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-receipt"></i>
-                            <p>Aucun depot effectue</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = '';
-                data.deposits.forEach(tx => {
-                    const isPaid = tx.status === 'completed' || tx.status === 'paid';
-                    const isPending = tx.status === 'pending' || tx.status === 'created';
-                    const statusClass = isPaid ? 'success' : isPending ? 'pending' : 'failed';
-                    const statusIcon = isPaid ? 'check' : isPending ? 'clock' : 'times';
-                    const statusText = isPaid ? 'Reussi' : isPending ? 'En attente' : 
-                                      tx.status === 'expired' ? 'Expire' : 'Echoue';
-
-                    const isAccountPe = tx.method === 'AccountPe';
-                    const methodLabel = isAccountPe ? 'Depot AccountPe' : 'Depot Mobile Money';
-                    const methodIconHtml = isAccountPe 
-                        ? `<div class="transaction-icon ${statusClass}" style="background:${isPaid ? 'rgba(108,71,255,0.1)' : ''};color:${isPaid ? '#6C47FF' : ''}">
-                               <i class="fas fa-globe"></i>
-                           </div>`
-                        : `<div class="transaction-icon ${statusClass}">
-                               <i class="fas fa-${statusIcon}"></i>
-                           </div>`;
-
-                    let date = 'Date inconnue';
-                    if (tx.createdAt && tx.createdAt._seconds) {
-                        date = new Date(tx.createdAt._seconds * 1000).toLocaleDateString('fr-FR');
+            unsubscribeActivities = db.collection('fapshiTransactions')
+                .where('userId', '==', userId)
+                .orderBy('dateInitiated', 'desc')
+                .limit(10)
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-receipt"></i>
+                                <p>Aucun dépôt effectué récemment</p>
+                            </div>
+                        `;
+                        return;
                     }
 
-                    container.innerHTML += `
-                        <div class="transaction-item" data-testid="transaction-item-${tx.transId}">
-                            ${methodIconHtml}
-                            <div class="transaction-info">
-                                <h4>${methodLabel}</h4>
-                                <p>${date} — ${statusText}</p>
-                            </div>
-                            <div class="transaction-amount ${isPending ? 'pending' : ''}">
-                                +${formatNumber(tx.amount)} XAF
-                            </div>
-                        </div>
-                    `;
-                });
+                    container.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const tx = doc.data();
+                        const isPaid = tx.status === 'CONFIRMED';
+                        const isPending = tx.status === 'PENDING';
+                        const isFailed = tx.status === 'FAILED' || tx.status === 'EXPIRED';
 
-            } catch (error) {
-                console.error('Error loading transactions:', error);
-            }
+                        const statusClass = isPaid ? 'success' : isPending ? 'pending' : 'failed';
+                        const statusIcon = isPaid ? 'check' : isPending ? 'clock' : 'times';
+                        const statusText = isPaid ? 'Réussi' : isPending ? 'En attente' : 'Échoué';
+                        
+                        let dateText = 'Date inconnue';
+                        if (tx.dateInitiated && tx.dateInitiated.toDate) {
+                            dateText = tx.dateInitiated.toDate().toLocaleDateString('fr-FR', {
+                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                            });
+                        }
+
+                        let verifyBtnHtml = '';
+                        if (isPending) {
+                            verifyBtnHtml = `
+                                <button class="verify-inline-btn" onclick="verifySinglePayment('${tx.transId}', this)">
+                                    <i class="fas fa-sync-alt"></i> Vérifier
+                                </button>
+                            `;
+                        }
+
+                        container.innerHTML += `
+                            <div class="transaction-item">
+                                <div class="transaction-icon ${statusClass}">
+                                    <i class="fas fa-${statusIcon}"></i>
+                                </div>
+                                <div class="transaction-info">
+                                    <h4>Dépôt Mobile Money</h4>
+                                    <p>${dateText} — ${statusText}</p>
+                                    ${verifyBtnHtml}
+                                </div>
+                                <div class="transaction-amount ${isPending ? 'pending' : ''}">
+                                    +${formatNumber(tx.amount)} XAF
+                                </div>
+                            </div>
+                        `;
+                    });
+                }, err => {
+                    console.error('Erreur chargement transactions:', err);
+                });
         }
 
-        async function loadUserData() {
-            try {
-                const doc = await db.collection('users').doc(currentUser.uid).get();
+        // Surveiller le solde en temps réel
+        function watchBalance(userId) {
+            db.collection('users').doc(userId).onSnapshot(doc => {
                 if (doc.exists) {
                     userData = doc.data();
                     document.getElementById('currentBalance').textContent = `${formatNumber(userData.balance || 0)} XAF`;
                 }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
-        }
-
-        // ---- AccountPe: check payment status after redirect back ----
-        async function checkAccountPeStatus(transactionId, attempts = 0) {
-            if (attempts >= 30) {
-                showNotification('warning', 'Timeout', 'Verification expiree. Votre solde sera mis a jour automatiquement sous peu.');
-                loadTransactions();
-                return;
-            }
-            try {
-                const authHeaders = await getAuthHeaders();
-                const response = await fetch(API_BASE_URL + `/api/accountpe/confirm/${transactionId}`, {
-                    headers: authHeaders
-                });
-                const data = await response.json();
-                console.log('AccountPe confirm:', data);
-
-                if (data.isPaid) {
-                    const newBalance = data.newBalance || (userData?.balance || 0);
-                    userData = userData || {};
-                    userData.balance = newBalance;
-                    document.getElementById('currentBalance').textContent = `${formatNumber(newBalance)} XAF`;
-                    showNotification('success', 'Depot confirme!', `Votre solde a ete credite avec succes.`);
-                    localStorage.removeItem('pendingAccountPeId');
-                    localStorage.removeItem('pendingAccountPeAmount');
-                    await loadTransactions();
-                } else {
-                    setTimeout(() => checkAccountPeStatus(transactionId, attempts + 1), 4000);
-                }
-            } catch (error) {
-                console.error('AccountPe confirm error:', error);
-                setTimeout(() => checkAccountPeStatus(transactionId, attempts + 1), 4000);
-            }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            auth.onAuthStateChanged(async user => {
+            auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
-                    await loadUserData();
-                    await loadTransactions();
+                    watchBalance(user.uid);
+                    loadRecentActivities(user.uid);
+                    updateSummary();
                     hideLoading();
-                    
-                    // Check Fapshi pending payment
-                    const pendingTransId = localStorage.getItem('pendingTransId');
-                    if (pendingTransId) {
-                        showNotification('info', 'Verification', 'Verification du paiement Fapshi en cours...');
-                        localStorage.removeItem('pendingTransId');
-                        localStorage.removeItem('pendingAmount');
-                        checkPaymentStatus(pendingTransId);
-                    }
-
-                    // Check AccountPe pending payment
-                    const pendingAccountPeId = localStorage.getItem('pendingAccountPeId');
-                    if (pendingAccountPeId) {
-                        showNotification('info', 'Verification', 'Verification de votre paiement AccountPe...');
-                        checkAccountPeStatus(pendingAccountPeId);
-                    }
                 } else {
                     window.location.href = 'connexion.html';
                 }
