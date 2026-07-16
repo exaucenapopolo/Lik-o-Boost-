@@ -1,0 +1,15 @@
+{
+  "name": "likeo-boost-backend",
+  "version": "1.0.0",
+  "description": "API backend pour Likeo Boost (Vercel serverless)",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
