@@ -5,529 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - Likéo Boost</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
+        /* Mêmes styles CSS professionnels que pour la page de connexion */
         :root {
-            --primary-yellow: #FFD700;
-            --primary-blue: #2A5EE8;
-            --primary-orange: #FF7A00;
-            --dark-blue: #1A1F3C;
-            --light-gray: #F8F9FA;
-            --text-dark: #333333;
-            --text-light: #777777;
-            --white: #FFFFFF;
-            --success-green: #4CAF50;
-            --error-red: #f44336;
-            --warning-orange: #ff9800;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --primary-yellow: #FFD700; --primary-blue: #2A5EE8; --primary-orange: #FF7A00;
+            --dark-blue: #1A1F3C; --text-dark: #2d3748; --text-light: #718096;
+            --white: #FFFFFF; --bg-color: #f7fafc; --input-border: #e2e8f0;
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05); --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f2ff 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        h1, h2, h3, h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 14px 32px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: var(--transition);
-            cursor: pointer;
-            border: none;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-orange);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 15px 0;
-            transition: var(--transition);
-            background-color: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.8rem;
-            color: var(--dark-blue);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo span { color: var(--primary-blue); }
-        .logo .dot { color: var(--primary-orange); font-size: 2.2rem; line-height: 1; }
-        .logo .yellow { color: var(--primary-yellow); }
-
-        .auth-section {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 120px 0 60px;
-            animation: fadeIn 1s ease-out;
-            width: 100%;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .auth-container {
-            width: 100%;
-            max-width: 500px;
-            background-color: var(--white);
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            animation: slideUp 0.8s ease-out;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .auth-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-yellow), var(--primary-blue), var(--primary-orange));
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .auth-header h2 {
-            font-size: 2.2rem;
-            color: var(--dark-blue);
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, var(--primary-blue), var(--primary-orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .auth-header p { color: var(--text-light); }
-
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: var(--transition);
-            background-color: #f9f9f9;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            background-color: var(--white);
-            box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1);
-        }
-
-        .form-control.has-error {
-            border-color: var(--error-red);
-        }
-
-        .error-message {
-            color: var(--error-red);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background-color: var(--bg-color); min-height: 100vh; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header { background-color: var(--white); box-shadow: var(--shadow-sm); padding: 15px 0; position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .navbar { display: flex; justify-content: center; }
+        .logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2rem; color: var(--dark-blue); text-decoration: none; }
+        .logo span { color: var(--primary-blue); } .logo .dot { color: var(--primary-orange); } .logo .yellow { color: var(--primary-yellow); }
+        .auth-section { flex: 1; display: flex; align-items: center; justify-content: center; padding: 100px 0 40px; }
+        .auth-card { background: var(--white); width: 100%; max-width: 420px; border-radius: 16px; padding: 40px; box-shadow: var(--shadow-md); text-align: center; }
+        .auth-card h2 { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; margin-bottom: 8px; color: var(--dark-blue); }
+        .auth-card p.subtitle { color: var(--text-light); margin-bottom: 30px; font-size: 0.95rem; }
+        .btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--input-border); border-radius: 8px; background: var(--white); color: var(--text-dark); font-weight: 500; font-family: 'Poppins', sans-serif; font-size: 1rem; cursor: pointer; transition: var(--transition); }
+        .btn-google:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .divider { display: flex; align-items: center; text-align: center; margin-bottom: 20px; color: var(--text-light); font-size: 0.9rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--input-border); }
+        .divider:not(:empty)::before { margin-right: .5em; } .divider:not(:empty)::after { margin-left: .5em; }
+        .form-group { text-align: left; margin-bottom: 20px; position: relative; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px 16px; border: 1px solid var(--input-border); border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 1rem; transition: var(--transition); background: #f8fafc; }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); background: var(--white); box-shadow: 0 0 0 3px rgba(42, 94, 232, 0.1); }
+        select.form-control { cursor: pointer; appearance: none; }
+        .password-toggle { position: absolute; right: 15px; top: 38px; background: none; border: none; color: var(--text-light); cursor: pointer; }
+        .error-message { color: #e53e3e; font-size: 0.8rem; margin-top: 4px; display: none; }
         .error-message.show { display: block; }
-
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 40px;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .password-toggle:hover { color: var(--primary-blue); }
-
-        .password-strength {
-            margin-top: 10px;
-            display: none;
-        }
-
-        .password-strength.show { display: block; }
-
-        .strength-bar {
-            height: 5px;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 5px;
-        }
-
-        .strength-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 5px;
-            transition: width 0.3s ease, background-color 0.3s ease;
-        }
-
-        .strength-text {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .phone-input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .country-code { flex: 0 0 100px; }
-        .phone-number { flex: 1; }
-
-        .form-footer {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .submit-btn:hover { transform: translateY(-3px) scale(1.02); }
-        .submit-btn .btn-text { position: relative; z-index: 2; }
-
-        .submit-btn .btn-loader {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-        }
-
-        .submit-btn.loading { pointer-events: none; }
-        .submit-btn.loading .btn-text { opacity: 0; }
-        .submit-btn.loading .btn-loader { display: block; }
-
-        .btn-loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--white);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        .auth-links {
-            margin-top: 25px;
-            text-align: center;
-        }
-
-        .auth-links a {
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .auth-links a:hover { color: var(--primary-orange); }
-
-        .notification-container {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 350px;
-        }
-
-        .notification {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            border-left: 5px solid var(--success-green);
-            transform: translateX(400px);
-            opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s ease;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .notification.show { transform: translateX(0); opacity: 1; }
-        .notification.error { border-left-color: var(--error-red); }
-        .notification.warning { border-left-color: var(--warning-orange); }
-
-        .notification-icon { font-size: 1.5rem; margin-right: 15px; margin-top: 2px; }
-        .notification.success .notification-icon { color: var(--success-green); }
-        .notification.error .notification-icon { color: var(--error-red); }
-        .notification.warning .notification-icon { color: var(--warning-orange); }
-
-        .notification-content h4 { font-size: 1.1rem; margin-bottom: 5px; }
-        .notification-content p { font-size: 0.9rem; color: var(--text-light); }
-
-        .notification-close {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            margin-left: auto;
-            font-size: 1.2rem;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .notification-close:hover { color: var(--text-dark); }
-
-        footer {
-            background-color: var(--dark-blue);
-            color: var(--white);
-            padding: 30px 0;
-            margin-top: auto;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .footer-bottom a {
-            color: var(--primary-yellow);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .footer-bottom a:hover { color: var(--primary-orange); text-decoration: underline; }
-
-        @media (max-width: 768px) {
-            .auth-container { padding: 30px; margin: 0 20px; }
-            .auth-header h2 { font-size: 1.8rem; }
-            .notification-container { left: 20px; right: 20px; max-width: none; }
-            .phone-input-group { flex-direction: column; gap: 10px; }
-            .country-code { flex: 1; }
-        }
-
-        @media (max-width: 480px) {
-            .auth-container { padding: 25px 20px; }
-            .form-control { padding: 12px 15px; }
-            .btn { padding: 12px 24px; }
-        }
+        .btn-submit { width: 100%; padding: 14px; background: var(--primary-blue); color: var(--white); border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: 'Poppins', sans-serif; margin-top: 10px;}
+        .btn-submit:hover { background: var(--dark-blue); }
+        .auth-links { margin-top: 20px; font-size: 0.95rem; }
+        .auth-links a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+        footer { text-align: center; padding: 20px 0; color: var(--text-light); font-size: 0.85rem; }
     </style>
 </head>
 <body>
     <header>
-        <div class="container">
-            <nav class="navbar">
-                <a href="index.html" class="logo">
-                    Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost
-                </a>
-            </nav>
+        <div class="container navbar">
+            <a href="index.html" class="logo">Lik<span class="yellow">é</span>o<span class="dot">.</span>Boost</a>
         </div>
     </header>
 
-    <div class="notification-container" id="notificationContainer"></div>
-
     <section class="auth-section">
-        <div class="container">
-            <div class="auth-container">
-                <div class="auth-header">
-                    <h2>Créer un Compte</h2>
-                    <p>Rejoignez Likéo Boost et boostez votre visibilité en ligne</p>
+        <div class="auth-card">
+            <h2>Créer un compte</h2>
+            <p class="subtitle">Rejoignez-nous en quelques secondes</p>
+
+            <button type="button" class="btn-google" id="btnGoogle">
+                <i class="fab fa-google" style="color: #DB4437; font-size: 1.2rem;"></i> S'inscrire avec Google
+            </button>
+
+            <div class="divider">ou classiquement</div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="email">Adresse Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="votre@email.com" required>
+                    <div class="error-message" id="emailError"></div>
                 </div>
 
-                <form id="registerForm">
-                    <div class="form-group">
-                        <label for="username">Nom d'utilisateur</label>
-                        <input type="text" id="username" class="form-control" placeholder="Votre nom d'utilisateur" required>
-                        <div class="error-message" id="usernameError"></div>
-                    </div>
+                <div class="form-group">
+                    <label for="country">Pays de résidence</label>
+                    <select id="country" class="form-control" required>
+                        <option value="">Sélectionnez un pays</option>
+                        <optgroup label="Afrique">
+                            <option value="CM">Cameroun</option>
+                            <option value="CI">Côte d'Ivoire</option>
+                            <option value="SN">Sénégal</option>
+                            <option value="ML">Mali</option>
+                            <option value="BF">Burkina Faso</option>
+                            <option value="BJ">Bénin</option>
+                            <option value="TG">Togo</option>
+                            <option value="GA">Gabon</option>
+                            <option value="CG">Congo</option>
+                            <option value="CD">RD Congo</option>
+                        </optgroup>
+                        <optgroup label="Europe & Amérique">
+                            <option value="FR">France</option>
+                            <option value="BE">Belgique</option>
+                            <option value="CH">Suisse</option>
+                            <option value="CA">Canada</option>
+                        </optgroup>
+                    </select>
+                    <div class="error-message" id="countryError"></div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="email">Adresse Email</label>
-                        <input type="email" id="email" class="form-control" placeholder="votre@email.com" required>
-                        <div class="error-message" id="emailError"></div>
-                    </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe (Min. 6 caractères)</label>
+                    <input type="password" id="password" class="form-control" placeholder="Créer un mot de passe" required minlength="6">
+                    <button type="button" class="password-toggle" id="togglePassword"><i class="far fa-eye"></i></button>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="country">Pays</label>
-                        <select id="country" class="form-control" required>
-                            <option value="" disabled selected>Sélectionnez votre pays</option>
-                            <option value="BJ">Bénin (+229)</option>
-                            <option value="BF">Burkina Faso (+226)</option>
-                            <option value="CM">Cameroun (+237)</option>
-                            <option value="CI">Côte d'Ivoire (+225)</option>
-                            <option value="GA">Gabon (+241)</option>
-                            <option value="GN">Guinée (+224)</option>
-                            <option value="ML">Mali (+223)</option>
-                            <option value="NE">Niger (+227)</option>
-                            <option value="SN">Sénégal (+221)</option>
-                            <option value="TG">Togo (+228)</option>
-                            <option value="CD">RD Congo (+243)</option>
-                            <option value="CG">Congo (+242)</option>
-                            <option value="MG">Madagascar (+261)</option>
-                            <option value="FR">France (+33)</option>
-                            <option value="BE">Belgique (+32)</option>
-                            <option value="CH">Suisse (+41)</option>
-                            <option value="CA">Canada (+1)</option>
-                        </select>
-                        <div class="error-message" id="countryError"></div>
-                    </div>
+                <button type="submit" class="btn-submit">Créer mon compte</button>
 
-                    <div class="form-group">
-                        <label for="phone">Numéro WhatsApp</label>
-                        <div class="phone-input-group">
-                            <input type="text" id="countryCode" class="form-control country-code" value="+" readonly>
-                            <input type="tel" id="phone" class="form-control phone-number" placeholder="XX XXX XX XX" required>
-                        </div>
-                        <div class="error-message" id="phoneError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Mot de passe</label>
-                        <input type="password" id="password" class="form-control" placeholder="Votre mot de passe" required>
-                        <button type="button" class="password-toggle" id="togglePassword">
-                            <i class="far fa-eye"></i>
-                        </button>
-                        <div class="password-strength" id="passwordStrength">
-                            <div class="strength-bar">
-                                <div class="strength-fill" id="passwordStrengthFill"></div>
-                            </div>
-                            <span class="strength-text" id="passwordStrengthText"></span>
-                        </div>
-                        <div class="error-message" id="passwordError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirmer le mot de passe</label>
-                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmez votre mot de passe" required>
-                        <div class="error-message" id="confirmPasswordError"></div>
-                    </div>
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-primary submit-btn">
-                            <span class="btn-text">Créer mon compte</span>
-                            <div class="btn-loader"></div>
-                        </button>
-                        <div class="auth-links">
-                            <p>Vous avez déjà un compte ? <a href="connexion.html">Connectez-vous</a></p>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                <div class="auth-links">
+                    <p>Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
+                </div>
+            </form>
         </div>
     </section>
 
     <footer>
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2026 Likéo Boost. Tous droits réservés.</p>
-            </div>
-        </div>
+        <p>&copy; 2026 Likéo Boost. Tous droits réservés.</p>
     </footer>
 
     <script>
-        // Configuration Firebase - Nouveau projet
         const firebaseConfig = {
             apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
@@ -538,307 +131,116 @@
             measurementId: "G-RV38D7VYF5"
         };
 
-        // Initialiser Firebase
-        let app, auth, db;
-        try {
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-            console.log("Firebase initialisé avec succès");
-        } catch (error) {
-            console.error("Erreur d'initialisation Firebase:", error);
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // 1. DÉTECTION AUTOMATIQUE DU PAYS
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('https://get.geojs.io/v1/ip/country.json')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('country');
+                    // Vérifie si le code pays détecté existe dans nos options
+                    if (select.querySelector(`option[value="${data.country}"]`)) {
+                        select.value = data.country;
+                    }
+                })
+                .catch(err => console.log('Géolocalisation ignorée', err));
+        });
+
+        // Affichage des erreurs simples
+        function showError(id, message) {
+            const err = document.getElementById(id + 'Error');
+            err.textContent = message;
+            err.classList.add('show');
+        }
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
         }
 
-        let isSubmitting = false;
-
-        const countryCodes = {
-            'CM': '+237', 'CI': '+225', 'SN': '+221', 'GN': '+224', 'ML': '+223',
-            'BF': '+226', 'NE': '+227', 'TG': '+228', 'BJ': '+229', 'GA': '+241',
-            'CG': '+242', 'CD': '+243', 'MG': '+261', 'FR': '+33', 'BE': '+32',
-            'CH': '+41', 'CA': '+1'
-        };
-
-        function showNotification(type, title, message, duration = 5000) {
-            const container = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            
-            let icon = type === 'success' ? 'fas fa-check-circle' : 
-                       type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-exclamation-triangle';
-            
-            notification.innerHTML = `
-                <div class="notification-icon"><i class="${icon}"></i></div>
-                <div class="notification-content"><h4>${title}</h4><p>${message}</p></div>
-                <button class="notification-close"><i class="fas fa-times"></i></button>
-            `;
-            
-            container.appendChild(notification);
-            setTimeout(() => notification.classList.add('show'), 10);
-            
-            notification.querySelector('.notification-close').addEventListener('click', () => closeNotification(notification));
-            if (duration > 0) setTimeout(() => closeNotification(notification), duration);
-        }
-
-        function closeNotification(notification) {
-            notification.classList.remove('show');
-            setTimeout(() => notification.parentNode && notification.parentNode.removeChild(notification), 500);
-        }
-
-        function showError(inputId, message) {
-            const input = document.getElementById(inputId);
-            const errorElement = document.getElementById(inputId + 'Error');
-            if (input) input.classList.add('has-error');
-            if (errorElement) {
-                errorElement.textContent = message;
-                errorElement.classList.add('show');
-            }
-        }
-
-        function clearError(inputId) {
-            const input = document.getElementById(inputId);
-            const errorElement = document.getElementById(inputId + 'Error');
-            if (input) input.classList.remove('has-error');
-            if (errorElement) {
-                errorElement.textContent = '';
-                errorElement.classList.remove('show');
-            }
-        }
-
-        function checkPasswordStrength(password) {
-            let strength = 0;
-            const strengthBar = document.getElementById('passwordStrengthFill');
-            const strengthText = document.getElementById('passwordStrengthText');
-            const strengthContainer = document.getElementById('passwordStrength');
-            
-            if (!password) {
-                strengthContainer.classList.remove('show');
-                return;
-            }
-            
-            strengthContainer.classList.add('show');
-            
-            if (password.length >= 8) strength += 25;
-            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-            if (/\d/.test(password)) strength += 25;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-            
-            strengthBar.style.width = `${strength}%`;
-            
-            if (strength < 25) {
-                strengthBar.style.backgroundColor = '#f44336';
-                strengthText.textContent = 'Très faible';
-            } else if (strength < 50) {
-                strengthBar.style.backgroundColor = '#ff9800';
-                strengthText.textContent = 'Faible';
-            } else if (strength < 75) {
-                strengthBar.style.backgroundColor = '#ffc107';
-                strengthText.textContent = 'Moyen';
-            } else {
-                strengthBar.style.backgroundColor = '#4caf50';
-                strengthText.textContent = 'Fort';
-            }
-        }
-
-        function updateCountryCode() {
-            const countrySelect = document.getElementById('country');
-            const countryCodeInput = document.getElementById('countryCode');
-            const selectedCountry = countrySelect.value;
-            countryCodeInput.value = countryCodes[selectedCountry] || '+';
-        }
-
-        function validateForm() {
-            let isValid = true;
-            
-            const username = document.getElementById('username').value.trim();
-            if (!username || username.length < 3) {
-                showError('username', 'Le nom d\'utilisateur doit contenir au moins 3 caractères');
-                isValid = false;
-            } else clearError('username');
+        // --- INSCRIPTION CLASSIQUE ---
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
             
             const email = document.getElementById('email').value.trim();
-            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showError('email', 'Veuillez entrer une adresse email valide');
-                isValid = false;
-            } else clearError('email');
-            
+            const password = document.getElementById('password').value;
             const country = document.getElementById('country').value;
+            
+            // Création automatique du nom d'utilisateur depuis l'email (ex: jean.dupont@mail.com -> jean.dupont)
+            const autoUsername = email.split('@')[0];
+
+            if (password.length < 6) {
+                return showError('password', 'Le mot de passe doit faire au moins 6 caractères.');
+            }
             if (!country) {
-                showError('country', 'Veuillez sélectionner votre pays');
-                isValid = false;
-            } else clearError('country');
-            
-            const phone = document.getElementById('phone').value.trim();
-            if (!phone || phone.replace(/\s/g, '').length < 8) {
-                showError('phone', 'Le numéro doit contenir au moins 8 chiffres');
-                isValid = false;
-            } else clearError('phone');
-            
-            const password = document.getElementById('password').value;
-            if (!password || password.length < 6) {
-                showError('password', 'Le mot de passe doit contenir au moins 6 caractères');
-                isValid = false;
-            } else clearError('password');
-            
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            if (password !== confirmPassword) {
-                showError('confirmPassword', 'Les mots de passe ne correspondent pas');
-                isValid = false;
-            } else clearError('confirmPassword');
-            
-            return isValid;
-        }
-
-        // FONCTION CORRIGÉE - Création du document utilisateur
-        async function createUserDocument(userId, userData) {
-            console.log("Création du document utilisateur pour UID:", userId);
-            console.log("Données:", userData);
-            
-            try {
-                const userRef = db.collection('users').doc(userId);
-                
-                const dataToSave = {
-                    uid: userId,
-                    username: userData.username,
-                    email: userData.email,
-                    country: userData.country,
-                    phone: userData.phone,
-                    balance: 0,
-                    totalOrders: 0,
-                    activeOrders: 0,
-                    totalSpent: 0,
-                    role: 'user',
-                    status: 'active',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                await userRef.set(dataToSave);
-                console.log("Document utilisateur créé avec succès!");
-                return true;
-            } catch (error) {
-                console.error("Erreur création document:", error);
-                console.error("Code erreur:", error.code);
-                console.error("Message:", error.message);
-                throw error;
+                return showError('country', 'Veuillez sélectionner un pays.');
             }
-        }
 
-        async function handleRegister(event) {
-            event.preventDefault();
-            
-            if (isSubmitting) return;
-            if (!validateForm()) {
-                showNotification('warning', 'Formulaire invalide', 'Veuillez corriger les erreurs');
-                return;
-            }
-            
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const country = document.getElementById('country').value;
-            const countryCode = document.getElementById('countryCode').value;
-            const phone = countryCode + ' ' + document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value;
-            
-            isSubmitting = true;
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.classList.add('loading');
-            
             try {
-                console.log("1. Création du compte Auth...");
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                console.log("2. Compte Auth créé, UID:", user.uid);
+                // Créer l'utilisateur dans Firebase Auth
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
                 
-                console.log("3. Création du document Firestore...");
-                await createUserDocument(user.uid, {
-                    username: username,
+                // Sauvegarder dans la base de données Firestore
+                await db.collection('users').doc(cred.user.uid).set({
+                    uid: cred.user.uid,
+                    username: autoUsername,
                     email: email,
                     country: country,
-                    phone: phone
+                    balance: 0,
+                    role: 'user',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                console.log("4. Document Firestore créé!");
-                
-                // Stocker les infos dans localStorage
-                localStorage.setItem('userUID', user.uid);
-                localStorage.setItem('userEmail', user.email);
-                localStorage.setItem('userName', username);
-                
-                isSubmitting = false;
-                submitBtn.classList.remove('loading');
-                
-                showNotification('success', 'Inscription réussie!', 'Redirection vers le tableau de bord...');
-                document.getElementById('registerForm').reset();
-                
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 2000);
-                
+
+                window.location.href = 'dashboard.html';
             } catch (error) {
-                isSubmitting = false;
-                submitBtn.classList.remove('loading');
-                
-                console.error("Erreur inscription:", error);
-                
-                let errorMessage = 'Une erreur est survenue';
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'Cette adresse email est déjà utilisée';
-                        showError('email', errorMessage);
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Adresse email invalide';
-                        showError('email', errorMessage);
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Mot de passe trop faible';
-                        showError('password', errorMessage);
-                        break;
-                    default:
-                        errorMessage = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    showError('email', 'Cette adresse email est déjà utilisée.');
+                } else {
+                    showError('email', 'Une erreur est survenue lors de la création.');
                 }
+            }
+        });
+
+        // --- INSCRIPTION GOOGLE ---
+        document.getElementById('btnGoogle').addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
                 
-                showNotification('error', 'Échec de l\'inscription', errorMessage);
-            }
-        }
-
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            const toggleButton = document.getElementById('togglePassword');
-            const icon = toggleButton.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                confirmPasswordInput.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                confirmPasswordInput.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("Page d'inscription chargée");
-            
-            document.getElementById('registerForm').addEventListener('submit', handleRegister);
-            document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
-            document.getElementById('country').addEventListener('change', updateCountryCode);
-            document.getElementById('password').addEventListener('input', function() {
-                checkPasswordStrength(this.value);
-            });
-            
-            document.querySelectorAll('.form-control').forEach(input => {
-                input.addEventListener('input', function() { clearError(this.id); });
-            });
-            
-            // Vérifier si déjà connecté
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    console.log("Utilisateur déjà connecté, redirection...");
-                    window.location.href = 'dashboard.html';
+                // Vérifier si le compte existe dans Firestore
+                const docRef = await db.collection('users').doc(user.uid).get();
+                if (!docRef.exists) {
+                    await db.collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        username: user.email.split('@')[0],
+                        email: user.email,
+                        country: "Détecté via Google",
+                        balance: 0,
+                        role: 'user',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } else {
+                    await db.collection('users').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
                 }
-            });
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                console.error("Erreur Google Auth:", error);
+                alert("Erreur lors de l'inscription avec Google.");
+            }
+        });
+
+        // Toggle mot de passe
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            this.innerHTML = input.type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
         });
     </script>
 </body>
