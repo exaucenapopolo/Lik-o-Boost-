@@ -94,6 +94,7 @@ app.use(cors());
 app.use(express.json());
 
 // ---------- ROUTES ----------
+
 // GET /api/exo/services
 app.get('/api/exo/services', async (req, res) => {
     try {
@@ -163,7 +164,7 @@ app.post('/api/exo/order', async (req, res) => {
             if (counterDoc.exists && counterDoc.data().lastId) {
                 nextId = counterDoc.data().lastId + 1;
             }
-            finalOrderId = `SBH-${nextId}`;
+            finalOrderId = `LKB-${nextId}`; // LKB pour Likéo Boost !
 
             const userRef2 = db.collection('users').doc(uid);
             const userDoc2 = await transaction.get(userRef2);
@@ -215,7 +216,7 @@ app.post('/api/exo/order', async (req, res) => {
     }
 });
 
-// GET /api/orders/:uid
+// GET /api/orders/:uid - MODIFIÉ POUR ÉVITER LES INDEX COMPOSITES FIRESTORE
 app.get('/api/orders/:uid', async (req, res) => {
     try {
         const uid = req.params.uid;
@@ -224,51 +225,206 @@ app.get('/api/orders/:uid', async (req, res) => {
             return res.status(403).json({ error: 'Accès refusé' });
         }
 
+        // Requête simple uniquement sur userId (aucun index composite requis)
         const ordersSnapshot = await db.collection('commandes')
             .where('userId', '==', uid)
-            .orderBy('createdAt', 'desc')
             .get();
 
         const orders = [];
         for (const doc of ordersSnapshot.docs) {
             const data = doc.data();
-            let status = data.status;
-            let remains = data.remains || 0;
-            if (data.exoOrderId) {
-                try {
-                    const exoStatus = await getExoStatus(data.exoOrderId);
-                    if (exoStatus && exoStatus.status) {
-                        const raw = exoStatus.status.toLowerCase();
-                        if (raw === 'pending') status = 'En attente';
-                        else if (raw === 'processing' || raw === 'in progress') status = 'En cours';
-                        else if (raw === 'completed') status = 'Succès';
-                        else if (raw === 'partial') status = 'Partiel';
-                        else if (raw === 'canceled') status = 'Annulée';
-                        else status = exoStatus.status;
-                        remains = exoStatus.remains || 0;
-                    }
-                } catch (e) {
-                    console.warn('Erreur mise à jour statut Exo pour', data.exoOrderId);
-                }
-            }
+            
             orders.push({
                 id: doc.id,
-                orderId: data.orderId,
+                orderId: data.orderId || `LKB-${String(doc.id).slice(-6)}`,
                 platform: data.platform || 'Autre',
-                serviceName: data.serviceName || '',
+                serviceName: data.serviceName || 'N/A',
                 link: data.link || '',
                 quantity: data.quantity || 0,
                 cost: data.cost || 0,
-                status: status,
-                remains: remains,
-                createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null
+                status: data.status || 'En attente',
+                remains: data.remains !== undefined ? data.remains : (data.quantity || 0),
+                startCount: data.startCount !== undefined ? data.startCount : null,
+                createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
+                comments: data.comments || null,
+                contactInfo: data.contactInfo || null,
+                exoOrderId: data.exoOrderId || null
             });
         }
+
+        // Tri des commandes en JS côté serveur (par date décroissante)
+        orders.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt) : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt) : 0;
+            return dateB - dateA;
+        });
 
         res.status(200).json({ orders });
     } catch (error) {
         console.error('Erreur GET /api/orders/:uid:', error);
         res.status(500).json({ error: error.message || 'Erreur serveur' });
+    }
+});
+
+// POST /api/exo-status - NOUVEAU ENDPOINT
+app.post('/api/exo-status', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const uid = decoded.uid;
+        const { orderId } = req.body;
+
+        if (!orderId) {
+            return res.status(400).json({ success: false, error: 'orderId requis' });
+        }
+
+        const orderRef = db.collection('commandes').doc(orderId);
+        const orderDoc = await orderRef.get();
+
+        if (!orderDoc.exists) {
+            return res.status(404).json({ success: false, error: 'Commande introuvable' });
+        }
+
+        const orderData = orderDoc.data();
+        if (orderData.userId !== uid) {
+            return res.status(403).json({ success: false, error: 'Non autorisé' });
+        }
+
+        if (!orderData.exoOrderId) {
+            return res.status(200).json({ success: true, status: orderData.status });
+        }
+
+        // Interroger l'API du fournisseur pour mettre à jour
+        const exoStatus = await getExoStatus(orderData.exoOrderId);
+        if (exoStatus && !exoStatus.error) {
+            let status = orderData.status;
+            const raw = exoStatus.status.toLowerCase();
+            if (raw === 'pending') status = 'En attente';
+            else if (raw === 'processing' || raw === 'in progress') status = 'En cours';
+            else if (raw === 'completed') status = 'Succès';
+            else if (raw === 'partial') status = 'Partiel';
+            else if (raw === 'canceled') status = 'Annulée';
+            else status = exoStatus.status;
+
+            const remains = exoStatus.remains || 0;
+            const startCount = exoStatus.start_count || 0;
+
+            await orderRef.update({
+                status: status,
+                remains: remains,
+                startCount: startCount,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+            return res.status(200).json({ success: true, status: status, remains: remains });
+        } else {
+            return res.status(400).json({ success: false, error: exoStatus.error || 'Erreur API' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// POST /api/exo/refill - NOUVEAU ENDPOINT
+app.post('/api/exo/refill', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const uid = decoded.uid;
+        const { orderId } = req.body;
+
+        const orderRef = db.collection('commandes').doc(orderId);
+        const orderDoc = await orderRef.get();
+
+        if (!orderDoc.exists) {
+            return res.status(404).json({ success: false, error: 'Commande introuvable' });
+        }
+
+        const orderData = orderDoc.data();
+        if (orderData.userId !== uid) {
+            return res.status(403).json({ success: false, error: 'Accès interdit' });
+        }
+
+        if (!orderData.exoOrderId) {
+            return res.status(400).json({ success: false, error: 'Cette commande n\'est pas automatisée' });
+        }
+
+        const params = new URLSearchParams();
+        params.append('key', process.env.EXO_SUPPLIER_API_KEY);
+        params.append('action', 'refill');
+        params.append('order', orderData.exoOrderId);
+
+        const response = await fetch(EXO_API_URL, {
+            method: 'POST',
+            body: params,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+        const exoResult = await response.json();
+
+        if (exoResult.error) {
+            return res.status(400).json({ success: false, error: exoResult.error });
+        }
+
+        return res.status(200).json({ success: true, refill: exoResult.refill });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// POST /api/exo/cancel - NOUVEAU ENDPOINT AVEC REMBOURSEMENT SÉCURISÉ
+app.post('/api/exo/cancel', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const uid = decoded.uid;
+        const { orderId } = req.body;
+
+        const orderRef = db.collection('commandes').doc(orderId);
+        const userRef = db.collection('users').doc(uid);
+
+        let refundAmount = 0;
+
+        await db.runTransaction(async (transaction) => {
+            const orderDoc = await transaction.get(orderRef);
+            if (!orderDoc.exists) {
+                throw new Error('Commande introuvable');
+            }
+
+            const orderData = orderDoc.data();
+            if (orderData.userId !== uid) {
+                throw new Error('Accès interdit');
+            }
+
+            const currentStatus = (orderData.status || '').toLowerCase();
+            if (currentStatus.includes('annul') || currentStatus.includes('rembours')) {
+                throw new Error('Commande déjà annulée');
+            }
+            if (currentStatus.includes('succes') || currentStatus.includes('succès')) {
+                throw new Error('Impossible d\'annuler une commande terminée');
+            }
+
+            refundAmount = orderData.cost || 0;
+
+            const userDoc = await transaction.get(userRef);
+            const currentBalance = userDoc.data().balance || 0;
+            const newBalance = currentBalance + refundAmount;
+
+            // Rembourser et mettre à jour le solde de l'utilisateur
+            transaction.update(userRef, {
+                balance: newBalance,
+                activeOrders: admin.firestore.FieldValue.increment(-1)
+            });
+
+            // Mettre à jour le statut de la commande
+            transaction.update(orderRef, {
+                status: 'Annulée',
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        });
+
+        res.status(200).json({ success: true, refundAmount: refundAmount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
