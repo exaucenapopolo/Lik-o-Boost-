@@ -280,7 +280,7 @@
     </main>
 
     <script>
-        // Configuration Firebase (Garde ta configuration)
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
@@ -306,11 +306,10 @@
 
         let currentUser = null;
         let userData = null;
-        let selectedAmountXAF = 500; // Toujours basé sur le XAF en interne
-        let currentLocalAmount = 500; // Montant affiché dans la devise locale
+        let selectedAmountXAF = 500; 
+        let currentLocalAmount = 500; 
         let selectedMethod = 'fapshi';
-        let unsubscribeActivities = null;
-        let activeCountryCode = 'CM'; // Par défaut le Cameroun
+        let activeCountryCode = 'CM'; 
 
         // --- INTÉGRATION DE LA CONFIGURATION DES DEVISES ---
         const CURRENCY_CONFIG = {
@@ -386,7 +385,6 @@
             const config = getCurrencyConfig(activeCountryCode);
             const symbol = config.symbol;
 
-            // Met à jour les étiquettes des boutons de montant
             document.querySelectorAll('.amount-option').forEach(option => {
                 const baseXAF = parseInt(option.dataset.baseAmount);
                 const localVal = convertFromXAF(baseXAF, activeCountryCode);
@@ -394,13 +392,11 @@
                 option.querySelector('.label').textContent = symbol;
             });
 
-            // Gère le champ personnalisé
             const customInput = document.getElementById('customAmount');
             if (customInput.value) {
                 currentLocalAmount = parseInt(customInput.value);
                 selectedAmountXAF = convertToXAF(currentLocalAmount, activeCountryCode);
             } else {
-                // Relire la sélection
                 const selectedOption = document.querySelector('.amount-option.selected');
                 if (selectedOption) {
                     selectedAmountXAF = parseInt(selectedOption.dataset.baseAmount);
@@ -416,18 +412,15 @@
             document.getElementById('summaryTotal').textContent = `${formatNumber(currentLocalAmount)} ${config.symbol}`;
             document.getElementById('summaryConvertedAmount').textContent = `Soit l'équivalent de ${formatNumber(selectedAmountXAF)} XAF sur votre solde`;
             
-            // Activer/désactiver le bouton de paiement
             const minXAF = selectedMethod === 'accountpe' ? 500 : 100;
             document.getElementById('depositBtn').disabled = selectedAmountXAF < minXAF;
         }
 
-        // Écouteur sur la sélection du pays AccountPe
         document.getElementById('accountpeCountry').addEventListener('change', (e) => {
             activeCountryCode = e.target.value;
             updateUIBasedOnCountry();
         });
 
-        // Sélecteurs de montant
         document.querySelectorAll('.amount-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
@@ -452,7 +445,6 @@
             updateSummary();
         });
 
-        // Sélecteurs de méthode de paiement
         document.querySelectorAll('.payment-method').forEach(method => {
             method.addEventListener('click', () => {
                 document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
@@ -464,13 +456,12 @@
                     activeCountryCode = document.getElementById('accountpeCountry').value;
                 } else {
                     document.getElementById('accountpeFields').style.display = 'none';
-                    activeCountryCode = 'CM'; // Fapshi est toujours XAF/CM
+                    activeCountryCode = 'CM';
                 }
                 updateUIBasedOnCountry();
             });
         });
 
-        // Clic sur "Confirmer le dépôt"
         document.getElementById('depositBtn').addEventListener('click', async () => {
             const minXAF = selectedMethod === 'accountpe' ? 500 : 100;
             if (selectedAmountXAF < minXAF) {
@@ -486,7 +477,6 @@
                 const authHeaders = await getAuthHeaders();
 
                 if (selectedMethod === 'accountpe') {
-                    // INTÉGRATION DE L'API SWYCHR (Inspiré de paid.html)
                     const country = document.getElementById('accountpeCountry').value;
                     const phone = document.getElementById('accountpePhone').value || '';
                     const currencyCode = getCurrencyConfig(country).code;
@@ -497,8 +487,8 @@
                         username: userData?.username || currentUser.displayName || 'Client',
                         country: country,
                         phone: phone,
-                        amount: currentLocalAmount, // Montant en devise locale
-                        amountXAF: selectedAmountXAF, // Montant converti en XAF
+                        amount: currentLocalAmount, 
+                        amountXAF: selectedAmountXAF, 
                         currency: currencyCode
                     };
 
@@ -511,7 +501,6 @@
                     const data = await response.json();
                     
                     if (data.success && data.checkoutUrl) {
-                        // Sauvegarde de l'intention pour vérification ultérieure
                         localStorage.setItem('pendingPayment', JSON.stringify({
                             transactionId: data.transactionId,
                             timestamp: Date.now()
@@ -522,7 +511,6 @@
                     }
 
                 } else {
-                    // Flux Fapshi (existant)
                     const response = await fetch(API_BASE_URL + '/api/create-fapshi-checkout', {
                         method: 'POST',
                         headers: authHeaders,
@@ -548,14 +536,13 @@
             }
         });
 
-        // VÉRIFICATION DES PAIEMENTS ACCOUNTPE EN ATTENTE
         window.addEventListener('load', () => {
             const pending = localStorage.getItem('pendingPayment');
             if (pending) {
                 try {
                     const paymentData = JSON.parse(pending);
                     const age = Date.now() - paymentData.timestamp;
-                    if (age < 30 * 60 * 1000) { // Vérifie si ça a moins de 30 mins
+                    if (age < 30 * 60 * 1000) {
                         checkAccountPeStatus(paymentData.transactionId);
                     } else {
                         localStorage.removeItem('pendingPayment');
@@ -585,7 +572,6 @@
             }
         }
 
-        // Vérification manuelle du paiement via le bouton de l'historique
         window.verifySinglePayment = async function(transId, type, btnElement) {
             const originalHtml = btnElement.innerHTML;
             btnElement.disabled = true;
@@ -599,7 +585,6 @@
                 const res = await fetch(API_BASE_URL + endpoint, options);
                 const data = await res.json();
                 
-                // Adapte la réponse selon l'API appelée
                 const isSuccess = type === 'Swychr' ? (data.finalStatus === 'success') : (data.success && data.status === 'CONFIRMED');
                 const isFailed = type === 'Swychr' ? (data.finalStatus === 'failed') : (data.success && data.status === 'FAILED');
 
@@ -608,7 +593,7 @@
                 } else if (isFailed) {
                     showNotification('error', 'Échec', 'Ce paiement a échoué ou a expiré.');
                 } else {
-                    showNotification('info', 'En attente', 'Le paiement est toujours en attente chez l\'opérateur.');
+                    showNotification('info', 'En attente', 'Le paiement est toujours en attente.');
                 }
             } catch(e) {
                 console.error("Erreur verify:", e);
@@ -619,92 +604,126 @@
             }
         };
 
-        // Chargement en temps réel des activités et mise à jour du solde SANS index composite
-        function loadRecentActivities(userId) {
-            if (unsubscribeActivities) unsubscribeActivities();
-            const container = document.getElementById('transactionsContainer');
+        // ==========================================
+        // LE NOYAU DU CORRECTIF - SANS INDEX COMPOSITE 
+        // ==========================================
+        let allTransactions = { swychr: [], fapshi: [] };
+        let unsubSwychr = null;
+        let unsubFapshi = null;
 
-            // On retire le '.orderBy()' pour éviter l'erreur d'index composite
-            unsubscribeActivities = db.collection('transactions')
+        function renderTransactions() {
+            const container = document.getElementById('transactionsContainer');
+            // On combine les deux listes de données 
+            let combined = [...allTransactions.swychr, ...allTransactions.fapshi];
+            
+            if (combined.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>Aucun dépôt effectué récemment</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // On trie toutes les transactions par date en utilisant JavaScript (Ce qui évite l'index Firestore)
+            combined.sort((a, b) => b.date - a.date);
+            
+            // On garde seulement les 10 dernières 
+            const recent = combined.slice(0, 10);
+
+            container.innerHTML = '';
+            recent.forEach(item => {
+                const tx = item.data;
+                const id = item.id;
+                const txType = item.type;
+                
+                const isPaid = tx.status === 'completed' || tx.status === 'CONFIRMED';
+                const isPending = tx.status === 'pending' || tx.status === 'PENDING';
+                
+                const statusClass = isPaid ? 'success' : isPending ? 'pending' : 'failed';
+                const statusIcon = isPaid ? 'check' : isPending ? 'clock' : 'times';
+                const statusText = isPaid ? 'Réussi' : isPending ? 'En attente' : 'Échoué';
+                
+                let dateText = 'Date inconnue';
+                if (item.date.getTime() > 0) {
+                    dateText = item.date.toLocaleDateString('fr-FR', {
+                        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                    });
+                }
+
+                const txIdParam = txType === 'Swychr' ? id : (tx.transId || id);
+
+                let verifyBtnHtml = '';
+                if (isPending) {
+                    verifyBtnHtml = `
+                        <button class="verify-inline-btn" onclick="verifySinglePayment('${txIdParam}', '${txType}', this)">
+                            <i class="fas fa-sync-alt"></i> Vérifier
+                        </button>
+                    `;
+                }
+
+                const amountDisplay = tx.amountXAF || tx.amount || 0;
+
+                container.innerHTML += `
+                    <div class="transaction-item">
+                        <div class="transaction-icon ${statusClass}">
+                            <i class="fas fa-${statusIcon}"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <h4>Dépôt ${txType}</h4>
+                            <p>${dateText} — ${statusText}</p>
+                            ${verifyBtnHtml}
+                        </div>
+                        <div class="transaction-amount ${isPending ? 'pending' : ''}">
+                            +${formatNumber(amountDisplay)} XAF
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function loadRecentActivities(userId) {
+            // Nettoyage des anciennes connexions
+            if (unsubSwychr) unsubSwychr();
+            if (unsubFapshi) unsubFapshi();
+
+            const container = document.getElementById('transactionsContainer');
+            
+            // On s'assure d'écouter les 2 sources de payement SIMPLEMENT pour éviter les erreurs d'index composites
+            
+            // 1. Écoute des transactions Swychr
+            unsubSwychr = db.collection('transactions')
                 .where('userId', '==', userId)
                 .onSnapshot(snapshot => {
-                    if (snapshot.empty) {
-                        container.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-receipt"></i>
-                                <p>Aucun dépôt effectué récemment</p>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    // 1. Extraire les documents dans un tableau
-                    let transactionsList = [];
-                    snapshot.forEach(doc => {
-                        transactionsList.push({ id: doc.id, data: doc.data() });
+                    allTransactions.swychr = snapshot.docs.map(doc => {
+                        let data = doc.data();
+                        let date = data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate() : new Date(data.createdAt)) : new Date(0);
+                        return { id: doc.id, data, date, type: 'Swychr' };
                     });
-
-                    // 2. Trier manuellement en JavaScript par date (du plus récent au plus ancien)
-                    transactionsList.sort((a, b) => {
-                        const dateA = a.data.createdAt ? (typeof a.data.createdAt.toDate === 'function' ? a.data.createdAt.toDate() : new Date(a.data.createdAt)) : new Date(0);
-                        const dateB = b.data.createdAt ? (typeof b.data.createdAt.toDate === 'function' ? b.data.createdAt.toDate() : new Date(b.data.createdAt)) : new Date(0);
-                        return dateB - dateA;
-                    });
-
-                    // 3. Ne conserver que les 10 transactions les plus récentes
-                    const recentTransactions = transactionsList.slice(0, 10);
-
-                    // 4. Afficher le rendu
-                    container.innerHTML = '';
-                    recentTransactions.forEach(item => {
-                        const tx = item.data;
-                        const id = item.id;
-                        
-                        const isPaid = tx.status === 'completed' || tx.status === 'CONFIRMED';
-                        const isPending = tx.status === 'pending' || tx.status === 'PENDING';
-                        
-                        const statusClass = isPaid ? 'success' : isPending ? 'pending' : 'failed';
-                        const statusIcon = isPaid ? 'check' : isPending ? 'clock' : 'times';
-                        const statusText = isPaid ? 'Réussi' : isPending ? 'En attente' : 'Échoué';
-                        
-                        let dateText = 'Date inconnue';
-                        if (tx.createdAt && tx.createdAt.toDate) {
-                            dateText = tx.createdAt.toDate().toLocaleDateString('fr-FR', {
-                                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-                            });
-                        }
-
-                        // Identifier si c'est Swychr ou Fapshi
-                        const txType = tx.label && tx.label.includes('Swychr') ? 'Swychr' : 'Fapshi';
-                        const txIdParam = txType === 'Swychr' ? id : (tx.transId || id);
-
-                        let verifyBtnHtml = '';
-                        if (isPending) {
-                            verifyBtnHtml = `
-                                <button class="verify-inline-btn" onclick="verifySinglePayment('${txIdParam}', '${txType}', this)">
-                                    <i class="fas fa-sync-alt"></i> Vérifier
-                                </button>
-                            `;
-                        }
-
-                        container.innerHTML += `
-                            <div class="transaction-item">
-                                <div class="transaction-icon ${statusClass}">
-                                    <i class="fas fa-${statusIcon}"></i>
-                                </div>
-                                <div class="transaction-info">
-                                    <h4>Dépôt ${txType}</h4>
-                                    <p>${dateText} — ${statusText}</p>
-                                    ${verifyBtnHtml}
-                                </div>
-                                <div class="transaction-amount ${isPending ? 'pending' : ''}">
-                                    +${formatNumber(tx.amountXAF || tx.amount)} XAF
-                                </div>
-                            </div>
-                        `;
-                    });
+                    renderTransactions();
                 }, err => {
-                    console.error('Erreur chargement transactions:', err);
+                    console.error('Erreur chargement Swychr:', err);
+                    if(container.innerHTML.includes('fa-spinner')) {
+                        container.innerHTML = '<div class="empty-state" style="color: var(--error-red);"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement (Swychr).</p></div>';
+                    }
+                });
+
+            // 2. Écoute des transactions Fapshi
+            unsubFapshi = db.collection('fapshiTransactions')
+                .where('userId', '==', userId)
+                .onSnapshot(snapshot => {
+                    allTransactions.fapshi = snapshot.docs.map(doc => {
+                        let data = doc.data();
+                        let date = data.dateInitiated ? (typeof data.dateInitiated.toDate === 'function' ? data.dateInitiated.toDate() : new Date(data.dateInitiated)) : new Date(0);
+                        return { id: doc.id, data, date, type: 'Fapshi' };
+                    });
+                    renderTransactions();
+                }, err => {
+                    console.error('Erreur chargement Fapshi:', err);
+                    if(container.innerHTML.includes('fa-spinner')) {
+                        container.innerHTML = '<div class="empty-state" style="color: var(--error-red);"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement (Fapshi).</p></div>';
+                    }
                 });
         }
 
