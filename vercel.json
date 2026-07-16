@@ -15,9 +15,4 @@
       "src": "/(.*)",
       "dest": "/dashboard.html"
     }
-  ],
-  "env": {
-    "EXO_SUPPLIER_API_KEY": "@exo_supplier_api_key",
-    "FIREBASE_SERVICE_ACCOUNT": "@firebase_service_account"
-  }
 }
