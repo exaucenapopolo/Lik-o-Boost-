@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
+        /* Les styles originaux sont conservés intacts */
         :root {
             --primary-yellow: #FFD700;
             --primary-blue: #2A5EE8;
@@ -31,454 +32,92 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: #f5f7ff;
-            min-height: 100vh;
-        }
-
-        h1, h2, h3, h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-
+        body { font-family: 'Poppins', sans-serif; line-height: 1.6; color: var(--text-dark); background-color: #f5f7ff; min-height: 100vh; }
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
         .container { width: 100%; max-width: 100%; margin: 0 auto; padding: 0 15px; }
-
-        .btn {
-            display: inline-block; padding: 12px 24px;
-            border-radius: 50px; text-decoration: none;
-            font-weight: 600; font-size: 0.95rem;
-            transition: var(--transition); cursor: pointer;
-            border: none; text-align: center; white-space: nowrap;
-        }
-
+        .btn { display: inline-block; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: var(--transition); cursor: pointer; border: none; text-align: center; white-space: nowrap; }
         .btn-primary { background-color: var(--primary-blue); color: var(--white); }
-        .btn-primary:hover {
-            background-color: var(--primary-orange);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(255, 122, 0, 0.2);
-        }
-
-        .btn-yellow {
-            background-color: var(--primary-yellow);
-            color: var(--dark-blue);
-            font-weight: 700;
-        }
-        .btn-yellow:hover {
-            background-color: #e6c200;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(255, 215, 0, 0.3);
-        }
-
+        .btn-primary:hover { background-color: var(--primary-orange); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(255, 122, 0, 0.2); }
+        .btn-yellow { background-color: var(--primary-yellow); color: var(--dark-blue); font-weight: 700; }
+        .btn-yellow:hover { background-color: #e6c200; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(255, 215, 0, 0.3); }
         .btn-success { background-color: var(--success-green); color: var(--white); }
         .btn-success:hover { background-color: #3d8b40; }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .mobile-header {
-            background-color: var(--white); padding: 15px 0;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            position: sticky; top: 0; z-index: 100; width: 100%;
-        }
-
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .mobile-header { background-color: var(--white); padding: 15px 0; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 100; width: 100%; }
         .mobile-header-content { display: flex; justify-content: space-between; align-items: center; }
-
-        .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900; font-size: 1.5rem;
-            color: var(--dark-blue); text-decoration: none;
-            display: flex; align-items: center;
-        }
+        .logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--dark-blue); text-decoration: none; display: flex; align-items: center; }
         .logo span { color: var(--primary-blue); }
         .logo .dot { color: var(--primary-orange); font-size: 1.8rem; line-height: 1; }
         .logo .yellow { color: var(--primary-yellow); }
-
-        .back-btn {
-            background: none; border: none;
-            font-size: 1.2rem; color: var(--primary-blue);
-            cursor: pointer; width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; transition: var(--transition);
-            text-decoration: none;
-        }
+        .back-btn { background: none; border: none; font-size: 1.2rem; color: var(--primary-blue); cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); text-decoration: none; }
         .back-btn:hover { background-color: rgba(42, 94, 232, 0.1); }
-
         .main-content { padding: 20px 0 40px; }
-
-        .page-title {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .page-title h1 {
-            font-size: 1.8rem;
-            color: var(--dark-blue);
-            margin-bottom: 5px;
-        }
-        .page-title p {
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
-            color: var(--white);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        .balance-card .label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-        .balance-card .amount {
-            font-size: 2.5rem;
-            font-weight: 800;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .deposit-section {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            color: var(--dark-blue);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-title i {
-            color: var(--primary-blue);
-        }
-
-        .amount-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .amount-option {
-            padding: 15px 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: var(--white);
-        }
-        .amount-option:hover {
-            border-color: var(--primary-blue);
-            background: var(--light-blue);
-        }
-        .amount-option.selected {
-            border-color: var(--primary-blue);
-            background: var(--primary-blue);
-            color: var(--white);
-        }
-        .amount-option .value {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-        .amount-option .label {
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
-
-        .custom-amount {
-            margin-bottom: 20px;
-        }
-        .custom-amount label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-dark);
-        }
-        .custom-amount input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: var(--transition);
-        }
-        .custom-amount input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
-
-        .payment-methods {
-            margin-bottom: 20px;
-        }
-
-        .payment-method {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .payment-method:hover {
-            border-color: var(--primary-blue);
-        }
-        .payment-method.selected {
-            border-color: var(--primary-blue);
-            background: var(--light-blue);
-        }
-        .payment-method img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            margin-right: 15px;
-        }
-        .payment-method .method-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 1.5rem;
-        }
-        .payment-method .method-icon.mtn {
-            background: #ffcc00;
-            color: #000;
-        }
-        .payment-method .method-info h4 {
-            font-size: 1rem;
-            margin-bottom: 2px;
-            font-weight: 600;
-        }
-        .payment-method .method-info p {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            margin: 0;
-        }
-        .payment-method .check-icon {
-            margin-left: auto;
-            color: var(--primary-blue);
-            display: none;
-        }
-        .payment-method.selected .check-icon {
-            display: block;
-        }
-
-        .deposit-btn {
-            width: 100%;
-            padding: 18px;
-            font-size: 1.1rem;
-        }
-
-        .deposit-summary {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .deposit-summary .row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .deposit-summary .row:last-child {
-            margin-bottom: 0;
-            padding-top: 10px;
-            border-top: 1px dashed #ddd;
-            font-weight: 700;
-        }
-        .deposit-summary .label {
-            color: var(--text-light);
-        }
-
-        .notification-container {
-            position: fixed;
-            top: 80px;
-            right: 15px;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .notification {
-            padding: 15px 20px;
-            border-radius: 12px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-            min-width: 280px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
+        .page-title { text-align: center; margin-bottom: 30px; }
+        .page-title h1 { font-size: 1.8rem; color: var(--dark-blue); margin-bottom: 5px; }
+        .page-title p { color: var(--text-light); font-size: 0.95rem; }
+        .balance-card { background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue)); color: var(--white); border-radius: 20px; padding: 25px; margin-bottom: 25px; text-align: center; }
+        .balance-card .label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px; }
+        .balance-card .amount { font-size: 2.5rem; font-weight: 800; font-family: 'Montserrat', sans-serif; }
+        .deposit-section { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; }
+        .section-title { font-size: 1.2rem; color: var(--dark-blue); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-title i { color: var(--primary-blue); }
+        .amount-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .amount-option { padding: 15px 10px; border: 2px solid #e0e0e0; border-radius: 12px; text-align: center; cursor: pointer; transition: var(--transition); background: var(--white); }
+        .amount-option:hover { border-color: var(--primary-blue); background: var(--light-blue); }
+        .amount-option.selected { border-color: var(--primary-blue); background: var(--primary-blue); color: var(--white); }
+        .amount-option .value { font-weight: 700; font-size: 1.1rem; }
+        .amount-option .label { font-size: 0.75rem; opacity: 0.8; }
+        .custom-amount { margin-bottom: 20px; }
+        .custom-amount label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-dark); }
+        .custom-amount input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1.1rem; font-family: 'Poppins', sans-serif; transition: var(--transition); }
+        .custom-amount input:focus { outline: none; border-color: var(--primary-blue); }
+        .payment-methods { margin-bottom: 20px; }
+        .payment-method { display: flex; align-items: center; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: var(--transition); }
+        .payment-method:hover { border-color: var(--primary-blue); }
+        .payment-method.selected { border-color: var(--primary-blue); background: var(--light-blue); }
+        .payment-method img { width: 40px; height: 40px; object-fit: contain; margin-right: 15px; }
+        .payment-method .method-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 1.5rem; }
+        .payment-method .method-icon.mtn { background: #ffcc00; color: #000; }
+        .payment-method .method-info h4 { font-size: 1rem; margin-bottom: 2px; font-weight: 600; }
+        .payment-method .method-info p { font-size: 0.8rem; color: var(--text-light); margin: 0; }
+        .payment-method .check-icon { margin-left: auto; color: var(--primary-blue); display: none; }
+        .payment-method.selected .check-icon { display: block; }
+        .deposit-btn { width: 100%; padding: 18px; font-size: 1.1rem; }
+        .deposit-summary { background: var(--light-gray); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .deposit-summary .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .deposit-summary .row:last-child { margin-bottom: 0; padding-top: 10px; border-top: 1px dashed #ddd; font-weight: 700; }
+        .deposit-summary .label { color: var(--text-light); }
+        .notification-container { position: fixed; top: 80px; right: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .notification { padding: 15px 20px; border-radius: 12px; color: white; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; min-width: 280px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         .notification.success { background-color: var(--success-green); }
         .notification.error { background-color: var(--error-red); }
         .notification.warning { background-color: var(--warning-orange); }
         .notification.info { background-color: var(--primary-blue); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
         .loading-overlay.hidden { display: none; }
-        .loading-spinner {
-            width: 50px; height: 50px;
-            border: 4px solid #e0e0e0;
-            border-top-color: var(--primary-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        .loading-text {
-            margin-top: 15px;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Styles pour l'historique et la vérification */
-        .transactions-section {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-        }
-
-        .transaction-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-        .transaction-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-        }
-        .transaction-icon.success {
-            background: rgba(76, 175, 80, 0.1);
-            color: var(--success-green);
-        }
-        .transaction-icon.pending {
-            background: rgba(255, 152, 0, 0.1);
-            color: var(--warning-orange);
-        }
-        .transaction-icon.failed {
-            background: rgba(244, 67, 54, 0.1);
-            color: var(--error-red);
-        }
-        .transaction-info {
-            flex: 1;
-        }
-        .transaction-info h4 {
-            font-size: 0.95rem;
-            margin-bottom: 2px;
-            font-weight: 600;
-        }
-        .transaction-info p {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            margin: 0;
-        }
-        .transaction-amount {
-            font-weight: 700;
-            color: var(--success-green);
-            text-align: right;
-        }
-        .transaction-amount.pending {
-            color: var(--warning-orange);
-        }
-        
-        .verify-inline-btn {
-            background: rgba(42, 94, 232, 0.1);
-            border: 1px solid rgba(42, 94, 232, 0.3);
-            color: var(--primary-blue);
-            padding: 5px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.75rem;
-            transition: var(--transition);
-            margin-top: 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .verify-inline-btn:hover:not(:disabled) {
-            background: rgba(42, 94, 232, 0.2);
-        }
-        .verify-inline-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-light);
-        }
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        /* Bloc d'instructions */
-        .instruction-block {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(42, 94, 232, 0.05);
-            border-left: 4px solid var(--primary-blue);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-        }
-
-        @media (min-width: 768px) {
-            .container { max-width: 600px; }
-            .amount-options { grid-template-columns: repeat(4, 1fr); }
-        }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top-color: var(--primary-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loading-text { margin-top: 15px; color: var(--text-dark); font-weight: 500; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .transactions-section { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--shadow); }
+        .transaction-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; }
+        .transaction-icon.success { background: rgba(76, 175, 80, 0.1); color: var(--success-green); }
+        .transaction-icon.pending { background: rgba(255, 152, 0, 0.1); color: var(--warning-orange); }
+        .transaction-icon.failed { background: rgba(244, 67, 54, 0.1); color: var(--error-red); }
+        .transaction-info { flex: 1; }
+        .transaction-info h4 { font-size: 0.95rem; margin-bottom: 2px; font-weight: 600; }
+        .transaction-info p { font-size: 0.8rem; color: var(--text-light); margin: 0; }
+        .transaction-amount { font-weight: 700; color: var(--success-green); text-align: right; }
+        .transaction-amount.pending { color: var(--warning-orange); }
+        .verify-inline-btn { background: rgba(42, 94, 232, 0.1); border: 1px solid rgba(42, 94, 232, 0.3); color: var(--primary-blue); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.75rem; transition: var(--transition); margin-top: 5px; display: inline-flex; align-items: center; gap: 5px; }
+        .verify-inline-btn:hover:not(:disabled) { background: rgba(42, 94, 232, 0.2); }
+        .verify-inline-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .empty-state { text-align: center; padding: 30px; color: var(--text-light); }
+        .empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; }
+        .instruction-block { margin-bottom: 20px; padding: 15px; background: rgba(42, 94, 232, 0.05); border-left: 4px solid var(--primary-blue); border-radius: 8px; font-size: 0.9rem; color: var(--text-dark); }
+        @media (min-width: 768px) { .container { max-width: 600px; } .amount-options { grid-template-columns: repeat(4, 1fr); } }
     </style>
 </head>
 <body>
@@ -514,43 +153,8 @@
             </div>
 
             <div class="deposit-section">
-                <!-- Bloc d'instruction inspiré de Social Boost Horizon -->
                 <div class="instruction-block">
                     <strong>⚠️ Important :</strong> Après un paiement par Mobile Money, si votre solde ne s'actualise pas dans la minute, utilisez le bouton <strong>"Vérifier"</strong> dans l'historique ci-dessous.
-                </div>
-
-                <h3 class="section-title"><i class="fas fa-coins"></i> Montant du dépôt</h3>
-                
-                <div class="amount-options">
-                    <div class="amount-option selected" data-amount="500">
-                        <div class="value">500</div>
-                        <div class="label">XAF</div>
-                    </div>
-                    <div class="amount-option" data-amount="1000">
-                        <div class="value">1 000</div>
-                        <div class="label">XAF</div>
-                    </div>
-                    <div class="amount-option" data-amount="2000">
-                        <div class="value">2 000</div>
-                        <div class="label">XAF</div>
-                    </div>
-                    <div class="amount-option" data-amount="5000">
-                        <div class="value">5 000</div>
-                        <div class="label">XAF</div>
-                    </div>
-                    <div class="amount-option" data-amount="10000">
-                        <div class="value">10 000</div>
-                        <div class="label">XAF</div>
-                    </div>
-                    <div class="amount-option" data-amount="20000">
-                        <div class="value">20 000</div>
-                        <div class="label">XAF</div>
-                    </div>
-                </div>
-
-                <div class="custom-amount">
-                    <label for="customAmount">Ou entrez un montant personnalisé</label>
-                    <input type="number" id="customAmount" placeholder="Ex: 3500" min="100">
                 </div>
 
                 <h3 class="section-title"><i class="fas fa-mobile-alt"></i> Mode de paiement</h3>
@@ -578,34 +182,79 @@
                     </div>
                 </div>
 
-                <!-- AccountPe champs cachés -->
-                <div id="accountpeFields" style="display:none;">
+                <!-- AccountPe champs cachés avec la liste complète des pays intégrée -->
+                <div id="accountpeFields" style="display:none; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #eee;">
                     <div style="margin-bottom:15px;">
                         <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
-                            <i class="fas fa-flag" style="color:var(--primary-blue);margin-right:6px;"></i>Pays
+                            <i class="fas fa-flag" style="color:var(--primary-blue);margin-right:6px;"></i>Sélectionnez votre pays
                         </label>
                         <select id="accountpeCountry" style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;background:#fff;cursor:pointer;">
                             <option value="CM">🇨🇲 Cameroun (XAF)</option>
-                            <option value="SN">🇸🇳 Senegal (XOF)</option>
-                            <option value="CI">🇨🇮 Cote d'Ivoire (XOF)</option>
+                            <option value="SN">🇸🇳 Sénégal (XOF)</option>
+                            <option value="CI">🇨🇮 Côte d'Ivoire (XOF)</option>
+                            <option value="BF">🇧🇫 Burkina Faso (XOF)</option>
+                            <option value="ML">🇲🇱 Mali (XOF)</option>
+                            <option value="BJ">🇧🇯 Bénin (XOF)</option>
+                            <option value="TG">🇹🇬 Togo (XOF)</option>
+                            <option value="NE">🇳🇪 Niger (XOF)</option>
+                            <option value="GA">🇬🇦 Gabon (XAF)</option>
+                            <option value="CG">🇨🇬 Congo (XAF)</option>
+                            <option value="CD">🇨🇩 RD Congo (CDF)</option>
+                            <option value="GH">🇬🇭 Ghana (GHS)</option>
+                            <option value="NG">🇳🇬 Nigeria (NGN)</option>
+                            <option value="KE">🇰🇪 Kenya (KES)</option>
+                            <option value="UG">🇺🇬 Ouganda (UGX)</option>
+                            <option value="TZ">🇹🇿 Tanzanie (TZS)</option>
+                            <option value="RW">🇷🇼 Rwanda (RWF)</option>
+                            <option value="ZM">🇿🇲 Zambie (ZMW)</option>
                         </select>
                     </div>
-                    <div style="margin-bottom:15px;">
+                    <div>
                         <label style="display:block;font-weight:500;margin-bottom:8px;color:var(--text-dark);">
                             <i class="fas fa-phone" style="color:var(--primary-blue);margin-right:6px;"></i>Numéro (optionnel)
                         </label>
-                        <input type="tel" id="accountpePhone" placeholder="Ex: 6XXXXXXXX" style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;">
+                        <input type="tel" id="accountpePhone" placeholder="Ex: +237 6XXXXXXXX" style="width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:12px;font-size:1rem;font-family:'Poppins',sans-serif;">
                     </div>
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-coins"></i> Montant du dépôt</h3>
+                
+                <div class="amount-options">
+                    <div class="amount-option selected" data-base-amount="500">
+                        <div class="value">500</div>
+                        <div class="label currency-label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-base-amount="1000">
+                        <div class="value">1 000</div>
+                        <div class="label currency-label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-base-amount="2000">
+                        <div class="value">2 000</div>
+                        <div class="label currency-label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-base-amount="5000">
+                        <div class="value">5 000</div>
+                        <div class="label currency-label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-base-amount="10000">
+                        <div class="value">10 000</div>
+                        <div class="label currency-label">XAF</div>
+                    </div>
+                    <div class="amount-option" data-base-amount="20000">
+                        <div class="value">20 000</div>
+                        <div class="label currency-label">XAF</div>
+                    </div>
+                </div>
+
+                <div class="custom-amount">
+                    <label for="customAmount">Ou entrez un montant personnalisé</label>
+                    <input type="number" id="customAmount" placeholder="Ex: 3500" min="100">
                 </div>
 
                 <div class="deposit-summary">
                     <div class="row">
-                        <span class="label">Montant</span>
-                        <span id="summaryAmount">500 XAF</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Frais</span>
-                        <span id="summaryFees">0 XAF</span>
+                        <span class="label">Montant converti</span>
+                        <span id="summaryConvertedAmount">500 XAF</span>
                     </div>
                     <div class="row">
                         <span class="label">Total à payer</span>
@@ -631,7 +280,7 @@
     </main>
 
     <script>
-        // Configuration Firebase
+        // Configuration Firebase (Garde ta configuration)
         const firebaseConfig = {
             apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
@@ -653,14 +302,51 @@
             console.error("Erreur Firebase:", error);
         }
 
-        // L'API est servie sur le même domaine, on utilise donc des chemins relatifs.
         const API_BASE_URL = '';
 
         let currentUser = null;
         let userData = null;
-        let selectedAmount = 500;
+        let selectedAmountXAF = 500; // Toujours basé sur le XAF en interne
+        let currentLocalAmount = 500; // Montant affiché dans la devise locale
         let selectedMethod = 'fapshi';
         let unsubscribeActivities = null;
+        let activeCountryCode = 'CM'; // Par défaut le Cameroun
+
+        // --- INTÉGRATION DE LA CONFIGURATION DES DEVISES ---
+        const CURRENCY_CONFIG = {
+            'cm': { code:'XAF', symbol:'XAF', rate:1 },
+            'ga': { code:'XAF', symbol:'XAF', rate:1 },
+            'cg': { code:'XAF', symbol:'XAF', rate:1 },
+            'sn': { code:'XOF', symbol:'XOF', rate:1 },
+            'ci': { code:'XOF', symbol:'XOF', rate:1 },
+            'ml': { code:'XOF', symbol:'XOF', rate:1 },
+            'bf': { code:'XOF', symbol:'XOF', rate:1 },
+            'bj': { code:'XOF', symbol:'XOF', rate:1 },
+            'tg': { code:'XOF', symbol:'XOF', rate:1 },
+            'ne': { code:'XOF', symbol:'XOF', rate:1 },
+            'cd': { code:'CDF', symbol:'FC', rate:4.27 },
+            'gh': { code:'GHS', symbol:'GH₵', rate:0.024 },
+            'ng': { code:'NGN', symbol:'₦', rate:2.44 },
+            'ke': { code:'KES', symbol:'KSh', rate:0.20 },
+            'ug': { code:'UGX', symbol:'USh', rate:5.64 },
+            'tz': { code:'TZS', symbol:'TSh', rate:3.81 },
+            'rw': { code:'RWF', symbol:'FRw', rate:1.98 },
+            'zm': { code:'ZMW', symbol:'ZK', rate:0.041 }
+        };
+
+        function getCurrencyConfig(countryCode) {
+            return CURRENCY_CONFIG[countryCode.toLowerCase()] || CURRENCY_CONFIG['cm'];
+        }
+
+        function convertFromXAF(amountXAF, countryCode) {
+            const config = getCurrencyConfig(countryCode);
+            return Math.round(amountXAF * config.rate);
+        }
+
+        function convertToXAF(amountLocal, countryCode) {
+            const config = getCurrencyConfig(countryCode);
+            return Math.round(amountLocal / config.rate);
+        }
 
         function formatNumber(num) {
             return (num || 0).toLocaleString('fr-FR');
@@ -678,10 +364,8 @@
             const container = document.getElementById('notificationContainer');
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            
             const icons = { success: 'check-circle', error: 'times-circle', warning: 'exclamation-triangle', info: 'info-circle' };
             notification.innerHTML = `<i class="fas fa-${icons[type] || 'info-circle'}"></i><div><strong>${title}</strong><br>${message}</div>`;
-            
             container.appendChild(notification);
             setTimeout(() => {
                 notification.style.animation = 'slideIn 0.3s ease reverse';
@@ -698,22 +382,58 @@
             document.getElementById('loadingOverlay').classList.add('hidden');
         }
 
-        function updateSummary() {
-            const amount = selectedAmount || 0;
-            const fees = 0;
-            const total = amount + fees;
-            document.getElementById('summaryAmount').textContent = `${formatNumber(amount)} XAF`;
-            document.getElementById('summaryFees').textContent = `${formatNumber(fees)} XAF`;
-            document.getElementById('summaryTotal').textContent = `${formatNumber(total)} XAF`;
-            document.getElementById('depositBtn').disabled = amount < 100;
+        function updateUIBasedOnCountry() {
+            const config = getCurrencyConfig(activeCountryCode);
+            const symbol = config.symbol;
+
+            // Met à jour les étiquettes des boutons de montant
+            document.querySelectorAll('.amount-option').forEach(option => {
+                const baseXAF = parseInt(option.dataset.baseAmount);
+                const localVal = convertFromXAF(baseXAF, activeCountryCode);
+                option.querySelector('.value').textContent = formatNumber(localVal);
+                option.querySelector('.label').textContent = symbol;
+            });
+
+            // Gère le champ personnalisé
+            const customInput = document.getElementById('customAmount');
+            if (customInput.value) {
+                currentLocalAmount = parseInt(customInput.value);
+                selectedAmountXAF = convertToXAF(currentLocalAmount, activeCountryCode);
+            } else {
+                // Relire la sélection
+                const selectedOption = document.querySelector('.amount-option.selected');
+                if (selectedOption) {
+                    selectedAmountXAF = parseInt(selectedOption.dataset.baseAmount);
+                    currentLocalAmount = convertFromXAF(selectedAmountXAF, activeCountryCode);
+                }
+            }
+
+            updateSummary();
         }
+
+        function updateSummary() {
+            const config = getCurrencyConfig(activeCountryCode);
+            document.getElementById('summaryTotal').textContent = `${formatNumber(currentLocalAmount)} ${config.symbol}`;
+            document.getElementById('summaryConvertedAmount').textContent = `Soit l'équivalent de ${formatNumber(selectedAmountXAF)} XAF sur votre solde`;
+            
+            // Activer/désactiver le bouton de paiement
+            const minXAF = selectedMethod === 'accountpe' ? 500 : 100;
+            document.getElementById('depositBtn').disabled = selectedAmountXAF < minXAF;
+        }
+
+        // Écouteur sur la sélection du pays AccountPe
+        document.getElementById('accountpeCountry').addEventListener('change', (e) => {
+            activeCountryCode = e.target.value;
+            updateUIBasedOnCountry();
+        });
 
         // Sélecteurs de montant
         document.querySelectorAll('.amount-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
                 option.classList.add('selected');
-                selectedAmount = parseInt(option.dataset.amount);
+                selectedAmountXAF = parseInt(option.dataset.baseAmount);
+                currentLocalAmount = convertFromXAF(selectedAmountXAF, activeCountryCode);
                 document.getElementById('customAmount').value = '';
                 updateSummary();
             });
@@ -721,7 +441,14 @@
 
         document.getElementById('customAmount').addEventListener('input', (e) => {
             document.querySelectorAll('.amount-option').forEach(o => o.classList.remove('selected'));
-            selectedAmount = parseInt(e.target.value) || 0;
+            const val = parseInt(e.target.value);
+            if(val) {
+                currentLocalAmount = val;
+                selectedAmountXAF = convertToXAF(currentLocalAmount, activeCountryCode);
+            } else {
+                currentLocalAmount = 0;
+                selectedAmountXAF = 0;
+            }
             updateSummary();
         });
 
@@ -731,15 +458,25 @@
                 document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
                 method.classList.add('selected');
                 selectedMethod = method.dataset.method;
-                document.getElementById('accountpeFields').style.display = (selectedMethod === 'accountpe') ? 'block' : 'none';
+                
+                if (selectedMethod === 'accountpe') {
+                    document.getElementById('accountpeFields').style.display = 'block';
+                    activeCountryCode = document.getElementById('accountpeCountry').value;
+                } else {
+                    document.getElementById('accountpeFields').style.display = 'none';
+                    activeCountryCode = 'CM'; // Fapshi est toujours XAF/CM
+                }
+                updateUIBasedOnCountry();
             });
         });
 
         // Clic sur "Confirmer le dépôt"
         document.getElementById('depositBtn').addEventListener('click', async () => {
-            const minAmount = selectedMethod === 'accountpe' ? 500 : 100;
-            if (selectedAmount < minAmount) {
-                showNotification('error', 'Erreur', `Le montant minimum est de ${minAmount} XAF`);
+            const minXAF = selectedMethod === 'accountpe' ? 500 : 100;
+            if (selectedAmountXAF < minXAF) {
+                const localMin = convertFromXAF(minXAF, activeCountryCode);
+                const sym = getCurrencyConfig(activeCountryCode).symbol;
+                showNotification('error', 'Erreur', `Le montant minimum est de ${localMin} ${sym} (${minXAF} XAF)`);
                 return;
             }
 
@@ -749,25 +486,48 @@
                 const authHeaders = await getAuthHeaders();
 
                 if (selectedMethod === 'accountpe') {
-                    const country = document.getElementById('accountpeCountry').value || 'CM';
+                    // INTÉGRATION DE L'API SWYCHR (Inspiré de paid.html)
+                    const country = document.getElementById('accountpeCountry').value;
                     const phone = document.getElementById('accountpePhone').value || '';
-                    const response = await fetch(API_BASE_URL + '/api/accountpe/create-payment', {
+                    const currencyCode = getCurrencyConfig(country).code;
+                    
+                    const requestBody = {
+                        email: currentUser.email,
+                        userId: currentUser.uid,
+                        username: userData?.username || currentUser.displayName || 'Client',
+                        country: country,
+                        phone: phone,
+                        amount: currentLocalAmount, // Montant en devise locale
+                        amountXAF: selectedAmountXAF, // Montant converti en XAF
+                        currency: currencyCode
+                    };
+
+                    const response = await fetch(API_BASE_URL + '/api/create-swychr', {
                         method: 'POST',
                         headers: authHeaders,
-                        body: JSON.stringify({ amount: selectedAmount, country, phone })
+                        body: JSON.stringify(requestBody)
                     });
+                    
                     const data = await response.json();
-                    if (!data.success) throw new Error(data.error || 'Erreur AccountPe');
+                    
+                    if (data.success && data.checkoutUrl) {
+                        // Sauvegarde de l'intention pour vérification ultérieure
+                        localStorage.setItem('pendingPayment', JSON.stringify({
+                            transactionId: data.transactionId,
+                            timestamp: Date.now()
+                        }));
+                        window.location.href = data.checkoutUrl;
+                    } else {
+                        throw new Error(data.error || 'Erreur lors de la création du lien AccountPe');
+                    }
 
-                    localStorage.setItem('pendingAccountPeId', data.transactionId);
-                    window.location.href = data.checkoutUrl;
                 } else {
-                    // Nouveau flux Fapshi basé sur la configuration de Social Boost Horizon
+                    // Flux Fapshi (existant)
                     const response = await fetch(API_BASE_URL + '/api/create-fapshi-checkout', {
                         method: 'POST',
                         headers: authHeaders,
                         body: JSON.stringify({
-                            amount: selectedAmount,
+                            amount: selectedAmountXAF,
                             description: 'Recharge Likéo Boost',
                             email: userData?.email || currentUser.email || '',
                             name: userData?.username || currentUser.displayName || 'Client'
@@ -788,32 +548,67 @@
             }
         });
 
-        // Vérification manuelle du paiement via le bouton de l'historique
-        window.verifySinglePayment = async function(transId, btnElement) {
+        // VÉRIFICATION DES PAIEMENTS ACCOUNTPE EN ATTENTE
+        window.addEventListener('load', () => {
+            const pending = localStorage.getItem('pendingPayment');
+            if (pending) {
+                try {
+                    const paymentData = JSON.parse(pending);
+                    const age = Date.now() - paymentData.timestamp;
+                    if (age < 30 * 60 * 1000) { // Vérifie si ça a moins de 30 mins
+                        checkAccountPeStatus(paymentData.transactionId);
+                    } else {
+                        localStorage.removeItem('pendingPayment');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('pendingPayment');
+                }
+            }
+        });
+
+        async function checkAccountPeStatus(transactionId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/confirm-swychr?transactionId=${transactionId}`);
+                if(!response.ok) throw new Error('Erreur serveur');
+
+                const data = await response.json();
+
+                if (data.finalStatus === 'success') {
+                    localStorage.removeItem('pendingPayment');
+                    showNotification('success', 'Paiement confirmé !', 'Votre solde a été mis à jour.');
+                } else if (data.finalStatus === 'failed') {
+                    localStorage.removeItem('pendingPayment');
+                    showNotification('error', 'Échec', 'Le paiement a échoué ou a été annulé.');
+                }
+            } catch (error) {
+                console.error('Erreur vérification:', error);
+            }
+        }
+
+        // Vérification manuelle du paiement via le bouton de l'historique (Supporte maintenant Fapshi ET Swychr)
+        window.verifySinglePayment = async function(transId, type, btnElement) {
             const originalHtml = btnElement.innerHTML;
             btnElement.disabled = true;
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérif...';
 
             try {
                 const authHeaders = await getAuthHeaders();
-                const res = await fetch(API_BASE_URL + '/api/fapshi/verify-transaction', {
-                    method: 'POST',
-                    headers: authHeaders,
-                    body: JSON.stringify({ transId })
-                });
-                
+                let endpoint = type === 'Swychr' ? `/api/confirm-swychr?transactionId=${transId}` : `/api/fapshi/verify-transaction`;
+                let options = type === 'Swychr' ? { method: 'GET', headers: authHeaders } : { method: 'POST', headers: authHeaders, body: JSON.stringify({ transId }) };
+
+                const res = await fetch(API_BASE_URL + endpoint, options);
                 const data = await res.json();
                 
-                if (data.success) {
-                    if (data.status === 'CONFIRMED') {
-                        showNotification('success', 'Succès', 'Paiement confirmé ! Votre solde a été mis à jour.');
-                    } else if (data.status === 'FAILED') {
-                        showNotification('error', 'Échec', 'Ce paiement a échoué ou a expiré.');
-                    } else {
-                        showNotification('info', 'En attente', 'Le paiement est toujours en attente chez l\'opérateur.');
-                    }
+                // Adapte la réponse selon l'API appelée
+                const isSuccess = type === 'Swychr' ? (data.finalStatus === 'success') : (data.success && data.status === 'CONFIRMED');
+                const isFailed = type === 'Swychr' ? (data.finalStatus === 'failed') : (data.success && data.status === 'FAILED');
+
+                if (isSuccess) {
+                    showNotification('success', 'Succès', 'Paiement confirmé ! Votre solde a été mis à jour.');
+                } else if (isFailed) {
+                    showNotification('error', 'Échec', 'Ce paiement a échoué ou a expiré.');
                 } else {
-                    showNotification('error', 'Erreur', data.error || 'Impossible de vérifier la transaction.');
+                    showNotification('info', 'En attente', 'Le paiement est toujours en attente chez l\'opérateur.');
                 }
             } catch(e) {
                 console.error("Erreur verify:", e);
@@ -827,12 +622,13 @@
         // Chargement en temps réel des activités et mise à jour du solde
         function loadRecentActivities(userId) {
             if (unsubscribeActivities) unsubscribeActivities();
-
             const container = document.getElementById('transactionsContainer');
 
-            unsubscribeActivities = db.collection('fapshiTransactions')
+            // On écoute la collection générale des transactions (ou fapshi selon ta DB)
+            // Note: Si tes transactions Swychr sont dans la collection 'transactions', tu devras ajuster ceci.
+            unsubscribeActivities = db.collection('transactions')
                 .where('userId', '==', userId)
-                .orderBy('dateInitiated', 'desc')
+                .orderBy('createdAt', 'desc')
                 .limit(10)
                 .onSnapshot(snapshot => {
                     if (snapshot.empty) {
@@ -848,25 +644,30 @@
                     container.innerHTML = '';
                     snapshot.forEach(doc => {
                         const tx = doc.data();
-                        const isPaid = tx.status === 'CONFIRMED';
-                        const isPending = tx.status === 'PENDING';
-                        const isFailed = tx.status === 'FAILED' || tx.status === 'EXPIRED';
-
+                        const id = doc.id;
+                        
+                        const isPaid = tx.status === 'completed' || tx.status === 'CONFIRMED';
+                        const isPending = tx.status === 'pending' || tx.status === 'PENDING';
+                        
                         const statusClass = isPaid ? 'success' : isPending ? 'pending' : 'failed';
                         const statusIcon = isPaid ? 'check' : isPending ? 'clock' : 'times';
                         const statusText = isPaid ? 'Réussi' : isPending ? 'En attente' : 'Échoué';
                         
                         let dateText = 'Date inconnue';
-                        if (tx.dateInitiated && tx.dateInitiated.toDate) {
-                            dateText = tx.dateInitiated.toDate().toLocaleDateString('fr-FR', {
+                        if (tx.createdAt && tx.createdAt.toDate) {
+                            dateText = tx.createdAt.toDate().toLocaleDateString('fr-FR', {
                                 day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
                             });
                         }
 
+                        // Identifier si c'est Swychr ou Fapshi
+                        const txType = tx.label && tx.label.includes('Swychr') ? 'Swychr' : 'Fapshi';
+                        const txIdParam = txType === 'Swychr' ? id : (tx.transId || id);
+
                         let verifyBtnHtml = '';
                         if (isPending) {
                             verifyBtnHtml = `
-                                <button class="verify-inline-btn" onclick="verifySinglePayment('${tx.transId}', this)">
+                                <button class="verify-inline-btn" onclick="verifySinglePayment('${txIdParam}', '${txType}', this)">
                                     <i class="fas fa-sync-alt"></i> Vérifier
                                 </button>
                             `;
@@ -878,12 +679,12 @@
                                     <i class="fas fa-${statusIcon}"></i>
                                 </div>
                                 <div class="transaction-info">
-                                    <h4>Dépôt Mobile Money</h4>
+                                    <h4>Dépôt ${txType}</h4>
                                     <p>${dateText} — ${statusText}</p>
                                     ${verifyBtnHtml}
                                 </div>
                                 <div class="transaction-amount ${isPending ? 'pending' : ''}">
-                                    +${formatNumber(tx.amount)} XAF
+                                    +${formatNumber(tx.amountXAF || tx.amount)} XAF
                                 </div>
                             </div>
                         `;
@@ -893,7 +694,6 @@
                 });
         }
 
-        // Surveiller le solde en temps réel
         function watchBalance(userId) {
             db.collection('users').doc(userId).onSnapshot(doc => {
                 if (doc.exists) {
@@ -909,7 +709,7 @@
                     currentUser = user;
                     watchBalance(user.uid);
                     loadRecentActivities(user.uid);
-                    updateSummary();
+                    updateUIBasedOnCountry();
                     hideLoading();
                 } else {
                     window.location.href = 'connexion.html';
