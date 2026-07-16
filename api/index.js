@@ -580,5 +580,203 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
     }
 });
 
+
+// ---------------------------------------------------------
+// 1. ROUTE : CRÉER UNE TRANSACTION SWYCHR (AccountPe)
+// ---------------------------------------------------------
+app.post('/api/create-swychr', async (req, res) => {
+    try {
+        const { email, userId, username, country, phone, amount, amountXAF, currency } = req.body;
+
+        // Authentification auprès de Swychr
+        const authRes = await fetch('https://api.accountpe.com/api/payin/admin/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: process.env.ACCOUNTPE_USERNAME,
+                password: process.env.ACCOUNTPE_PASSWORD
+            })
+        });
+
+        const authData = await authRes.json();
+        if (!authData.token) throw new Error('Échec de l\'authentification Swychr');
+
+        // Génération de l'ID incrémenté
+        const counterRef = db.collection('counters').doc('transactions');
+        const transactionId = await db.runTransaction(async (transaction) => {
+            const counterDoc = await transaction.get(counterRef);
+            let currentCount = counterDoc.exists ? (counterDoc.data().count || 0) : 0;
+            const nextCount = currentCount + 1;
+            transaction.set(counterRef, { count: nextCount }, { merge: true });
+            return `LIKEO-PAY-${nextCount}`; // Adapté pour Likéo Boost
+        });
+
+        // Host pour le callback
+        const host = req.headers.host || 'likeoboost.com'; 
+        const baseUrl = `https://${host}`;
+
+        // Enregistrement dans Firestore
+        await db.collection('transactions').doc(transactionId).set({
+            userId,
+            username: username || 'Client',
+            email,
+            phone: phone || '',
+            country,
+            amount,
+            amountXAF,
+            currency,
+            status: 'pending',
+            type: 'Recharge',
+            label: `Recharge Swychr (${currency})`,
+            createdAt: admin.firestore.FieldValue.serverTimestamp() // Sécurisé et précis
+        });
+
+        // Création du lien chez Swychr
+        const paymentRes = await fetch('https://api.accountpe.com/api/payin/create_payment_links', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authData.token}`,
+                'Idempotency-Key': transactionId
+            },
+            body: JSON.stringify({
+                country_code: country,
+                name: username || 'Client',
+                email: email,
+                mobile: phone || '',
+                amount: amount,
+                currency: currency,
+                transaction_id: transactionId,
+                description: 'Recharge Solde Likéo Boost',
+                pass_digital_charge: true,
+                callback_url: `${baseUrl}/api/webhook-swychr`
+            })
+        });
+
+        const paymentData = await paymentRes.json();
+
+        if (paymentData.status === 200 || paymentData.status === 201) {
+            return res.status(200).json({ success: true, checkoutUrl: paymentData.data.payment_link, transactionId });
+        } else {
+            throw new Error(paymentData.message || 'Erreur API Swychr');
+        }
+    } catch (error) {
+        console.error('Erreur create-swychr:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ---------------------------------------------------------
+// 2. ROUTE : CONFIRMER UNE TRANSACTION (Manuel / Polling)
+// ---------------------------------------------------------
+app.get('/api/confirm-swychr', async (req, res) => {
+    const { transactionId } = req.query;
+    if (!transactionId) return res.status(400).json({ error: 'ID manquant' });
+
+    try {
+        const authRes = await fetch('https://api.accountpe.com/api/payin/admin/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: process.env.ACCOUNTPE_USERNAME,
+                password: process.env.ACCOUNTPE_PASSWORD
+            })
+        });
+
+        const authData = await authRes.json();
+        if (!authData.token) throw new Error("Impossible de s'authentifier chez Swychr");
+
+        const statusRes = await fetch('https://api.accountpe.com/api/payin/payment_link_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authData.token}` },
+            body: JSON.stringify({ transaction_id: transactionId })
+        });
+
+        const statusData = await statusRes.json();
+        const attributes = statusData?.data?.data?.attributes || statusData?.data?.attributes || {};
+        const rawStatus = String(attributes.status || "inconnu").toLowerCase().trim();
+
+        const statusSucces = ["1", "success", "completed", "terminé", "succès", "reussi", "successful", "paid"];
+        const statusEchec = ["-1", "2", "failed", "echec", "annulé", "cancelled", "rejected", "error"];
+        
+        let interpretedStatus = "pending";
+        if (statusSucces.includes(rawStatus)) interpretedStatus = "success";
+        else if (statusEchec.includes(rawStatus)) interpretedStatus = "failed";
+
+        const txRef = db.collection('transactions').doc(transactionId);
+        
+        const result = await db.runTransaction(async (transaction) => {
+            const txDoc = await transaction.get(txRef);
+            if (!txDoc.exists) throw new Error("Transaction introuvable");
+
+            const txData = txDoc.data();
+            if (txData.status === 'completed') return { finalStatus: 'success', message: 'Déjà crédité' };
+
+            if (interpretedStatus === 'success') {
+                const userRef = db.collection('users').doc(txData.userId);
+                transaction.update(userRef, {
+                    balance: admin.firestore.FieldValue.increment(Number(txData.amountXAF))
+                });
+                
+                transaction.update(txRef, {
+                    status: 'completed',
+                    verifiedBy: 'api_direct_check_success',
+                    paidAt: new Date().toISOString()
+                });
+                return { finalStatus: 'success', message: 'Solde mis à jour avec succès' };
+            } else if (interpretedStatus === 'failed') {
+                transaction.update(txRef, { status: 'failed', verifiedBy: 'api_direct_check_failed' });
+                return { finalStatus: 'failed', message: 'Paiement échoué ou annulé' };
+            }
+            return { finalStatus: 'pending', message: 'Toujours en attente' };
+        });
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Erreur confirm-swychr:', error);
+        return res.status(500).json({ error: error.message, finalStatus: 'pending' });
+    }
+});
+
+// ---------------------------------------------------------
+// 3. ROUTE : WEBHOOK AUTOMATIQUE (Asynchrone)
+// ---------------------------------------------------------
+app.post('/api/webhook-swychr', async (req, res) => {
+    try {
+        const payload = req.body;
+        const attributes = payload?.data?.data?.attributes || payload?.data?.attributes || payload;
+        if (!attributes) return res.status(400).send('Payload invalide');
+
+        const { status, transaction_id } = attributes;
+        const rawStatus = status ? String(status).toLowerCase().trim() : "inconnu";
+        const statusSucces = ["success", "completed", "terminé", "succès", "reussi", "1", "successful", "paid", "ok"];
+
+        if (statusSucces.includes(rawStatus)) { 
+            const txRef = db.collection('transactions').doc(transaction_id);
+            const txDoc = await txRef.get();
+
+            if (txDoc.exists && txDoc.data().status === 'pending') {
+                const { userId, amountXAF } = txDoc.data();
+                
+                // Utilisation de batch ou incrément direct
+                await db.collection('users').doc(userId).update({
+                    balance: admin.firestore.FieldValue.increment(Number(amountXAF))
+                });
+
+                await txRef.update({
+                    status: 'completed',
+                    paidAt: new Date().toISOString()
+                });
+                console.log(`Webhook Swychr: Transaction ${transaction_id} validée.`);
+            }
+        }
+        return res.status(200).send('Webhook traité');
+    } catch (error) {
+        console.error('Erreur Webhook Swychr:', error);
+        return res.status(500).send('Erreur interne');
+    }
+});
+
+
 // ---------- EXPORT POUR VERCEL ----------
 module.exports = app;
