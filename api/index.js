@@ -88,6 +88,32 @@ async function getExoStatus(exoOrderId) {
     return await response.json();
 }
 
+async function refillExoOrder(exoOrderId) {
+    const params = new URLSearchParams();
+    params.append('key', process.env.EXO_SUPPLIER_API_KEY);
+    params.append('action', 'refill');
+    params.append('order', exoOrderId);
+    const response = await fetch(EXO_API_URL, {
+        method: 'POST',
+        body: params,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    return await response.json();
+}
+
+async function cancelExoOrder(exoOrderId) {
+    const params = new URLSearchParams();
+    params.append('key', process.env.EXO_SUPPLIER_API_KEY);
+    params.append('action', 'cancel');
+    params.append('order', exoOrderId);
+    const response = await fetch(EXO_API_URL, {
+        method: 'POST',
+        body: params,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    return await response.json();
+}
+
 // ---------- EXPRESS APP ----------
 const app = express();
 app.use(cors());
@@ -164,7 +190,7 @@ app.post('/api/exo/order', async (req, res) => {
             if (counterDoc.exists && counterDoc.data().lastId) {
                 nextId = counterDoc.data().lastId + 1;
             }
-            finalOrderId = `LKB-${nextId}`; // LKB pour Likéo Boost !
+            finalOrderId = `SBH-${nextId}`;
 
             const userRef2 = db.collection('users').doc(uid);
             const userDoc2 = await transaction.get(userRef2);
@@ -216,7 +242,8 @@ app.post('/api/exo/order', async (req, res) => {
     }
 });
 
-// GET /api/orders/:uid - MODIFIÉ POUR ÉVITER LES INDEX COMPOSITES FIRESTORE
+// GET /api/orders/:uid
+// Modifiée pour trier en mémoire et éviter de requérir un index composite sur Firestore
 app.get('/api/orders/:uid', async (req, res) => {
     try {
         const uid = req.params.uid;
@@ -225,7 +252,7 @@ app.get('/api/orders/:uid', async (req, res) => {
             return res.status(403).json({ error: 'Accès refusé' });
         }
 
-        // Requête simple uniquement sur userId (aucun index composite requis)
+        // On enlève le .orderBy() de Firestore pour contourner la création forcée d'index composite
         const ordersSnapshot = await db.collection('commandes')
             .where('userId', '==', uid)
             .get();
@@ -233,29 +260,63 @@ app.get('/api/orders/:uid', async (req, res) => {
         const orders = [];
         for (const doc of ordersSnapshot.docs) {
             const data = doc.data();
-            
+            let status = data.status;
+            let remains = data.remains !== undefined ? data.remains : 0;
+            let startCount = data.startCount !== undefined ? data.startCount : 0;
+
+            const isFinalStatus = status === 'Succès' || status === 'Terminée' || status === 'Annulée' || status === 'Échouée';
+            if (data.exoOrderId && !isFinalStatus) {
+                try {
+                    const exoStatus = await getExoStatus(data.exoOrderId);
+                    if (exoStatus && exoStatus.status) {
+                        const raw = exoStatus.status.toLowerCase();
+                        if (raw === 'pending') status = 'En attente';
+                        else if (raw === 'processing' || raw === 'in progress') status = 'En cours';
+                        else if (raw === 'completed') status = 'Succès';
+                        else if (raw === 'partial') status = 'Partiel';
+                        else if (raw === 'canceled' || raw === 'cancelled') status = 'Annulée';
+                        else status = exoStatus.status;
+                        
+                        remains = exoStatus.remains !== undefined ? exoStatus.remains : remains;
+                        startCount = exoStatus.start_count !== undefined ? exoStatus.start_count : startCount;
+
+                        // Mise à jour asynchrone dans Firestore en tâche de fond
+                        db.collection('commandes').doc(doc.id).update({
+                            status: status,
+                            remains: remains,
+                            startCount: startCount,
+                            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                        }).catch(e => console.error("background update error:", e));
+                    }
+                } catch (e) {
+                    console.warn('Erreur mise à jour statut Exo pour', data.exoOrderId, e);
+                }
+            }
+
             orders.push({
                 id: doc.id,
-                orderId: data.orderId || `LKB-${String(doc.id).slice(-6)}`,
+                orderId: data.orderId,
                 platform: data.platform || 'Autre',
-                serviceName: data.serviceName || 'N/A',
+                serviceName: data.serviceName || data.service || '',
                 link: data.link || '',
                 quantity: data.quantity || 0,
-                cost: data.cost || 0,
-                status: data.status || 'En attente',
-                remains: data.remains !== undefined ? data.remains : (data.quantity || 0),
-                startCount: data.startCount !== undefined ? data.startCount : null,
-                createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
-                comments: data.comments || null,
-                contactInfo: data.contactInfo || null,
+                cost: data.cost || data.totalCost || 0,
+                status: status,
+                remains: remains,
+                startCount: startCount,
+                createdAt: data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate().toISOString() : new Date(data.createdAt).toISOString()) : null,
+                customComments: data.customComments || data.commentaires || data.commentaires_personnalises || data.comments || '',
+                contactInfo: data.contactInfo || data.contact || null,
+                quality: data.quality || 'Standard',
+                isAutoOrder: !!data.exoOrderId,
                 exoOrderId: data.exoOrderId || null
             });
         }
 
-        // Tri des commandes en JS côté serveur (par date décroissante)
+        // Tri en mémoire Node.js (du plus récent au plus ancien)
         orders.sort((a, b) => {
-            const dateA = a.createdAt ? new Date(a.createdAt) : 0;
-            const dateB = b.createdAt ? new Date(b.createdAt) : 0;
+            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
             return dateB - dateA;
         });
 
@@ -266,164 +327,141 @@ app.get('/api/orders/:uid', async (req, res) => {
     }
 });
 
-// POST /api/exo-status - NOUVEAU ENDPOINT
+// POST /api/exo-status
 app.post('/api/exo-status', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
-        const uid = decoded.uid;
         const { orderId } = req.body;
 
         if (!orderId) {
-            return res.status(400).json({ success: false, error: 'orderId requis' });
+            return res.status(400).json({ error: 'ID de commande manquant' });
         }
 
         const orderRef = db.collection('commandes').doc(orderId);
         const orderDoc = await orderRef.get();
-
         if (!orderDoc.exists) {
-            return res.status(404).json({ success: false, error: 'Commande introuvable' });
+            return res.status(404).json({ error: 'Commande introuvable' });
         }
 
-        const orderData = orderDoc.data();
-        if (orderData.userId !== uid) {
-            return res.status(403).json({ success: false, error: 'Non autorisé' });
+        const data = orderDoc.data();
+        if (data.userId !== decoded.uid) {
+            return res.status(403).json({ error: 'Accès refusé' });
         }
 
-        if (!orderData.exoOrderId) {
-            return res.status(200).json({ success: true, status: orderData.status });
+        let status = data.status;
+        let remains = data.remains !== undefined ? data.remains : 0;
+        let startCount = data.startCount !== undefined ? data.startCount : 0;
+
+        if (data.exoOrderId) {
+            const exoStatus = await getExoStatus(data.exoOrderId);
+            if (exoStatus && exoStatus.status) {
+                const raw = exoStatus.status.toLowerCase();
+                if (raw === 'pending') status = 'En attente';
+                else if (raw === 'processing' || raw === 'in progress') status = 'En cours';
+                else if (raw === 'completed') status = 'Succès';
+                else if (raw === 'partial') status = 'Partiel';
+                else if (raw === 'canceled' || raw === 'cancelled') status = 'Annulée';
+                else status = exoStatus.status;
+
+                remains = exoStatus.remains !== undefined ? exoStatus.remains : remains;
+                startCount = exoStatus.start_count !== undefined ? exoStatus.start_count : startCount;
+
+                await orderRef.update({
+                    status: status,
+                    remains: remains,
+                    startCount: startCount,
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+            }
         }
 
-        // Interroger l'API du fournisseur pour mettre à jour
-        const exoStatus = await getExoStatus(orderData.exoOrderId);
-        if (exoStatus && !exoStatus.error) {
-            let status = orderData.status;
-            const raw = exoStatus.status.toLowerCase();
-            if (raw === 'pending') status = 'En attente';
-            else if (raw === 'processing' || raw === 'in progress') status = 'En cours';
-            else if (raw === 'completed') status = 'Succès';
-            else if (raw === 'partial') status = 'Partiel';
-            else if (raw === 'canceled') status = 'Annulée';
-            else status = exoStatus.status;
-
-            const remains = exoStatus.remains || 0;
-            const startCount = exoStatus.start_count || 0;
-
-            await orderRef.update({
-                status: status,
-                remains: remains,
-                startCount: startCount,
-                updatedAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            return res.status(200).json({ success: true, status: status, remains: remains });
-        } else {
-            return res.status(400).json({ success: false, error: exoStatus.error || 'Erreur API' });
-        }
+        res.status(200).json({ success: true, status: status, remains: remains, startCount: startCount });
     } catch (error) {
-        console.error(error);
+        console.error('Erreur POST /api/exo-status:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// POST /api/exo/refill - NOUVEAU ENDPOINT
+// POST /api/exo/refill
 app.post('/api/exo/refill', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
-        const uid = decoded.uid;
         const { orderId } = req.body;
 
         const orderRef = db.collection('commandes').doc(orderId);
         const orderDoc = await orderRef.get();
-
         if (!orderDoc.exists) {
-            return res.status(404).json({ success: false, error: 'Commande introuvable' });
+            return res.status(404).json({ error: 'Commande introuvable' });
         }
 
-        const orderData = orderDoc.data();
-        if (orderData.userId !== uid) {
-            return res.status(403).json({ success: false, error: 'Accès interdit' });
+        const data = orderDoc.data();
+        if (data.userId !== decoded.uid) {
+            return res.status(403).json({ error: 'Accès refusé' });
         }
 
-        if (!orderData.exoOrderId) {
-            return res.status(400).json({ success: false, error: 'Cette commande n\'est pas automatisée' });
+        if (!data.exoOrderId) {
+            return res.status(400).json({ error: 'ID fournisseur manquant' });
         }
 
-        const params = new URLSearchParams();
-        params.append('key', process.env.EXO_SUPPLIER_API_KEY);
-        params.append('action', 'refill');
-        params.append('order', orderData.exoOrderId);
-
-        const response = await fetch(EXO_API_URL, {
-            method: 'POST',
-            body: params,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
-        const exoResult = await response.json();
-
-        if (exoResult.error) {
-            return res.status(400).json({ success: false, error: exoResult.error });
+        const refillResult = await refillExoOrder(data.exoOrderId);
+        if (refillResult.error) {
+            return res.status(400).json({ success: false, error: 'Fournisseur: ' + refillResult.error });
         }
 
-        return res.status(200).json({ success: true, refill: exoResult.refill });
+        res.status(200).json({ success: true, result: refillResult });
     } catch (error) {
-        console.error(error);
+        console.error('Erreur POST /api/exo/refill:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// POST /api/exo/cancel - NOUVEAU ENDPOINT AVEC REMBOURSEMENT SÉCURISÉ
+// POST /api/exo/cancel
 app.post('/api/exo/cancel', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
-        const uid = decoded.uid;
         const { orderId } = req.body;
 
         const orderRef = db.collection('commandes').doc(orderId);
-        const userRef = db.collection('users').doc(uid);
+        const orderDoc = await orderRef.get();
+        if (!orderDoc.exists) {
+            return res.status(404).json({ error: 'Commande introuvable' });
+        }
 
-        let refundAmount = 0;
+        const data = orderDoc.data();
+        if (data.userId !== decoded.uid) {
+            return res.status(403).json({ error: 'Accès refusé' });
+        }
 
-        await db.runTransaction(async (transaction) => {
-            const orderDoc = await transaction.get(orderRef);
-            if (!orderDoc.exists) {
-                throw new Error('Commande introuvable');
-            }
+        if (data.status === 'Annulée' || data.status === 'Canceled') {
+            return res.status(400).json({ error: 'Commande déjà annulée' });
+        }
 
-            const orderData = orderDoc.data();
-            if (orderData.userId !== uid) {
-                throw new Error('Accès interdit');
-            }
+        let refundAmount = Number(data.cost || data.totalCost || 0);
 
-            const currentStatus = (orderData.status || '').toLowerCase();
-            if (currentStatus.includes('annul') || currentStatus.includes('rembours')) {
-                throw new Error('Commande déjà annulée');
-            }
-            if (currentStatus.includes('succes') || currentStatus.includes('succès')) {
-                throw new Error('Impossible d\'annuler une commande terminée');
-            }
-
-            refundAmount = orderData.cost || 0;
-
-            const userDoc = await transaction.get(userRef);
-            const currentBalance = userDoc.data().balance || 0;
-            const newBalance = currentBalance + refundAmount;
-
-            // Rembourser et mettre à jour le solde de l'utilisateur
-            transaction.update(userRef, {
-                balance: newBalance,
-                activeOrders: admin.firestore.FieldValue.increment(-1)
+        if (refundAmount > 0) {
+            await db.runTransaction(async (transaction) => {
+                const userRef = db.collection('users').doc(decoded.uid);
+                const userDoc = await transaction.get(userRef);
+                if (userDoc.exists) {
+                    const currentBalance = userDoc.data().balance || 0;
+                    const newBalance = currentBalance + refundAmount;
+                    transaction.update(userRef, { balance: newBalance });
+                }
+                transaction.update(orderRef, {
+                    status: 'Annulée',
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                });
             });
-
-            // Mettre à jour le statut de la commande
-            transaction.update(orderRef, {
+        } else {
+            await orderRef.update({
                 status: 'Annulée',
                 updatedAt: admin.firestore.FieldValue.serverTimestamp()
             });
-        });
+        }
 
         res.status(200).json({ success: true, refundAmount: refundAmount });
     } catch (error) {
-        console.error(error);
+        console.error('Erreur POST /api/exo/cancel:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
