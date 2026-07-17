@@ -26,6 +26,10 @@ const EXO_API_URL = 'https://exosupplier.com/api/v2';
 const USD_TO_XAF = 615;
 const PROFIT_MULTIPLIER = 1.5;
 
+// ---------- DICTIONNAIRES DE STATUTS PARTENAIRES ----------
+const STATUS_SUCCES = ["1", "success", "completed", "terminé", "succès", "reussi", "successful", "paid", "ok", "approuvé", "approved"];
+const STATUS_ECHEC = ["-1", "2", "failed", "echec", "annulé", "cancelled", "rejected", "error", "expired", "expiré", "refusé", "declined"];
+
 // ---------- FONCTIONS UTILITAIRES ----------
 async function verifyToken(req) {
     const authHeader = req.headers.authorization;
@@ -488,7 +492,7 @@ app.post('/api/create-fapshi-checkout', async (req, res) => {
             amount: amount,
             email: email || 'client@likeoboost.com',
             externalId: txRef.id,
-            redirectUrl: req.headers.origin + '/depot.html' // Assure-toi que cette page existe côté front !
+            redirectUrl: req.headers.origin + '/depot.html' 
         };
         
         const fapshiRes = await fetch('https://live.fapshi.com/initiate-pay', {
@@ -527,52 +531,66 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
         const decoded = await verifyToken(req);
         const { transId } = req.body;
         
+        // On récupère la référence du document avant d'entrer dans la transaction
         const txSnapshot = await db.collection('fapshiTransactions').where('transId', '==', transId).get();
         if (txSnapshot.empty) {
             return res.status(404).json({ error: 'Transaction introuvable dans la base de données.' });
         }
+        const txDocRef = txSnapshot.docs[0].ref;
         
-        const txDoc = txSnapshot.docs[0];
-        const txData = txDoc.data();
-        
-        if (txData.userId !== decoded.uid) {
-            return res.status(403).json({ error: 'Accès refusé' });
-        }
-        
-        if (txData.status === 'CONFIRMED') {
-            return res.status(200).json({ success: true, status: 'CONFIRMED' });
-        }
-        
+        // Vérification du statut auprès de Fapshi
         const fapshiHeaders = {
             'apiuser': process.env.FAPSHI_API_USER,
             'apikey': process.env.FAPSHI_API_KEY
         };
-        
         const fapshiRes = await fetch(`https://live.fapshi.com/payment-status/${transId}`, {
             headers: fapshiHeaders
         });
         const fapshiData = await fapshiRes.json();
         
-        if (fapshiData.status === 'SUCCESSFUL') {
-            await db.runTransaction(async (t) => {
+        // Utilisation du dictionnaire de statuts robustes
+        const rawStatus = String(fapshiData.status || "inconnu").toLowerCase().trim();
+        let interpretedStatus = "pending";
+        if (STATUS_SUCCES.includes(rawStatus)) interpretedStatus = "success";
+        else if (STATUS_ECHEC.includes(rawStatus)) interpretedStatus = "failed";
+        
+        // Utilisation d'une transaction Firestore pour verrouiller la mise à jour
+        const result = await db.runTransaction(async (t) => {
+            const txDoc = await t.get(txDocRef);
+            const txData = txDoc.data();
+            
+            if (txData.userId !== decoded.uid) {
+                throw new Error('Accès refusé');
+            }
+            
+            // Si la base indique DÉJÀ complété, on arrête ici et on renvoie succès
+            if (txData.status === 'CONFIRMED' || txData.status === 'completed') {
+                return { success: true, status: 'CONFIRMED', message: 'Déjà crédité' };
+            }
+            
+            // Si le partenaire dit succès, on met à jour en toute sécurité
+            if (interpretedStatus === 'success') {
                 const userRef = db.collection('users').doc(decoded.uid);
                 const userDoc = await t.get(userRef);
                 const currentBalance = userDoc.data().balance || 0;
                 
-                t.update(userRef, { balance: currentBalance + txData.amount });
-                t.update(txDoc.ref, { 
+                t.update(userRef, { balance: currentBalance + Number(txData.amount) });
+                t.update(txDocRef, { 
                     status: 'CONFIRMED', 
-                    dateConfirmed: admin.firestore.FieldValue.serverTimestamp() 
+                    dateConfirmed: admin.firestore.FieldValue.serverTimestamp(),
+                    verifiedBy: 'api_direct_check_success'
                 });
-            });
-            return res.status(200).json({ success: true, status: 'CONFIRMED' });
-            
-        } else if (fapshiData.status === 'FAILED' || fapshiData.status === 'EXPIRED') {
-            await txDoc.ref.update({ status: 'FAILED' });
-            return res.status(200).json({ success: true, status: 'FAILED' });
-        } else {
-            return res.status(200).json({ success: true, status: 'PENDING' });
-        }
+                return { success: true, status: 'CONFIRMED' };
+                
+            } else if (interpretedStatus === 'failed') {
+                t.update(txDocRef, { status: 'FAILED', verifiedBy: 'api_direct_check_failed' });
+                return { success: true, status: 'FAILED' };
+            } else {
+                return { success: true, status: 'PENDING' }; // Inconnu ou en attente = on garde en attente
+            }
+        });
+        
+        return res.status(200).json(result);
     } catch (err) {
         console.error('Erreur verify-transaction:', err);
         res.status(500).json({ error: err.message });
@@ -607,10 +625,9 @@ app.post('/api/create-swychr', async (req, res) => {
             let currentCount = counterDoc.exists ? (counterDoc.data().count || 0) : 0;
             const nextCount = currentCount + 1;
             transaction.set(counterRef, { count: nextCount }, { merge: true });
-            return `LIKEO-PAY-${nextCount}`; // Adapté pour Likéo Boost
+            return `LIKEO-PAY-${nextCount}`; 
         });
 
-        // Host pour le callback
         const host = req.headers.host || 'likeoboost.com'; 
         const baseUrl = `https://${host}`;
 
@@ -627,7 +644,7 @@ app.post('/api/create-swychr', async (req, res) => {
             status: 'pending',
             type: 'Recharge',
             label: `Recharge Swychr (${currency})`,
-            createdAt: admin.firestore.FieldValue.serverTimestamp() // Sécurisé et précis
+            createdAt: admin.firestore.FieldValue.serverTimestamp() 
         });
 
         // Création du lien chez Swychr
@@ -693,28 +710,31 @@ app.get('/api/confirm-swychr', async (req, res) => {
 
         const statusData = await statusRes.json();
         const attributes = statusData?.data?.data?.attributes || statusData?.data?.attributes || {};
-        const rawStatus = String(attributes.status || "inconnu").toLowerCase().trim();
-
-        const statusSucces = ["1", "success", "completed", "terminé", "succès", "reussi", "successful", "paid"];
-        const statusEchec = ["-1", "2", "failed", "echec", "annulé", "cancelled", "rejected", "error"];
         
+        // Utilisation de nos dictionnaires robustes de statuts
+        const rawStatus = String(attributes.status || "inconnu").toLowerCase().trim();
         let interpretedStatus = "pending";
-        if (statusSucces.includes(rawStatus)) interpretedStatus = "success";
-        else if (statusEchec.includes(rawStatus)) interpretedStatus = "failed";
+        if (STATUS_SUCCES.includes(rawStatus)) interpretedStatus = "success";
+        else if (STATUS_ECHEC.includes(rawStatus)) interpretedStatus = "failed";
 
         const txRef = db.collection('transactions').doc(transactionId);
         
+        // Transaction Firestore pour sécuriser l'incrémentation
         const result = await db.runTransaction(async (transaction) => {
             const txDoc = await transaction.get(txRef);
             if (!txDoc.exists) throw new Error("Transaction introuvable");
 
             const txData = txDoc.data();
-            if (txData.status === 'completed') return { finalStatus: 'success', message: 'Déjà crédité' };
+            
+            // Protection doublon
+            if (txData.status === 'completed' || txData.status === 'CONFIRMED') {
+                return { finalStatus: 'success', message: 'Déjà crédité' };
+            }
 
             if (interpretedStatus === 'success') {
                 const userRef = db.collection('users').doc(txData.userId);
                 transaction.update(userRef, {
-                    balance: admin.firestore.FieldValue.increment(Number(txData.amountXAF))
+                    balance: admin.firestore.FieldValue.increment(Number(txData.amountXAF || txData.amount))
                 });
                 
                 transaction.update(txRef, {
@@ -748,18 +768,16 @@ app.post('/api/webhook-swychr', async (req, res) => {
 
         const { status, transaction_id } = attributes;
         const rawStatus = status ? String(status).toLowerCase().trim() : "inconnu";
-        const statusSucces = ["success", "completed", "terminé", "succès", "reussi", "1", "successful", "paid", "ok"];
 
-        if (statusSucces.includes(rawStatus)) { 
+        if (STATUS_SUCCES.includes(rawStatus)) { 
             const txRef = db.collection('transactions').doc(transaction_id);
             const txDoc = await txRef.get();
 
             if (txDoc.exists && txDoc.data().status === 'pending') {
-                const { userId, amountXAF } = txDoc.data();
+                const { userId, amountXAF, amount } = txDoc.data();
                 
-                // Utilisation de batch ou incrément direct
                 await db.collection('users').doc(userId).update({
-                    balance: admin.firestore.FieldValue.increment(Number(amountXAF))
+                    balance: admin.firestore.FieldValue.increment(Number(amountXAF || amount))
                 });
 
                 await txRef.update({
@@ -775,7 +793,6 @@ app.post('/api/webhook-swychr', async (req, res) => {
         return res.status(500).send('Erreur interne');
     }
 });
-
 
 // ---------- EXPORT POUR VERCEL ----------
 module.exports = app;
