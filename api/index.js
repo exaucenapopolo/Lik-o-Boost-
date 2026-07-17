@@ -218,7 +218,6 @@ app.post('/api/exo/order', async (req, res) => {
             });
         });
 
-        // Mise à jour des statistiques utilisateur
         const userRefStats = db.collection('users').doc(uid);
         await userRefStats.update({
             totalOrders: admin.firestore.FieldValue.increment(1),
