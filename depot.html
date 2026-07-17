@@ -569,6 +569,9 @@
             }
         }
 
+        // ==========================================
+        // GESTION DU BOUTON VÉRIFIER
+        // ==========================================
         window.verifySinglePayment = async function(transId, type, btnElement) {
             const originalHtml = btnElement.innerHTML;
             btnElement.disabled = true;
@@ -587,15 +590,21 @@
 
                 if (isSuccess) {
                     showNotification('success', 'Succès', 'Paiement confirmé ! Votre solde a été mis à jour.');
+                    // On supprime le bouton pour ne plus pouvoir cliquer dessus !
+                    btnElement.remove();
                 } else if (isFailed) {
-                    showNotification('error', 'Échec', 'Ce paiement a échoué ou a expiré.');
+                    showNotification('error', 'Échec', 'Ce paiement a échoué, a été annulé ou a expiré.');
+                    // On supprime également le bouton pour ne plus l'embêter
+                    btnElement.remove();
                 } else {
-                    showNotification('info', 'En attente', 'Le paiement est toujours en attente.');
+                    showNotification('info', 'En attente', 'Le paiement est toujours en attente chez le partenaire.');
+                    // On rétablit le bouton pour lui permettre de réessayer plus tard
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalHtml;
                 }
             } catch(e) {
                 console.error("Erreur verify:", e);
                 showNotification('error', 'Erreur réseau', 'Erreur de connexion avec le serveur.');
-            } finally {
                 btnElement.disabled = false;
                 btnElement.innerHTML = originalHtml;
             }
@@ -719,7 +728,7 @@
                 .where('userId', '==', userId)
                 .onSnapshot(snapshot => {
                     allTransactions.isLoadingSwychr = false;
-                    allTransactions.errorSwychr = false; // Reset l'erreur si succès
+                    allTransactions.errorSwychr = false; 
                     allTransactions.swychr = snapshot.docs.map(doc => {
                         let data = doc.data();
                         let date = data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate() : new Date(data.createdAt)) : new Date();
@@ -729,8 +738,8 @@
                 }, err => {
                     console.error('Erreur chargement Swychr:', err);
                     allTransactions.isLoadingSwychr = false;
-                    allTransactions.errorSwychr = true; // Flag d'erreur
-                    renderTransactions(); // Raffraichir l'UI
+                    allTransactions.errorSwychr = true; 
+                    renderTransactions(); 
                 });
 
             // 2. Écoute des transactions Fapshi
@@ -738,7 +747,7 @@
                 .where('userId', '==', userId)
                 .onSnapshot(snapshot => {
                     allTransactions.isLoadingFapshi = false;
-                    allTransactions.errorFapshi = false; // Reset l'erreur si succès
+                    allTransactions.errorFapshi = false; 
                     allTransactions.fapshi = snapshot.docs.map(doc => {
                         let data = doc.data();
                         let date = data.dateInitiated ? (typeof data.dateInitiated.toDate === 'function' ? data.dateInitiated.toDate() : new Date(data.dateInitiated)) : new Date();
@@ -748,8 +757,8 @@
                 }, err => {
                     console.error('Erreur chargement Fapshi:', err);
                     allTransactions.isLoadingFapshi = false;
-                    allTransactions.errorFapshi = true; // Flag d'erreur
-                    renderTransactions(); // Raffraichir l'UI
+                    allTransactions.errorFapshi = true; 
+                    renderTransactions(); 
                 });
         }
 
