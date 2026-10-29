@@ -58,7 +58,6 @@
 
         button, input, textarea, select { font-family: inherit; }
 
-        /* ===== HEADER ===== */
         .header {
             background: var(--white);
             padding: 14px 0;
@@ -93,16 +92,10 @@
         .logo .dot { color: var(--primary-orange); font-size: 1.8rem; line-height: 1; }
         .logo .yellow { color: var(--primary-yellow); }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
 
         .header-balance {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 8px;
             background: var(--light-blue);
             padding: 8px 16px;
             border-radius: 50px;
@@ -114,9 +107,7 @@
         .header-balance i { color: var(--primary-orange); }
 
         .header-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            display: inline-flex; align-items: center; gap: 8px;
             color: var(--text-light);
             text-decoration: none;
             font-size: 0.85rem;
@@ -128,7 +119,6 @@
         }
         .header-back:hover { background: var(--light-blue); color: var(--primary-blue); }
 
-        /* ===== SEARCH BAR ===== */
         .search-bar-wrapper {
             position: sticky;
             top: 64px;
@@ -139,11 +129,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        .search-bar-inner {
-            max-width: 1120px;
-            margin: 0 auto;
-            position: relative;
-        }
+        .search-bar-inner { max-width: 1120px; margin: 0 auto; position: relative; }
 
         .search-bar-inner > i.fa-search {
             position: absolute;
@@ -163,22 +149,14 @@
             font-size: 0.92rem;
             outline: none;
             background: var(--white);
-            color: var(--text-dark);
             transition: border-color 0.15s, box-shadow 0.15s;
         }
-        #globalSearch:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 4px rgba(42,94,232,0.08);
-        }
-        #globalSearch::placeholder { color: #a0aec0; }
+        #globalSearch:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(42,94,232,0.08); }
 
         #clearSearchBtn {
-            position: absolute;
-            right: 14px;
-            top: 50%;
+            position: absolute; right: 14px; top: 50%;
             transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
+            width: 30px; height: 30px;
             border-radius: 50%;
             background: var(--light-gray);
             color: var(--text-light);
@@ -188,42 +166,21 @@
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
-            transition: background 0.15s;
         }
         #clearSearchBtn:hover { background: var(--border); color: var(--text-dark); }
         #clearSearchBtn.hidden { display: none; }
 
-        /* ===== MAIN ===== */
-        .main {
-            max-width: 1120px;
-            margin: 0 auto;
-            padding: 20px 20px 60px;
-        }
+        .main { max-width: 1120px; margin: 0 auto; padding: 20px 20px 60px; }
 
-        /* ===== SEARCH RESULTS PANEL ===== */
-        #searchResultsView.hidden { display: none; }
-        #wizardView.hidden { display: none; }
+        #searchResultsView.hidden, #wizardView.hidden { display: none; }
 
         .search-results-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
         }
+        .search-results-header h1 { font-size: 1.1rem; color: var(--dark-blue); }
+        .search-results-header .count { font-size: 0.82rem; color: var(--text-light); font-weight: 500; }
 
-        .search-results-header h1 {
-            font-size: 1.1rem;
-            color: var(--dark-blue);
-        }
-        .search-results-header .count {
-            font-size: 0.82rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        /* ===== WIZARD PROGRESS ===== */
         .wizard-progress {
             display: flex;
             align-items: center;
@@ -238,56 +195,29 @@
             gap: 8px;
         }
 
-        .wizard-step {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            min-width: 0;
-            opacity: 0.5;
-            transition: opacity 0.2s;
-        }
+        .wizard-step { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; opacity: 0.5; transition: opacity 0.2s; }
         .wizard-step.active { opacity: 1; }
         .wizard-step.completed { opacity: 0.85; }
 
         .wizard-step-num {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--light-gray);
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.82rem;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--light-gray); color: var(--text-light);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.82rem;
             flex-shrink: 0;
             transition: all 0.2s;
         }
         .wizard-step.active .wizard-step-num { background: var(--primary-blue); color: var(--white); }
         .wizard-step.completed .wizard-step-num { background: var(--success-green); color: var(--white); }
 
-        .wizard-step-label {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-light);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .wizard-step-label { font-size: 0.82rem; font-weight: 600; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .wizard-step.active .wizard-step-label { color: var(--primary-blue); }
         .wizard-step.completed .wizard-step-label { color: var(--success-green); }
 
-        .wizard-step-line {
-            flex: 1;
-            height: 2px;
-            background: var(--border);
-            max-width: 40px;
-        }
+        .wizard-step-line { flex: 1; height: 2px; background: var(--border); max-width: 40px; }
         .wizard-step.completed + .wizard-step .wizard-step-line,
         .wizard-step.completed .wizard-step-line { background: var(--success-green); }
 
-        /* ===== STEP CONTENT ===== */
         .step-panel {
             background: var(--white);
             border: 1px solid var(--border);
@@ -298,28 +228,14 @@
         .step-panel.hidden { display: none; }
 
         .step-panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
         }
-
-        .step-panel-header h1 {
-            font-size: 1.15rem;
-            color: var(--dark-blue);
-        }
-        .step-panel-header p {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            margin-top: 4px;
-        }
+        .step-panel-header h1 { font-size: 1.15rem; color: var(--dark-blue); }
+        .step-panel-header p { color: var(--text-light); font-size: 0.85rem; margin-top: 4px; }
 
         .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            display: inline-flex; align-items: center; gap: 6px;
             background: var(--light-gray);
             color: var(--text-dark);
             border: none;
@@ -332,12 +248,7 @@
         }
         .btn-back:hover { background: var(--light-blue); color: var(--primary-blue); }
 
-        /* ===== PLATFORM GRID ===== */
-        .platform-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        .platform-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
         .platform-card {
             background: var(--white);
@@ -347,46 +258,16 @@
             cursor: pointer;
             text-align: center;
             transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
             font-family: inherit;
         }
-        .platform-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
+        .platform-card:hover { border-color: var(--primary-blue); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-        .platform-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            color: var(--white);
-        }
+        .platform-card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--white); }
+        .platform-card-name { font-size: 0.88rem; font-weight: 700; color: var(--text-dark); }
+        .platform-card-count { font-size: 0.72rem; color: var(--text-light); }
 
-        .platform-card-name {
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .platform-card-count {
-            font-size: 0.72rem;
-            color: var(--text-light);
-        }
-
-        /* ===== CATEGORY GRID ===== */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
         .category-btn {
             background: var(--white);
@@ -396,57 +277,17 @@
             cursor: pointer;
             text-align: left;
             transition: border-color 0.15s, background 0.15s;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            display: flex; flex-direction: column; gap: 6px;
             font-family: inherit;
         }
-        .category-btn:hover {
-            border-color: var(--primary-blue);
-            background: var(--light-blue);
-        }
+        .category-btn:hover { border-color: var(--primary-blue); background: var(--light-blue); }
 
-        .category-btn-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
+        .category-btn-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .category-btn-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--light-blue); color: var(--primary-blue); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+        .category-btn-count { background: var(--light-gray); color: var(--text-light); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .category-btn-name { font-size: 0.9rem; font-weight: 700; color: var(--text-dark); margin-top: 4px; }
 
-        .category-btn-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--light-blue);
-            color: var(--primary-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.95rem;
-        }
-
-        .category-btn-count {
-            background: var(--light-gray);
-            color: var(--text-light);
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-
-        .category-btn-name {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-top: 4px;
-        }
-
-        /* ===== SERVICE LIST ===== */
-        .services-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .services-list { display: flex; flex-direction: column; gap: 10px; }
 
         .service-row {
             background: var(--white);
@@ -460,63 +301,21 @@
             align-items: center;
             gap: 14px;
         }
-        .service-row:hover {
-            border-color: var(--primary-blue);
-            background: var(--light-blue);
-        }
+        .service-row:hover { border-color: var(--primary-blue); background: var(--light-blue); }
 
-        .service-row-info h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .service-row-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            font-size: 0.72rem;
-            color: var(--text-light);
-        }
-
-        .service-row-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .service-row-info h4 { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; font-family: 'Poppins', sans-serif; }
+        .service-row-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; color: var(--text-light); }
+        .service-row-meta span { display: inline-flex; align-items: center; gap: 4px; }
         .service-row-meta span i { font-size: 0.65rem; color: var(--text-light); }
 
-        .service-tag {
-            background: #e6fffa;
-            color: #0f766e;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        .service-tag.cancel {
-            background: #fff5f5;
-            color: var(--error-red);
-        }
+        .service-tag { background: #e6fffa; color: #0f766e; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+        .service-tag.cancel { background: #fff5f5; color: var(--error-red); }
 
-        .service-row-price {
-            text-align: right;
-            white-space: nowrap;
-        }
+        .service-row-price { text-align: right; white-space: nowrap; }
+        .service-row-price strong { display: block; font-size: 0.95rem; font-weight: 700; color: var(--primary-blue); }
+        .service-row-price small { font-size: 0.68rem; color: var(--text-light); display: block; }
+        .service-row-price .wholesale { font-size: 0.65rem; color: var(--text-light); opacity: 0.7; margin-top: 2px; }
 
-        .service-row-price strong {
-            display: block;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        .service-row-price small {
-            font-size: 0.68rem;
-            color: var(--text-light);
-        }
-
-        /* ===== SEARCH RESULT ITEM ===== */
         .search-result-item {
             background: var(--white);
             border: 2px solid var(--border);
@@ -529,325 +328,69 @@
             align-items: center;
             transition: border-color 0.15s, background 0.15s;
         }
-        .search-result-item:hover {
-            border-color: var(--primary-blue);
-            background: var(--light-blue);
-        }
+        .search-result-item:hover { border-color: var(--primary-blue); background: var(--light-blue); }
 
-        .search-result-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            color: var(--white);
-            flex-shrink: 0;
-        }
-
+        .search-result-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--white); flex-shrink: 0; }
         .search-result-info { min-width: 0; }
+        .search-result-breadcrumb { font-size: 0.7rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .search-result-name { font-size: 0.88rem; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .search-result-meta { font-size: 0.7rem; color: var(--text-light); }
+        .search-result-price { text-align: right; white-space: nowrap; }
+        .search-result-price strong { display: block; font-size: 0.9rem; font-weight: 700; color: var(--primary-blue); }
+        .search-result-price small { font-size: 0.65rem; color: var(--text-light); display: block; }
 
-        .search-result-breadcrumb {
-            font-size: 0.7rem;
-            color: var(--text-light);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); font-size: 0.88rem; }
+        .empty-state i { font-size: 2rem; margin-bottom: 12px; display: block; color: var(--border); }
 
-        .search-result-name {
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 2px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .search-result-meta {
-            font-size: 0.7rem;
-            color: var(--text-light);
-        }
-
-        .search-result-price {
-            text-align: right;
-            white-space: nowrap;
-        }
-        .search-result-price strong {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        .search-result-price small {
-            font-size: 0.65rem;
-            color: var(--text-light);
-        }
-
-        /* ===== EMPTY / LOADING ===== */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
-            font-size: 0.88rem;
-        }
-        .empty-state i {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            display: block;
-            color: var(--border);
-        }
-
-        /* ===== SEARCH BAR IN STEP ===== */
-        .search-bar {
-            margin-bottom: 16px;
-            position: relative;
-        }
-        .search-bar i {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 0.85rem;
-        }
-        .search-bar input {
-            width: 100%;
-            padding: 12px 14px 12px 42px;
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            font-size: 0.88rem;
-            outline: none;
-            background: var(--white);
-            transition: border-color 0.15s;
-        }
+        .search-bar { margin-bottom: 16px; position: relative; }
+        .search-bar i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 0.85rem; }
+        .search-bar input { width: 100%; padding: 12px 14px 12px 42px; border: 1px solid var(--border); border-radius: 50px; font-size: 0.88rem; outline: none; background: var(--white); }
         .search-bar input:focus { border-color: var(--primary-blue); }
 
-        /* ===== ORDER FORM ===== */
-        .selected-service-box {
-            background: var(--light-blue);
-            border: 1px solid rgba(42,94,232,0.15);
-            border-radius: 10px;
-            padding: 14px 18px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .selected-service-box strong {
-            font-size: 0.9rem;
-            color: var(--dark-blue);
-        }
-        .selected-service-box .price-tag {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            background: var(--white);
-            padding: 6px 12px;
-            border-radius: 50px;
-        }
+        .selected-service-box { background: var(--light-blue); border: 1px solid rgba(42,94,232,0.15); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .selected-service-box strong { font-size: 0.9rem; color: var(--dark-blue); }
+        .selected-service-box .price-tag { font-size: 0.85rem; font-weight: 700; color: var(--primary-blue); background: var(--white); padding: 6px 12px; border-radius: 50px; }
 
         .form-group { margin-bottom: 20px; }
-
-        .form-group label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-        }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; }
         .form-group label .required { color: var(--error-red); }
 
-        .form-control {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            outline: none;
-            background: var(--white);
-            color: var(--text-dark);
-            transition: border-color 0.15s;
-        }
+        .form-control { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.9rem; outline: none; background: var(--white); color: var(--text-dark); transition: border-color 0.15s; }
         .form-control:focus { border-color: var(--primary-blue); }
-
         textarea.form-control { min-height: 100px; resize: vertical; }
 
-        .form-hint {
-            display: block;
-            font-size: 0.72rem;
-            color: var(--text-light);
-            margin-top: 6px;
-        }
+        .form-hint { display: block; font-size: 0.72rem; color: var(--text-light); margin-top: 6px; }
 
-        /* Quantity */
-        .qty-group {
-            display: flex;
-            align-items: stretch;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            background: var(--white);
-        }
-        .qty-group button {
-            width: 44px;
-            background: var(--light-gray);
-            border: none;
-            font-size: 1.1rem;
-            color: var(--text-dark);
-            cursor: pointer;
-            transition: background 0.15s;
-        }
+        .qty-group { display: flex; align-items: stretch; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--white); }
+        .qty-group button { width: 44px; background: var(--light-gray); border: none; font-size: 1.1rem; color: var(--text-dark); cursor: pointer; }
         .qty-group button:hover { background: var(--light-blue); color: var(--primary-blue); }
-        .qty-group input {
-            flex: 1;
-            border: none;
-            padding: 12px 8px;
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            outline: none;
-            background: transparent;
-        }
+        .qty-group input { flex: 1; border: none; padding: 12px 8px; text-align: center; font-size: 1rem; font-weight: 700; color: var(--text-dark); outline: none; background: transparent; }
         .qty-group input::-webkit-outer-spin-button,
         .qty-group input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .qty-group input[type=number] { -moz-appearance: textfield; }
 
-        /* Summary */
-        .order-summary {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 18px 20px;
-            margin-bottom: 24px;
-        }
-
-        .summary-line {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-light);
-            padding: 6px 0;
-        }
-
-        .summary-line.total {
-            border-top: 1.5px solid var(--border);
-            margin-top: 8px;
-            padding-top: 14px;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
+        .order-summary { background: var(--light-gray); border-radius: 12px; padding: 18px 20px; margin-bottom: 24px; }
+        .summary-line { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); padding: 6px 0; }
+        .summary-line.total { border-top: 1.5px solid var(--border); margin-top: 8px; padding-top: 14px; font-size: 1.05rem; font-weight: 700; color: var(--text-dark); }
         .summary-line.total .amount { color: var(--primary-orange); }
 
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 13px 24px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-            text-decoration: none;
-            font-family: inherit;
-        }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; border: none; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, background 0.15s; text-decoration: none; font-family: inherit; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-primary {
-            background: var(--primary-blue);
-            color: var(--white);
-        }
-        .btn-primary:hover:not(:disabled) {
-            background: var(--primary-orange);
-            box-shadow: 0 8px 20px rgba(255,122,0,0.25);
-        }
-        .btn-secondary {
-            background: var(--light-gray);
-            color: var(--text-dark);
-        }
+        .btn-primary { background: var(--primary-blue); color: var(--white); }
+        .btn-primary:hover:not(:disabled) { background: var(--primary-orange); box-shadow: 0 8px 20px rgba(255,122,0,0.25); }
+        .btn-secondary { background: var(--light-gray); color: var(--text-dark); }
         .btn-secondary:hover { background: var(--light-blue); color: var(--primary-blue); }
         .btn-block { width: 100%; }
 
-        /* Success */
-        .success-box {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .success-box .success-icon {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: #e6fffa;
-            color: var(--success-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 20px;
-        }
-        .success-box h2 {
-            font-size: 1.25rem;
-            color: var(--dark-blue);
-            margin-bottom: 10px;
-        }
-        .success-box p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 6px;
-        }
-        .success-box .order-ref {
-            display: inline-block;
-            background: var(--light-blue);
-            color: var(--primary-blue);
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 50px;
-            margin: 14px 0 24px;
-            font-size: 0.9rem;
-        }
-        .success-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 280px;
-            margin: 0 auto;
-        }
+        .success-box { text-align: center; padding: 40px 20px; }
+        .success-box .success-icon { width: 72px; height: 72px; border-radius: 50%; background: #e6fffa; color: var(--success-green); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; }
+        .success-box h2 { font-size: 1.25rem; color: var(--dark-blue); margin-bottom: 10px; }
+        .success-box p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 6px; }
+        .success-box .order-ref { display: inline-block; background: var(--light-blue); color: var(--primary-blue); font-weight: 700; padding: 8px 16px; border-radius: 50px; margin: 14px 0 24px; font-size: 0.9rem; }
+        .success-actions { display: flex; flex-direction: column; gap: 10px; max-width: 280px; margin: 0 auto; }
 
-        /* ===== TOAST ===== */
-        .toast-container {
-            position: fixed;
-            top: 140px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-width: 340px;
-        }
-        .toast {
-            background: var(--white);
-            border-radius: 10px;
-            padding: 14px 18px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-            border-left: 4px solid var(--success-green);
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            transform: translateX(400px);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+        .toast-container { position: fixed; top: 140px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 340px; }
+        .toast { background: var(--white); border-radius: 10px; padding: 14px 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); border-left: 4px solid var(--success-green); display: flex; align-items: flex-start; gap: 10px; transform: translateX(400px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
         .toast.show { transform: translateX(0); opacity: 1; }
         .toast.error { border-left-color: var(--error-red); }
         .toast.warning { border-left-color: var(--warning-orange); }
@@ -859,22 +402,18 @@
         .toast-body strong { display: block; margin-bottom: 2px; color: var(--text-dark); }
         .toast-body span { color: var(--text-light); font-size: 0.78rem; }
 
-        /* ===== RESPONSIVE ===== */
         @media (min-width: 640px) {
-            .platform-grid { grid-template-columns: repeat(3, 1fr); }
-            .category-grid { grid-template-columns: repeat(3, 1fr); }
-            .step-panel { padding: 32px 32px; }
+            .platform-grid, .category-grid { grid-template-columns: repeat(3, 1fr); }
+            .step-panel { padding: 32px; }
         }
 
         @media (min-width: 900px) {
-            .platform-grid { grid-template-columns: repeat(4, 1fr); }
-            .category-grid { grid-template-columns: repeat(4, 1fr); }
+            .platform-grid, .category-grid { grid-template-columns: repeat(4, 1fr); }
             .order-form-wrap { max-width: 640px; }
         }
 
         @media (max-width: 500px) {
-            .wizard-step-label { display: none; }
-            .wizard-step-line { display: none; }
+            .wizard-step-label, .wizard-step-line { display: none; }
             .wizard-step { justify-content: center; }
             .header-back span { display: none; }
             .step-panel { padding: 20px 16px; }
@@ -884,8 +423,7 @@
             .logo .dot { font-size: 1.5rem; }
             .header-balance { font-size: 0.78rem; padding: 6px 12px; }
             .toast-container { left: 14px; right: 14px; max-width: none; top: 130px; }
-            .search-bar-wrapper { padding: 10px 14px 6px; top: 56px; }
-            .search-bar-wrapper { top: 56px; }
+            .search-bar-wrapper { padding: 10px 14px 6px; }
             .search-result-item { grid-template-columns: auto 1fr; }
             .search-result-price { grid-column: 2; text-align: left; margin-top: 4px; }
         }
@@ -895,23 +433,16 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- HEADER -->
     <header class="header">
         <div class="header-inner">
             <a href="dashboard.html" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
             <div class="header-right">
-                <div class="header-balance">
-                    <i class="fas fa-wallet"></i>
-                    <span id="headerBalance">0 XAF</span>
-                </div>
-                <a href="dashboard.html" class="header-back">
-                    <i class="fas fa-arrow-left"></i><span>Retour</span>
-                </a>
+                <div class="header-balance"><i class="fas fa-wallet"></i><span id="headerBalance">0 XAF</span></div>
+                <a href="dashboard.html" class="header-back"><i class="fas fa-arrow-left"></i><span>Retour</span></a>
             </div>
         </div>
     </header>
 
-    <!-- GLOBAL SEARCH BAR -->
     <div class="search-bar-wrapper">
         <div class="search-bar-inner">
             <i class="fas fa-search"></i>
@@ -920,10 +451,7 @@
         </div>
     </div>
 
-    <!-- MAIN -->
     <main class="main">
-
-        <!-- SEARCH RESULTS VIEW -->
         <div id="searchResultsView" class="hidden">
             <div class="search-results-header">
                 <h1>Résultats de recherche</h1>
@@ -932,101 +460,51 @@
             <div class="services-list" id="searchResultsList"></div>
         </div>
 
-        <!-- WIZARD VIEW -->
         <div id="wizardView">
-
-            <!-- PROGRESS -->
             <div class="wizard-progress">
-                <div class="wizard-step active" data-step="1">
-                    <div class="wizard-step-num">1</div>
-                    <div class="wizard-step-label">Plateforme</div>
-                    <div class="wizard-step-line"></div>
-                </div>
-                <div class="wizard-step" data-step="2">
-                    <div class="wizard-step-num">2</div>
-                    <div class="wizard-step-label">Catégorie</div>
-                    <div class="wizard-step-line"></div>
-                </div>
-                <div class="wizard-step" data-step="3">
-                    <div class="wizard-step-num">3</div>
-                    <div class="wizard-step-label">Service</div>
-                    <div class="wizard-step-line"></div>
-                </div>
-                <div class="wizard-step" data-step="4">
-                    <div class="wizard-step-num">4</div>
-                    <div class="wizard-step-label">Commande</div>
-                </div>
+                <div class="wizard-step active" data-step="1"><div class="wizard-step-num">1</div><div class="wizard-step-label">Plateforme</div><div class="wizard-step-line"></div></div>
+                <div class="wizard-step" data-step="2"><div class="wizard-step-num">2</div><div class="wizard-step-label">Catégorie</div><div class="wizard-step-line"></div></div>
+                <div class="wizard-step" data-step="3"><div class="wizard-step-num">3</div><div class="wizard-step-label">Service</div><div class="wizard-step-line"></div></div>
+                <div class="wizard-step" data-step="4"><div class="wizard-step-num">4</div><div class="wizard-step-label">Commande</div></div>
             </div>
 
-            <!-- STEP 1 : PLATEFORME -->
             <section class="step-panel" id="step1">
-                <div class="step-panel-header">
-                    <div>
-                        <h1>Choisissez une plateforme</h1>
-                        <p>Sélectionnez le réseau social à booster</p>
-                    </div>
-                </div>
-                <div class="platform-grid" id="platformGrid">
-                    <div class="empty-state"><i class="fas fa-circle-notch fa-spin"></i>Chargement…</div>
-                </div>
+                <div class="step-panel-header"><div><h1>Choisissez une plateforme</h1><p>Sélectionnez le réseau social à booster</p></div></div>
+                <div class="platform-grid" id="platformGrid"><div class="empty-state"><i class="fas fa-circle-notch fa-spin"></i>Chargement…</div></div>
             </section>
 
-            <!-- STEP 2 : CATÉGORIE -->
             <section class="step-panel hidden" id="step2">
                 <div class="step-panel-header">
-                    <div>
-                        <h1>Choisissez une catégorie</h1>
-                        <p id="step2Platform">Plateforme —</p>
-                    </div>
-                    <button class="btn-back" id="backToStep1">
-                        <i class="fas fa-arrow-left"></i> Plateforme
-                    </button>
+                    <div><h1>Choisissez une catégorie</h1><p id="step2Platform">Plateforme —</p></div>
+                    <button class="btn-back" id="backToStep1"><i class="fas fa-arrow-left"></i> Plateforme</button>
                 </div>
                 <div class="category-grid" id="categoryGrid"></div>
             </section>
 
-            <!-- STEP 3 : SERVICE -->
             <section class="step-panel hidden" id="step3">
                 <div class="step-panel-header">
-                    <div>
-                        <h1>Choisissez un service</h1>
-                        <p id="step3Context">Plateforme — Catégorie</p>
-                    </div>
-                    <button class="btn-back" id="backToStep2">
-                        <i class="fas fa-arrow-left"></i> Catégorie
-                    </button>
+                    <div><h1>Choisissez un service</h1><p id="step3Context">Plateforme — Catégorie</p></div>
+                    <button class="btn-back" id="backToStep2"><i class="fas fa-arrow-left"></i> Catégorie</button>
                 </div>
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="serviceSearch" placeholder="Rechercher un service…">
-                </div>
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" id="serviceSearch" placeholder="Rechercher un service…"></div>
                 <div class="services-list" id="servicesList"></div>
             </section>
 
-            <!-- STEP 4 : COMMANDE -->
             <section class="step-panel hidden" id="step4">
                 <div class="step-panel-header">
-                    <div>
-                        <h1>Finaliser la commande</h1>
-                        <p>Vérifiez les informations avant de confirmer</p>
-                    </div>
-                    <button class="btn-back" id="backToStep3">
-                        <i class="fas fa-arrow-left"></i> Service
-                    </button>
+                    <div><h1>Finaliser la commande</h1><p>Vérifiez les informations avant de confirmer</p></div>
+                    <button class="btn-back" id="backToStep3"><i class="fas fa-arrow-left"></i> Service</button>
                 </div>
-
                 <div class="order-form-wrap">
                     <div class="selected-service-box">
                         <strong id="selectedServiceName">—</strong>
                         <span class="price-tag" id="selectedServicePrice">—</span>
                     </div>
-
                     <div class="form-group">
                         <label for="orderLink">Lien cible <span class="required">*</span></label>
                         <input type="url" id="orderLink" class="form-control" placeholder="https://instagram.com/votre-profil" required>
                         <span class="form-hint" id="linkHint">Lien du profil public ou de la publication.</span>
                     </div>
-
                     <div class="form-group" id="quantityGroup">
                         <label for="orderQuantity">Quantité <span class="required">*</span></label>
                         <div class="qty-group">
@@ -1036,35 +514,20 @@
                         </div>
                         <span class="form-hint" id="quantityHint">—</span>
                     </div>
-
                     <div class="form-group hidden" id="commentsGroup">
                         <label for="orderComments">Commentaires personnalisés <span class="required">*</span></label>
-                        <textarea id="orderComments" class="form-control" placeholder="Un commentaire par ligne&#10;Commentaire 1&#10;Commentaire 2&#10;Commentaire 3"></textarea>
+                        <textarea id="orderComments" class="form-control" placeholder="Un commentaire par ligne&#10;Commentaire 1&#10;Commentaire 2"></textarea>
                         <span class="form-hint">Le nombre de lignes détermine la quantité commandée.</span>
                     </div>
-
                     <div class="order-summary">
-                        <div class="summary-line">
-                            <span>Prix unitaire</span>
-                            <span id="unitPriceDisplay">—</span>
-                        </div>
-                        <div class="summary-line">
-                            <span>Quantité</span>
-                            <span id="quantityDisplay">—</span>
-                        </div>
-                        <div class="summary-line total">
-                            <span>Total à payer</span>
-                            <span class="amount" id="totalDisplay">0 XAF</span>
-                        </div>
+                        <div class="summary-line"><span>Prix unitaire</span><span id="unitPriceDisplay">—</span></div>
+                        <div class="summary-line"><span>Quantité</span><span id="quantityDisplay">—</span></div>
+                        <div class="summary-line total"><span>Total à payer</span><span class="amount" id="totalDisplay">0 XAF</span></div>
                     </div>
-
-                    <button class="btn btn-primary btn-block" id="submitBtn" disabled>
-                        <i class="fas fa-shopping-cart"></i> Confirmer la commande
-                    </button>
+                    <button class="btn btn-primary btn-block" id="submitBtn" disabled><i class="fas fa-shopping-cart"></i> Confirmer la commande</button>
                 </div>
             </section>
 
-            <!-- STEP 5 : SUCCÈS -->
             <section class="step-panel hidden" id="step5">
                 <div class="success-box">
                     <div class="success-icon"><i class="fas fa-check"></i></div>
@@ -1072,21 +535,15 @@
                     <p>Votre commande a été transmise au fournisseur.</p>
                     <div class="order-ref" id="successOrderRef">Référence —</div>
                     <div class="success-actions">
-                        <a href="historique-commandes.html" class="btn btn-primary btn-block">
-                            <i class="fas fa-list"></i> Voir mes commandes
-                        </a>
-                        <button class="btn btn-secondary btn-block" id="newOrderBtn">
-                            <i class="fas fa-plus"></i> Nouvelle commande
-                        </button>
+                        <a href="historique-commandes.html" class="btn btn-primary btn-block"><i class="fas fa-list"></i> Voir mes commandes</a>
+                        <button class="btn btn-secondary btn-block" id="newOrderBtn"><i class="fas fa-plus"></i> Nouvelle commande</button>
                     </div>
                 </div>
             </section>
-
         </div>
     </main>
 
     <script>
-        // ===== FIREBASE =====
         const firebaseConfig = {
             apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
             authDomain: "likeo-5e3e9.firebaseapp.com",
@@ -1102,13 +559,9 @@
             app = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
-        } catch (e) {
-            console.error('Firebase init error', e);
-        }
+        } catch (e) { console.error('Firebase init error', e); }
 
         const API_BASE = '';
-
-        // ===== STATE =====
         let currentUser = null;
         let userData = null;
         let allServices = [];
@@ -1118,76 +571,69 @@
         let selectedService = null;
         let currentQuantity = 100;
 
-        // ===== PLATFORM METADATA =====
         const platformMeta = {
-            'Instagram':    { icon: 'fab fa-instagram',    color: '#E1306C', priority: 1 },
-            'TikTok':       { icon: 'fab fa-tiktok',       color: '#000000', priority: 2 },
-            'Facebook':     { icon: 'fab fa-facebook-f',   color: '#1877F2', priority: 3 },
-            'YouTube':      { icon: 'fab fa-youtube',      color: '#FF0000', priority: 4 },
-            'Twitter':      { icon: 'fab fa-twitter',      color: '#1DA1F2', priority: 5 },
-            'Telegram':     { icon: 'fab fa-telegram',     color: '#0088cc', priority: 6 },
-            'WhatsApp':     { icon: 'fab fa-whatsapp',     color: '#25D366', priority: 7 },
-            'Spotify':      { icon: 'fab fa-spotify',      color: '#1DB954', priority: 8 },
-            'Discord':      { icon: 'fab fa-discord',      color: '#5865F2', priority: 9 },
-            'Snapchat':     { icon: 'fab fa-snapchat',     color: '#FFFC00', priority: 10 },
-            'LinkedIn':     { icon: 'fab fa-linkedin',     color: '#0077B5', priority: 11 },
-            'Threads':      { icon: 'fab fa-threads',      color: '#000000', priority: 12 },
-            'Twitch':       { icon: 'fab fa-twitch',       color: '#9146FF', priority: 13 },
-            'SoundCloud':   { icon: 'fab fa-soundcloud',   color: '#FF5500', priority: 14 },
-            'Pinterest':    { icon: 'fab fa-pinterest',    color: '#E60023', priority: 15 },
-            'Reddit':       { icon: 'fab fa-reddit',       color: '#FF4500', priority: 16 },
-            'Vimeo':        { icon: 'fab fa-vimeo',        color: '#1AB7EA', priority: 17 },
-            'Audiomack':    { icon: 'fas fa-headphones',   color: '#FFA200', priority: 18 },
-            'Deezer':       { icon: 'fas fa-music',        color: '#A238FF', priority: 19 },
-            'Kick':         { icon: 'fas fa-tv',           color: '#53FC18', priority: 20 },
-            'Boomplay':     { icon: 'fas fa-play',         color: '#FF6400', priority: 21 },
-            'Tidal':        { icon: 'fas fa-water',        color: '#000000', priority: 22 },
-            'Dailymotion':  { icon: 'fas fa-play-circle',  color: '#0066DC', priority: 23 },
-            'Tumblr':       { icon: 'fab fa-tumblr',       color: '#35465C', priority: 24 },
-            'Clubhouse':    { icon: 'fas fa-microphone',   color: '#5FB859', priority: 25 },
-            'Rumble':       { icon: 'fas fa-play',         color: '#85C742', priority: 26 },
-            'Resso':        { icon: 'fas fa-music',        color: '#FF9B00', priority: 27 },
-            'Shazam':       { icon: 'fas fa-wave-square',  color: '#0088FF', priority: 28 },
-            'Mixcloud':     { icon: 'fas fa-cloud',        color: '#52AAD8', priority: 29 },
-            'Bandcamp':     { icon: 'fab fa-bandcamp',     color: '#629AA9', priority: 30 },
-            'Line':         { icon: 'fab fa-line',         color: '#00C300', priority: 31 },
-            'VK':           { icon: 'fab fa-vk',           color: '#4C75A3', priority: 32 },
-            'OK.ru':        { icon: 'fab fa-odnoklassniki', color: '#ED812B', priority: 33 },
-            'WeChat':       { icon: 'fab fa-weixin',       color: '#7BB32E', priority: 34 },
-            'Autres':       { icon: 'fas fa-globe',        color: '#718096', priority: 99 }
+            'Instagram': { icon: 'fab fa-instagram', color: '#E1306C', priority: 1 },
+            'TikTok': { icon: 'fab fa-tiktok', color: '#000000', priority: 2 },
+            'Facebook': { icon: 'fab fa-facebook-f', color: '#1877F2', priority: 3 },
+            'YouTube': { icon: 'fab fa-youtube', color: '#FF0000', priority: 4 },
+            'Twitter': { icon: 'fab fa-twitter', color: '#1DA1F2', priority: 5 },
+            'Telegram': { icon: 'fab fa-telegram', color: '#0088cc', priority: 6 },
+            'WhatsApp': { icon: 'fab fa-whatsapp', color: '#25D366', priority: 7 },
+            'Spotify': { icon: 'fab fa-spotify', color: '#1DB954', priority: 8 },
+            'Discord': { icon: 'fab fa-discord', color: '#5865F2', priority: 9 },
+            'Snapchat': { icon: 'fab fa-snapchat', color: '#FFFC00', priority: 10 },
+            'LinkedIn': { icon: 'fab fa-linkedin', color: '#0077B5', priority: 11 },
+            'Threads': { icon: 'fab fa-threads', color: '#000000', priority: 12 },
+            'Twitch': { icon: 'fab fa-twitch', color: '#9146FF', priority: 13 },
+            'SoundCloud': { icon: 'fab fa-soundcloud', color: '#FF5500', priority: 14 },
+            'Pinterest': { icon: 'fab fa-pinterest', color: '#E60023', priority: 15 },
+            'Reddit': { icon: 'fab fa-reddit', color: '#FF4500', priority: 16 },
+            'Vimeo': { icon: 'fab fa-vimeo', color: '#1AB7EA', priority: 17 },
+            'Audiomack': { icon: 'fas fa-headphones', color: '#FFA200', priority: 18 },
+            'Deezer': { icon: 'fas fa-music', color: '#A238FF', priority: 19 },
+            'Kick': { icon: 'fas fa-tv', color: '#53FC18', priority: 20 },
+            'Boomplay': { icon: 'fas fa-play', color: '#FF6400', priority: 21 },
+            'Tidal': { icon: 'fas fa-water', color: '#000000', priority: 22 },
+            'Dailymotion': { icon: 'fas fa-play-circle', color: '#0066DC', priority: 23 },
+            'Tumblr': { icon: 'fab fa-tumblr', color: '#35465C', priority: 24 },
+            'Clubhouse': { icon: 'fas fa-microphone', color: '#5FB859', priority: 25 },
+            'Rumble': { icon: 'fas fa-play', color: '#85C742', priority: 26 },
+            'Resso': { icon: 'fas fa-music', color: '#FF9B00', priority: 27 },
+            'Shazam': { icon: 'fas fa-wave-square', color: '#0088FF', priority: 28 },
+            'Mixcloud': { icon: 'fas fa-cloud', color: '#52AAD8', priority: 29 },
+            'Bandcamp': { icon: 'fab fa-bandcamp', color: '#629AA9', priority: 30 },
+            'Line': { icon: 'fab fa-line', color: '#00C300', priority: 31 },
+            'VK': { icon: 'fab fa-vk', color: '#4C75A3', priority: 32 },
+            'OK.ru': { icon: 'fab fa-odnoklassniki', color: '#ED812B', priority: 33 },
+            'WeChat': { icon: 'fab fa-weixin', color: '#7BB32E', priority: 34 },
+            'Autres': { icon: 'fas fa-globe', color: '#718096', priority: 99 }
         };
 
         const categoryMeta = {
-            'Abonnés':        { icon: 'fas fa-user-plus',    priority: 1 },
-            'Likes':          { icon: 'fas fa-heart',        priority: 2 },
-            'Vues':           { icon: 'fas fa-eye',          priority: 3 },
-            'Commentaires':   { icon: 'fas fa-comment',      priority: 4 },
-            'Partages':       { icon: 'fas fa-share-alt',    priority: 5 },
-            'Souscripteurs':  { icon: 'fas fa-bell',         priority: 6 },
-            'Membres':        { icon: 'fas fa-users',        priority: 7 },
-            'Écoutes':        { icon: 'fas fa-headphones',   priority: 8 },
-            'Story':          { icon: 'fas fa-circle-notch', priority: 9 },
-            'Reels':          { icon: 'fas fa-video',        priority: 10 },
-            'Live':           { icon: 'fas fa-broadcast-tower', priority: 11 },
-            'Reposts':        { icon: 'fas fa-retweet',      priority: 12 },
-            'Enregistrements':{ icon: 'fas fa-bookmark',     priority: 13 },
-            'Impressions':    { icon: 'fas fa-chart-line',   priority: 14 },
-            'Portée':         { icon: 'fas fa-chart-bar',    priority: 15 },
-            'Réactions':      { icon: 'fas fa-smile',        priority: 16 },
-            'Messages':       { icon: 'fas fa-envelope',     priority: 17 },
-            'Tweets':         { icon: 'fas fa-comment-dots', priority: 18 },
-            'Vérification':   { icon: 'fas fa-check-circle', priority: 19 },
-            'Autres':         { icon: 'fas fa-cube',         priority: 99 }
+            'Abonnés': { icon: 'fas fa-user-plus', priority: 1 },
+            'Likes': { icon: 'fas fa-heart', priority: 2 },
+            'Vues': { icon: 'fas fa-eye', priority: 3 },
+            'Commentaires': { icon: 'fas fa-comment', priority: 4 },
+            'Partages': { icon: 'fas fa-share-alt', priority: 5 },
+            'Souscripteurs': { icon: 'fas fa-bell', priority: 6 },
+            'Membres': { icon: 'fas fa-users', priority: 7 },
+            'Écoutes': { icon: 'fas fa-headphones', priority: 8 },
+            'Story': { icon: 'fas fa-circle-notch', priority: 9 },
+            'Reels': { icon: 'fas fa-video', priority: 10 },
+            'Live': { icon: 'fas fa-broadcast-tower', priority: 11 },
+            'Reposts': { icon: 'fas fa-retweet', priority: 12 },
+            'Enregistrements': { icon: 'fas fa-bookmark', priority: 13 },
+            'Impressions': { icon: 'fas fa-chart-line', priority: 14 },
+            'Portée': { icon: 'fas fa-chart-bar', priority: 15 },
+            'Réactions': { icon: 'fas fa-smile', priority: 16 },
+            'Messages': { icon: 'fas fa-envelope', priority: 17 },
+            'Tweets': { icon: 'fas fa-comment-dots', priority: 18 },
+            'Vérification': { icon: 'fas fa-check-circle', priority: 19 },
+            'Autres': { icon: 'fas fa-cube', priority: 99 }
         };
 
-        // ===== HELPERS =====
         function escapeHtml(s) {
-            return String(s == null ? '' : s)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
+            return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         function formatXAF(n) {
@@ -1202,16 +648,11 @@
             const c = document.getElementById('toastContainer');
             const el = document.createElement('div');
             el.className = 'toast ' + type;
-            const icon = type === 'success' ? 'fa-check-circle' :
-                         type === 'error' ? 'fa-times-circle' : 'fa-exclamation-triangle';
-            el.innerHTML = `<i class="fas ${icon}"></i>
-                <div class="toast-body"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span></div>`;
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-exclamation-triangle';
+            el.innerHTML = `<i class="fas ${icon}"></i><div class="toast-body"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span></div>`;
             c.appendChild(el);
             requestAnimationFrame(() => el.classList.add('show'));
-            setTimeout(() => {
-                el.classList.remove('show');
-                setTimeout(() => el.remove(), 300);
-            }, 4500);
+            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 4500);
         }
 
         async function apiFetch(path, options = {}) {
@@ -1220,17 +661,15 @@
                 const token = await currentUser.getIdToken();
                 headers['Authorization'] = 'Bearer ' + token;
             }
-            const res = await fetch(API_BASE + path, { ...options, headers });
+            // Anti-cache : force le rechargement à chaque appel
+            const res = await fetch(API_BASE + path, { ...options, headers, cache: 'no-store' });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || data.message || 'Erreur serveur');
             return data;
         }
 
-        // ===== DÉTECTION PLATEFORME (ÉTENDUE) =====
         function detectPlatform(category, name) {
             const text = String((category || '') + ' ' + (name || '')).toLowerCase();
-
-            // Plates-formes spécifiques / moins communes en premier
             if (/audiomack/.test(text)) return 'Audiomack';
             if (/deezer/.test(text)) return 'Deezer';
             if (/boomplay/.test(text)) return 'Boomplay';
@@ -1248,8 +687,6 @@
             if (/\bvk\b|vkontakte/.test(text)) return 'VK';
             if (/ok\.?ru|odnoklassniki/.test(text)) return 'OK.ru';
             if (/\bline\b/.test(text) && !/online|offline|underline|inline/.test(text)) return 'Line';
-
-            // Plates-formes majeures
             if (/instagram|insta|\big\b/.test(text)) return 'Instagram';
             if (/tiktok|tik.?tok|douyin/.test(text)) return 'TikTok';
             if (/facebook|\bfb\b/.test(text)) return 'Facebook';
@@ -1267,11 +704,9 @@
             if (/pinterest/.test(text)) return 'Pinterest';
             if (/reddit/.test(text)) return 'Reddit';
             if (/vimeo/.test(text)) return 'Vimeo';
-
             return 'Autres';
         }
 
-        // ===== DÉTECTION CATÉGORIE =====
         function detectServiceType(category, name) {
             const text = String((category || '') + ' ' + (name || '')).toLowerCase();
             if (/comment/.test(text)) return 'Commentaires';
@@ -1291,12 +726,11 @@
             if (/reach|portée|portee/.test(text)) return 'Portée';
             if (/reaction|réaction/.test(text)) return 'Réactions';
             if (/\bdm\b|message/.test(text)) return 'Messages';
-            if (/tweet/.test(text)) return 'Tweet';
+            if (/tweet/.test(text)) return 'Tweets';
             if (/verified|verification|vérif/.test(text)) return 'Vérification';
             return 'Autres';
         }
 
-        // ===== ORGANISATION SERVICES =====
         function organizeServices(rawList) {
             const platforms = {};
 
@@ -1305,14 +739,11 @@
                 const category = detectServiceType(svc.category || '', svc.name || '');
 
                 if (!platforms[platform]) platforms[platform] = { categories: {} };
-                if (!platforms[platform].categories[category]) {
-                    platforms[platform].categories[category] = [];
-                }
+                if (!platforms[platform].categories[category]) platforms[platform].categories[category] = [];
 
                 const isCustomComments = svc.type === 'custom_comments' || svc.type === 'Custom Comments';
-
-                // Prix déjà multiplié côté backend (index.js applique PROFIT_MULTIPLIER)
                 const pricePer1000 = Number(svc.price_per_1000) || 0;
+                const pricePer1000Raw = Number(svc.price_per_1000_raw) || 0;
 
                 platforms[platform].categories[category].push({
                     service_id: svc.service_id,
@@ -1321,6 +752,7 @@
                     isCustomComments,
                     description: svc.description || '',
                     price_per_1000: pricePer1000,
+                    price_per_1000_raw: pricePer1000Raw,
                     min: Number(svc.min) || 1,
                     max: Number(svc.max) || 1000000,
                     refill: !!svc.refill,
@@ -1328,7 +760,6 @@
                 });
             });
 
-            // Tri par prix croissant dans chaque catégorie
             Object.values(platforms).forEach(p => {
                 Object.values(p.categories).forEach(arr => {
                     arr.sort((a, b) => a.price_per_1000 - b.price_per_1000);
@@ -1338,12 +769,8 @@
             return platforms;
         }
 
-        // ===== AUTH =====
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.href = 'connexion.html';
-                return;
-            }
+            if (!user) { window.location.href = 'connexion.html'; return; }
             currentUser = user;
 
             const userRef = db.collection('users').doc(user.uid);
@@ -1354,136 +781,83 @@
             await loadServices();
         });
 
-        // ===== CHARGEMENT SERVICES =====
         async function loadServices() {
             const grid = document.getElementById('platformGrid');
             try {
-                const data = await apiFetch('/api/sbh/services');
-                if (!data.success || !Array.isArray(data.services)) {
-                    throw new Error(data.error || 'Catalogue indisponible');
-                }
+                // Cache-busting : ajoute un timestamp pour forcer le rechargement
+                const data = await apiFetch('/api/sbh/services?t=' + Date.now());
+                if (!data.success || !Array.isArray(data.services)) throw new Error(data.error || 'Catalogue indisponible');
                 allServices = data.services;
                 platformsMap = organizeServices(allServices);
                 renderPlatforms();
             } catch (err) {
                 console.error(err);
-                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Impossible de charger les services.<br><small>${escapeHtml(err.message)}</small>
-                </div>`;
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle"></i>Impossible de charger les services.<br><small>${escapeHtml(err.message)}</small></div>`;
             }
         }
 
-        // ===== RENDU PLATEFORMES =====
         function renderPlatforms() {
             const grid = document.getElementById('platformGrid');
             const platforms = Object.keys(platformsMap);
-
             if (platforms.length === 0) {
-                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
-                    <i class="fas fa-info-circle"></i>Aucune plateforme disponible.
-                </div>`;
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-info-circle"></i>Aucune plateforme disponible.</div>`;
                 return;
             }
-
-            platforms.sort((a, b) => {
-                const pa = platformMeta[a]?.priority || 50;
-                const pb = platformMeta[b]?.priority || 50;
-                return pa - pb;
-            });
-
+            platforms.sort((a, b) => (platformMeta[a]?.priority || 50) - (platformMeta[b]?.priority || 50));
             grid.innerHTML = '';
             platforms.forEach(platform => {
                 const meta = platformMeta[platform] || platformMeta['Autres'];
-                const totalServices = Object.values(platformsMap[platform].categories)
-                    .reduce((sum, arr) => sum + arr.length, 0);
-
+                const totalServices = Object.values(platformsMap[platform].categories).reduce((sum, arr) => sum + arr.length, 0);
                 const btn = document.createElement('button');
                 btn.className = 'platform-card';
                 btn.innerHTML = `
-                    <div class="platform-card-icon" style="background:${meta.color}">
-                        <i class="${meta.icon}"></i>
-                    </div>
+                    <div class="platform-card-icon" style="background:${meta.color}"><i class="${meta.icon}"></i></div>
                     <div class="platform-card-name">${escapeHtml(platform)}</div>
                     <div class="platform-card-count">${totalServices} service${totalServices > 1 ? 's' : ''}</div>
                 `;
-                btn.addEventListener('click', () => {
-                    selectedPlatform = platform;
-                    goToStep(2);
-                    renderCategories();
-                });
+                btn.addEventListener('click', () => { selectedPlatform = platform; goToStep(2); renderCategories(); });
                 grid.appendChild(btn);
             });
         }
 
-        // ===== RENDU CATÉGORIES =====
         function renderCategories() {
             const grid = document.getElementById('categoryGrid');
             const categories = Object.keys(platformsMap[selectedPlatform]?.categories || {});
-
             document.getElementById('step2Platform').textContent = selectedPlatform + ' — Catégorie de service';
-
-            categories.sort((a, b) => {
-                const pa = categoryMeta[a]?.priority || 50;
-                const pb = categoryMeta[b]?.priority || 50;
-                return pa - pb;
-            });
-
+            categories.sort((a, b) => (categoryMeta[a]?.priority || 50) - (categoryMeta[b]?.priority || 50));
             grid.innerHTML = '';
             categories.forEach(cat => {
                 const meta = categoryMeta[cat] || categoryMeta['Autres'];
                 const count = platformsMap[selectedPlatform].categories[cat].length;
-
                 const btn = document.createElement('button');
                 btn.className = 'category-btn';
-                btn.innerHTML = `
-                    <div class="category-btn-head">
-                        <div class="category-btn-icon"><i class="${meta.icon}"></i></div>
-                        <span class="category-btn-count">${count}</span>
-                    </div>
-                    <div class="category-btn-name">${escapeHtml(cat)}</div>
-                `;
-                btn.addEventListener('click', () => {
-                    selectedCategory = cat;
-                    goToStep(3);
-                    document.getElementById('serviceSearch').value = '';
-                    renderServices();
-                });
+                btn.innerHTML = `<div class="category-btn-head"><div class="category-btn-icon"><i class="${meta.icon}"></i></div><span class="category-btn-count">${count}</span></div><div class="category-btn-name">${escapeHtml(cat)}</div>`;
+                btn.addEventListener('click', () => { selectedCategory = cat; goToStep(3); document.getElementById('serviceSearch').value = ''; renderServices(); });
                 grid.appendChild(btn);
             });
         }
 
-        // ===== RENDU SERVICES (triés par prix croissant) =====
         function renderServices() {
             const list = document.getElementById('servicesList');
-            document.getElementById('step3Context').textContent =
-                `${selectedPlatform} — ${selectedCategory}`;
-
+            document.getElementById('step3Context').textContent = `${selectedPlatform} — ${selectedCategory}`;
             const search = document.getElementById('serviceSearch').value.trim().toLowerCase();
             const services = platformsMap[selectedPlatform].categories[selectedCategory] || [];
-            const filtered = search
-                ? services.filter(s => s.name.toLowerCase().includes(search))
-                : services.slice();
-
-            // Tri par prix croissant
+            const filtered = search ? services.filter(s => s.name.toLowerCase().includes(search)) : services.slice();
             filtered.sort((a, b) => a.price_per_1000 - b.price_per_1000);
-
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="empty-state">
-                    <i class="fas fa-search"></i>Aucun service ne correspond.
-                </div>`;
+                list.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i>Aucun service ne correspond.</div>`;
                 return;
             }
-
             list.innerHTML = '';
             filtered.forEach(svc => {
                 const row = document.createElement('div');
                 row.className = 'service-row';
-
                 const tags = [];
                 if (svc.refill) tags.push('<span class="service-tag">Refill</span>');
                 if (svc.cancel) tags.push('<span class="service-tag cancel">Annulable</span>');
-
+                const wholesaleLine = svc.price_per_1000_raw > 0
+                    ? `<span class="wholesale">fournisseur: ${formatXAF(svc.price_per_1000_raw)}</span>`
+                    : '';
                 row.innerHTML = `
                     <div class="service-row-info">
                         <h4>${escapeHtml(svc.name)}</h4>
@@ -1496,6 +870,7 @@
                     <div class="service-row-price">
                         <strong>${formatXAF(svc.price_per_1000)}</strong>
                         <small>/ 1 000</small>
+                        ${wholesaleLine}
                     </div>
                 `;
                 row.addEventListener('click', () => selectService(svc, svc._platform, svc._category));
@@ -1503,42 +878,25 @@
             });
         }
 
-        // ===== RECHERCHE GLOBALE PUISSANTE =====
         function performSearch(query) {
             const q = query.toLowerCase().trim();
             if (!q) return [];
-
             const tokens = q.split(/\s+/).filter(Boolean);
             const results = [];
-
             Object.keys(platformsMap).forEach(platform => {
                 Object.keys(platformsMap[platform].categories).forEach(category => {
                     platformsMap[platform].categories[category].forEach(svc => {
-                        const haystack = (
-                            svc.name + ' ' + category + ' ' + platform + ' ' + (svc.description || '')
-                        ).toLowerCase();
-
+                        const haystack = (svc.name + ' ' + category + ' ' + platform + ' ' + (svc.description || '')).toLowerCase();
                         let match = false;
                         if (tokens.length === 1 && tokens[0].length <= 2) {
-                            // 1-2 caractères : substring simple
                             match = haystack.includes(tokens[0]);
                         } else {
-                            // Multi-mots : OR (au moins un mot-clé)
                             match = tokens.some(t => haystack.includes(t));
                         }
-
-                        if (match) {
-                            results.push({
-                                ...svc,
-                                _platform: platform,
-                                _category: category
-                            });
-                        }
+                        if (match) results.push({ ...svc, _platform: platform, _category: category });
                     });
                 });
             });
-
-            // Tri par prix croissant
             results.sort((a, b) => a.price_per_1000 - b.price_per_1000);
             return results;
         }
@@ -1546,34 +904,23 @@
         function renderSearchResults(query) {
             const list = document.getElementById('searchResultsList');
             const countEl = document.getElementById('searchResultsCount');
-
-            if (!query.trim()) {
-                list.innerHTML = '';
-                countEl.textContent = '';
-                return;
-            }
-
+            if (!query.trim()) { list.innerHTML = ''; countEl.textContent = ''; return; }
             const results = performSearch(query);
             countEl.textContent = `${results.length} service${results.length > 1 ? 's' : ''} trouvé${results.length > 1 ? 's' : ''}`;
-
             if (results.length === 0) {
-                list.innerHTML = `<div class="empty-state">
-                    <i class="fas fa-search"></i>Aucun service ne correspond à « ${escapeHtml(query)} ».
-                </div>`;
+                list.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i>Aucun service ne correspond à « ${escapeHtml(query)} ».</div>`;
                 return;
             }
-
             list.innerHTML = '';
-            // Limiter l'affichage à 300 pour performance
-            const display = results.slice(0, 300);
-            display.forEach(svc => {
+            results.slice(0, 300).forEach(svc => {
                 const meta = platformMeta[svc._platform] || platformMeta['Autres'];
                 const item = document.createElement('div');
                 item.className = 'search-result-item';
+                const wholesaleLine = svc.price_per_1000_raw > 0
+                    ? `<small style="color:#aaa;">fournisseur: ${formatXAF(svc.price_per_1000_raw)}</small>`
+                    : '';
                 item.innerHTML = `
-                    <div class="search-result-icon" style="background:${meta.color}">
-                        <i class="${meta.icon}"></i>
-                    </div>
+                    <div class="search-result-icon" style="background:${meta.color}"><i class="${meta.icon}"></i></div>
                     <div class="search-result-info">
                         <div class="search-result-breadcrumb">${escapeHtml(svc._platform)} • ${escapeHtml(svc._category)}</div>
                         <div class="search-result-name">${escapeHtml(svc.name)}</div>
@@ -1582,15 +929,12 @@
                     <div class="search-result-price">
                         <strong>${formatXAF(svc.price_per_1000)}</strong>
                         <small>/ 1 000</small>
+                        ${wholesaleLine}
                     </div>
                 `;
-                item.addEventListener('click', () => {
-                    selectService(svc, svc._platform, svc._category);
-                    clearSearch();
-                });
+                item.addEventListener('click', () => { selectService(svc, svc._platform, svc._category); clearSearch(); });
                 list.appendChild(item);
             });
-
             if (results.length > 300) {
                 const more = document.createElement('div');
                 more.className = 'empty-state';
@@ -1600,18 +944,14 @@
             }
         }
 
-        // ===== SÉLECTION SERVICE =====
         function selectService(svc, platform, category) {
             selectedService = svc;
             selectedPlatform = platform || selectedPlatform;
             selectedCategory = category || selectedCategory;
 
             document.getElementById('selectedServiceName').textContent = svc.name;
-            document.getElementById('selectedServicePrice').textContent =
-                formatXAF(svc.price_per_1000) + ' / 1000';
-
-            document.getElementById('quantityHint').textContent =
-                `Min ${formatNum(svc.min)} — Max ${formatNum(svc.max)}`;
+            document.getElementById('selectedServicePrice').textContent = formatXAF(svc.price_per_1000) + ' / 1000';
+            document.getElementById('quantityHint').textContent = `Min ${formatNum(svc.min)} — Max ${formatNum(svc.max)}`;
 
             const isComments = svc.isCustomComments;
             document.getElementById('commentsGroup').classList.toggle('hidden', !isComments);
@@ -1631,38 +971,28 @@
             }
 
             document.getElementById('orderLink').value = '';
-            document.getElementById('linkHint').textContent = isComments
-                ? 'Lien direct de la publication (post, photo, vidéo).'
-                : 'Lien du profil public ou de la publication.';
+            document.getElementById('linkHint').textContent = isComments ? 'Lien direct de la publication.' : 'Lien du profil public ou de la publication.';
 
             updateSummary();
             goToStep(4);
         }
 
-        // ===== CALCUL RÉSUMÉ =====
         function updateSummary() {
             if (!selectedService) return;
             const unit = selectedService.price_per_1000 / 1000;
-
             let qty = currentQuantity;
             if (selectedService.isCustomComments) {
-                const lines = document.getElementById('orderComments').value
-                    .split('\n').filter(l => l.trim());
+                const lines = document.getElementById('orderComments').value.split('\n').filter(l => l.trim());
                 qty = lines.length;
                 currentQuantity = qty;
             }
-
             const total = unit * qty;
             document.getElementById('unitPriceDisplay').textContent = formatXAF(unit) + ' / unité';
             document.getElementById('quantityDisplay').textContent = formatNum(qty);
             document.getElementById('totalDisplay').textContent = formatXAF(total);
-
-            const btn = document.getElementById('submitBtn');
-            const validQty = qty >= selectedService.min && qty <= selectedService.max;
-            btn.disabled = !validQty || qty === 0;
+            document.getElementById('submitBtn').disabled = !(qty >= selectedService.min && qty <= selectedService.max) || qty === 0;
         }
 
-        // ===== NAVIGATION ÉTAPES =====
         function goToStep(n) {
             for (let i = 1; i <= 5; i++) {
                 const el = document.getElementById('step' + i);
@@ -1677,7 +1007,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ===== RECHERCHE GLOBALE EVENT =====
         let searchDebounce = null;
         const globalSearchInput = document.getElementById('globalSearch');
         const clearSearchBtn = document.getElementById('clearSearchBtn');
@@ -1693,48 +1022,24 @@
 
         globalSearchInput.addEventListener('input', function () {
             const q = this.value.trim();
-
             if (q.length === 0) {
                 clearSearchBtn.classList.add('hidden');
                 searchResultsView.classList.add('hidden');
                 wizardView.classList.remove('hidden');
                 return;
             }
-
             clearSearchBtn.classList.remove('hidden');
             wizardView.classList.add('hidden');
             searchResultsView.classList.remove('hidden');
-
             if (searchDebounce) clearTimeout(searchDebounce);
-            searchDebounce = setTimeout(() => {
-                renderSearchResults(q);
-            }, 120);
+            searchDebounce = setTimeout(() => renderSearchResults(q), 120);
         });
 
-        clearSearchBtn.addEventListener('click', () => {
-            clearSearch();
-            globalSearchInput.focus();
-        });
+        clearSearchBtn.addEventListener('click', () => { clearSearch(); globalSearchInput.focus(); });
 
-        // ===== EVENT LISTENERS =====
-        document.getElementById('backToStep1').addEventListener('click', () => {
-            selectedPlatform = null;
-            selectedCategory = null;
-            selectedService = null;
-            goToStep(1);
-        });
-
-        document.getElementById('backToStep2').addEventListener('click', () => {
-            selectedCategory = null;
-            selectedService = null;
-            goToStep(2);
-        });
-
-        document.getElementById('backToStep3').addEventListener('click', () => {
-            selectedService = null;
-            goToStep(3);
-        });
-
+        document.getElementById('backToStep1').addEventListener('click', () => { selectedPlatform = null; selectedCategory = null; selectedService = null; goToStep(1); });
+        document.getElementById('backToStep2').addEventListener('click', () => { selectedCategory = null; selectedService = null; goToStep(2); });
+        document.getElementById('backToStep3').addEventListener('click', () => { selectedService = null; goToStep(3); });
         document.getElementById('serviceSearch').addEventListener('input', renderServices);
 
         document.getElementById('qtyMinus').addEventListener('click', () => {
@@ -1743,14 +1048,12 @@
             document.getElementById('orderQuantity').value = currentQuantity;
             updateSummary();
         });
-
         document.getElementById('qtyPlus').addEventListener('click', () => {
             if (!selectedService) return;
             currentQuantity = Math.min(selectedService.max, currentQuantity + 100);
             document.getElementById('orderQuantity').value = currentQuantity;
             updateSummary();
         });
-
         document.getElementById('orderQuantity').addEventListener('input', function () {
             if (!selectedService) return;
             let v = parseInt(this.value) || selectedService.min;
@@ -1759,74 +1062,42 @@
             this.value = v;
             updateSummary();
         });
-
         document.getElementById('orderComments').addEventListener('input', updateSummary);
 
-        // ===== SOUMISSION =====
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!selectedService) return;
-
             const link = document.getElementById('orderLink').value.trim();
-            if (!link || !/^https?:\/\//i.test(link)) {
-                toast('warning', 'Lien invalide', 'Saisissez une URL valide commençant par http(s)://');
-                return;
-            }
-
+            if (!link || !/^https?:\/\//i.test(link)) { toast('warning', 'Lien invalide', 'Saisissez une URL valide'); return; }
             let quantity = currentQuantity;
             let comments = null;
-
             if (selectedService.isCustomComments) {
                 const raw = document.getElementById('orderComments').value;
                 const lines = raw.split('\n').filter(l => l.trim());
-                if (lines.length < selectedService.min) {
-                    toast('warning', 'Commentaires insuffisants', `Minimum requis : ${selectedService.min}`);
-                    return;
-                }
-                if (lines.length > selectedService.max) {
-                    toast('warning', 'Commentaires trop nombreux', `Maximum : ${selectedService.max}`);
-                    return;
-                }
+                if (lines.length < selectedService.min) { toast('warning', 'Commentaires insuffisants', `Min ${selectedService.min}`); return; }
+                if (lines.length > selectedService.max) { toast('warning', 'Commentaires trop nombreux', `Max ${selectedService.max}`); return; }
                 comments = lines.join('\n');
                 quantity = lines.length;
             }
-
-            // Vérification préalable du solde
             const total = (selectedService.price_per_1000 / 1000) * quantity;
             if (userData && userData.balance < total) {
-                toast('error', 'Solde insuffisant',
-                    `Il vous manque ${formatXAF(Math.ceil(total - userData.balance))}. Veuillez recharger votre compte.`);
+                toast('error', 'Solde insuffisant', `Il vous manque ${formatXAF(Math.ceil(total - userData.balance))}.`);
                 return;
             }
-
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Traitement…';
-
             try {
-                const payload = {
-                    service_id: selectedService.service_id,
-                    link,
-                    quantity
-                };
+                const payload = { service_id: selectedService.service_id, link, quantity };
                 if (comments) payload.comments = comments;
-
-                const res = await apiFetch('/api/sbh/order', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
+                const res = await apiFetch('/api/sbh/order', { method: 'POST', body: JSON.stringify(payload) });
                 if (!res.success) throw new Error(res.error || 'Commande refusée');
-
                 toast('success', 'Commande passée', 'Référence ' + res.order_id);
-
                 if (res.newBalance !== undefined && userData) {
                     userData.balance = res.newBalance;
                     document.getElementById('headerBalance').textContent = formatXAF(res.newBalance);
                 }
-
                 document.getElementById('successOrderRef').textContent = 'Référence ' + res.order_id;
                 goToStep(5);
-
             } catch (err) {
                 toast('error', 'Erreur', err.message);
                 btn.disabled = false;
@@ -1834,25 +1105,18 @@
             }
         });
 
-        // ===== NOUVELLE COMMANDE =====
         document.getElementById('newOrderBtn').addEventListener('click', () => {
-            selectedPlatform = null;
-            selectedCategory = null;
-            selectedService = null;
+            selectedPlatform = null; selectedCategory = null; selectedService = null;
             document.getElementById('serviceSearch').value = '';
             clearSearch();
             goToStep(1);
         });
 
-        // Raccourci clavier : / pour focus la recherche
         document.addEventListener('keydown', (e) => {
             if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                globalSearchInput.focus();
+                e.preventDefault(); globalSearchInput.focus();
             }
-            if (e.key === 'Escape' && document.activeElement === globalSearchInput) {
-                clearSearch();
-            }
+            if (e.key === 'Escape' && document.activeElement === globalSearchInput) clearSearch();
         });
     </script>
 </body>
