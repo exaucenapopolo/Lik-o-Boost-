@@ -24,7 +24,8 @@ const db = admin.firestore();
 // ---------- CONSTANTES ----------
 const EXO_API_URL = 'https://exosupplier.com/api/v2';
 const USD_TO_XAF = 615;
-const PROFIT_MULTIPLIER = 1.5;
+// Multiplicateur de profit (doit être IDENTIQUE au frontend dashboard.html)
+const PROFIT_MULTIPLIER = 1.81;
 
 // ---------- DICTIONNAIRES DE STATUTS PARTENAIRES ----------
 // Liste exhaustive des mots signifiant un succès
@@ -47,10 +48,10 @@ const STATUS_ECHEC = [
 function normalizeStatus(statusStr) {
     if (statusStr === null || statusStr === undefined) return "inconnu";
     return String(statusStr)
-        .normalize("NFD") // Sépare la lettre de son accent
-        .replace(/[\u0300-\u036f]/g, "") // Supprime l'accent
-        .toLowerCase() // Met tout en minuscules
-        .trim(); // Enlève les espaces au début et à la fin
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
 }
 
 // Fonction qui décide si le paiement est validé, échoué ou en attente
@@ -59,6 +60,17 @@ function interpretPaymentStatus(rawStatus) {
     if (STATUS_SUCCES.includes(normalized)) return 'success';
     if (STATUS_ECHEC.includes(normalized)) return 'failed';
     return 'pending'; 
+}
+
+// Normalise les commentaires en tableau (quelle que soit l'entrée)
+function normalizeComments(comments) {
+    if (Array.isArray(comments)) {
+        return comments.filter(c => c && String(c).trim());
+    }
+    if (typeof comments === 'string') {
+        return comments.split('\n').filter(c => c.trim());
+    }
+    return [];
 }
 
 async function verifyToken(req) {
@@ -185,10 +197,16 @@ app.post('/api/exo/order', async (req, res) => {
         }
 
         const rateXAF = parseFloat(exoService.rate) * USD_TO_XAF * PROFIT_MULTIPLIER;
+        
+        // Normalisation robuste des commentaires (string ou array)
+        const commentsArray = normalizeComments(comments);
+        
+        // Calcul du coût selon le type de service
+        // - Custom Comments : le rate Exo est PAR 10 COMMENTAIRES (donc /10)
+        // - Autres services  : le rate Exo est PAR 1000 UNITES  (donc /1000)
         let cost = 0;
         if (exoService.type === 'Custom Comments') {
-            const commentsArray = comments || [];
-            cost = (rateXAF / 1000) * commentsArray.length;
+            cost = (rateXAF / 10) * commentsArray.length;
         } else {
             cost = (rateXAF / 1000) * quantity;
         }
@@ -201,12 +219,12 @@ app.post('/api/exo/order', async (req, res) => {
         const userData = userDoc.data();
         const currentBalance = userData.balance || 0;
         if (currentBalance < cost) {
-            return res.status(400).json({ error: 'Solde insuffisant' });
+            return res.status(400).json({ error: 'Solde insuffisant', message: 'Votre solde est insuffisant pour cette commande.' });
         }
 
         let exoResult;
         try {
-            exoResult = await placeExoOrder(service, link, quantity, comments);
+            exoResult = await placeExoOrder(service, link, quantity, commentsArray);
             if (exoResult.error) {
                 return res.status(400).json({ error: 'Erreur fournisseur: ' + exoResult.error });
             }
@@ -217,6 +235,8 @@ app.post('/api/exo/order', async (req, res) => {
 
         let finalOrderId;
         let newBalance;
+
+        // Transaction unique : balance + stats + commande + compteur
         await db.runTransaction(async (transaction) => {
             const counterRef = db.collection('counters').doc('commandes');
             const counterDoc = await transaction.get(counterRef);
@@ -230,7 +250,13 @@ app.post('/api/exo/order', async (req, res) => {
             const userDoc2 = await transaction.get(userRef2);
             const balance = userDoc2.data().balance || 0;
             newBalance = balance - cost;
-            transaction.update(userRef2, { balance: newBalance });
+
+            transaction.update(userRef2, { 
+                balance: newBalance,
+                totalOrders: admin.firestore.FieldValue.increment(1),
+                totalSpent: admin.firestore.FieldValue.increment(cost),
+                activeOrders: admin.firestore.FieldValue.increment(1)
+            });
 
             transaction.set(counterRef, { lastId: nextId }, { merge: true });
 
@@ -243,7 +269,8 @@ app.post('/api/exo/order', async (req, res) => {
                 serviceName: serviceName || exoService.name,
                 platform: platform || 'Autre',
                 link: link,
-                quantity: exoService.type === 'Custom Comments' ? (comments ? comments.length : 0) : quantity,
+                quantity: exoService.type === 'Custom Comments' ? commentsArray.length : quantity,
+                customComments: exoService.type === 'Custom Comments' ? commentsArray.join('\n') : '',
                 cost: cost,
                 status: 'En attente',
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -252,14 +279,7 @@ app.post('/api/exo/order', async (req, res) => {
             });
         });
 
-        const userRefStats = db.collection('users').doc(uid);
-        await userRefStats.update({
-            totalOrders: admin.firestore.FieldValue.increment(1),
-            totalSpent: admin.firestore.FieldValue.increment(cost),
-            activeOrders: admin.firestore.FieldValue.increment(1)
-        });
-
-        const updatedUser = await userRefStats.get();
+        const updatedUser = await userRef.get();
         const updatedData = updatedUser.data();
 
         res.status(200).json({
@@ -348,6 +368,26 @@ app.get('/api/orders/:uid', async (req, res) => {
             const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
             return dateB - dateA;
         });
+
+        // Recalcul du compteur réel "activeOrders" pour rester cohérent
+        try {
+            const activeCount = orders.filter(o => {
+                const s = (o.status || '')
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase().replace(/[_-]/g, ' ').trim();
+                return s === 'en cours' || s === 'en attente' || 
+                       s === 'in progress' || s === 'processing' || 
+                       s === 'partiel' || s === 'partial';
+            }).length;
+
+            const userRef = db.collection('users').doc(uid);
+            const userDoc = await userRef.get();
+            if (userDoc.exists && userDoc.data().activeOrders !== activeCount) {
+                await userRef.update({ activeOrders: activeCount });
+            }
+        } catch (syncErr) {
+            console.warn('Erreur sync activeOrders:', syncErr);
+        }
 
         res.status(200).json({ orders });
     } catch (error) {
@@ -506,6 +546,11 @@ app.post('/api/create-fapshi-checkout', async (req, res) => {
         const decoded = await verifyToken(req);
         const { amount, description, email, name } = req.body;
         
+        // Validation stricte du montant
+        if (!Number.isFinite(Number(amount)) || Number(amount) <= 0) {
+            return res.status(400).json({ error: 'Montant invalide' });
+        }
+        
         if (!process.env.FAPSHI_API_USER || !process.env.FAPSHI_API_KEY) {
             throw new Error('Identifiants API Fapshi manquants dans les variables d\'environnement');
         }
@@ -519,7 +564,7 @@ app.post('/api/create-fapshi-checkout', async (req, res) => {
         };
         
         const fapshiBody = {
-            amount: amount,
+            amount: Number(amount),
             email: email || 'client@likeoboost.com',
             externalId: txRef.id,
             redirectUrl: req.headers.origin + '/depot.html' 
@@ -540,7 +585,7 @@ app.post('/api/create-fapshi-checkout', async (req, res) => {
         
         await txRef.set({
             userId: decoded.uid,
-            amount: amount,
+            amount: Number(amount),
             description: description || 'Recharge de solde Likéo Boost',
             status: 'PENDING',
             dateInitiated: admin.firestore.FieldValue.serverTimestamp(),
@@ -561,14 +606,12 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
         const decoded = await verifyToken(req);
         const { transId } = req.body;
         
-        // On récupère la référence du document avant d'entrer dans la transaction
         const txSnapshot = await db.collection('fapshiTransactions').where('transId', '==', transId).get();
         if (txSnapshot.empty) {
             return res.status(404).json({ error: 'Transaction introuvable dans la base de données.' });
         }
         const txDocRef = txSnapshot.docs[0].ref;
         
-        // Vérification du statut auprès de Fapshi
         const fapshiHeaders = {
             'apiuser': process.env.FAPSHI_API_USER,
             'apikey': process.env.FAPSHI_API_KEY
@@ -578,10 +621,8 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
         });
         const fapshiData = await fapshiRes.json();
         
-        // Utilisation de la nouvelle fonction robuste d'interprétation
         const interpretedStatus = interpretPaymentStatus(fapshiData.status);
         
-        // Utilisation d'une transaction Firestore pour verrouiller la mise à jour
         const result = await db.runTransaction(async (t) => {
             const txDoc = await t.get(txDocRef);
             const txData = txDoc.data();
@@ -590,12 +631,10 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
                 throw new Error('Accès refusé');
             }
             
-            // Si la base indique DÉJÀ complété, on arrête ici et on renvoie succès
             if (txData.status === 'CONFIRMED' || txData.status === 'completed') {
                 return { success: true, status: 'CONFIRMED', message: 'Déjà crédité' };
             }
             
-            // Si le partenaire dit succès, on met à jour en toute sécurité
             if (interpretedStatus === 'success') {
                 const userRef = db.collection('users').doc(decoded.uid);
                 const userDoc = await t.get(userRef);
@@ -613,7 +652,7 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
                 t.update(txDocRef, { status: 'FAILED', verifiedBy: 'api_direct_check_failed' });
                 return { success: true, status: 'FAILED' };
             } else {
-                return { success: true, status: 'PENDING' }; // Inconnu ou en attente = on garde en attente
+                return { success: true, status: 'PENDING' };
             }
         });
         
@@ -631,6 +670,11 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
 app.post('/api/create-swychr', async (req, res) => {
     try {
         const { email, userId, username, country, phone, amount, amountXAF, currency } = req.body;
+
+        // Validation stricte du montant
+        if (!Number.isFinite(Number(amount)) || Number(amount) <= 0) {
+            return res.status(400).json({ success: false, error: 'Montant invalide' });
+        }
 
         // Authentification auprès de Swychr
         const authRes = await fetch('https://api.accountpe.com/api/payin/admin/auth', {
@@ -665,8 +709,8 @@ app.post('/api/create-swychr', async (req, res) => {
             email,
             phone: phone || '',
             country,
-            amount,
-            amountXAF,
+            amount: Number(amount),
+            amountXAF: Number(amountXAF || 0),
             currency,
             status: 'pending',
             type: 'Recharge',
@@ -687,7 +731,7 @@ app.post('/api/create-swychr', async (req, res) => {
                 name: username || 'Client',
                 email: email,
                 mobile: phone || '',
-                amount: amount,
+                amount: Number(amount),
                 currency: currency,
                 transaction_id: transactionId,
                 description: 'Recharge Solde Likéo Boost',
@@ -735,19 +779,16 @@ app.get('/api/confirm-swychr', async (req, res) => {
         const statusData = await statusRes.json();
         const attributes = statusData?.data?.data?.attributes || statusData?.data?.attributes || {};
         
-        // Utilisation de la nouvelle fonction robuste d'interprétation
         const interpretedStatus = interpretPaymentStatus(attributes.status);
 
         const txRef = db.collection('transactions').doc(transactionId);
         
-        // Transaction Firestore pour sécuriser l'incrémentation
         const result = await db.runTransaction(async (transaction) => {
             const txDoc = await transaction.get(txRef);
             if (!txDoc.exists) throw new Error("Transaction introuvable");
 
             const txData = txDoc.data();
             
-            // Protection doublon
             if (txData.status === 'completed' || txData.status === 'CONFIRMED') {
                 return { finalStatus: 'success', message: 'Déjà crédité' };
             }
@@ -786,7 +827,6 @@ app.post('/api/webhook-swychr', async (req, res) => {
 
         const { status, transaction_id } = attributes;
         
-        // Utilisation de la nouvelle fonction robuste d'interprétation
         const interpretedStatus = interpretPaymentStatus(status);
 
         if (interpretedStatus === 'success') { 
