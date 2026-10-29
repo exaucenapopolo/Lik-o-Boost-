@@ -132,13 +132,15 @@
         }
         .menu-btn:hover { background-color: rgba(42, 94, 232, 0.1); }
 
+        /* ===== MENU MOBILE PROFESSIONNEL ===== */
         .mobile-menu {
             position: fixed; top: 0; right: -100%;
-            width: 280px; height: 100%;
+            width: 320px; max-width: 85vw; height: 100%;
             background-color: var(--white);
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-            z-index: 1000; transition: var(--transition);
+            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.15);
+            z-index: 1000; transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
+            display: flex; flex-direction: column;
         }
         .mobile-menu.active { right: 0; }
 
@@ -152,64 +154,168 @@
         .menu-overlay.active { opacity: 1; visibility: visible; }
 
         .menu-header {
-            padding: 25px 20px;
-            background-color: var(--dark-blue); color: var(--white);
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--dark-blue) 0%, #2A5EE8 100%);
+            color: var(--white);
             display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
         }
         .menu-header .logo { color: var(--white); font-size: 1.3rem; }
+        .menu-header .logo span { color: var(--primary-yellow); }
 
         .menu-close {
-            background: none; border: none;
-            color: var(--white); font-size: 1.5rem; cursor: pointer;
+            background: rgba(255,255,255,0.15); border: none;
+            color: var(--white); font-size: 1rem; cursor: pointer;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition);
         }
+        .menu-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
 
-        .user-info {
-            padding: 20px; display: flex; align-items: center;
+        .menu-profile {
+            padding: 22px 24px;
+            display: flex; align-items: center;
             border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
         }
 
-        .user-avatar {
-            width: 50px; height: 50px; border-radius: 50%;
+        .profile-avatar {
+            width: 54px; height: 54px; border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; font-weight: bold;
+            font-size: 1.4rem; font-weight: bold;
             margin-right: 15px; color: var(--white);
+            box-shadow: 0 6px 15px rgba(42, 94, 232, 0.25);
+            flex-shrink: 0;
         }
 
-        .user-details h3 { font-size: 1.1rem; margin-bottom: 5px; }
-        .user-details p { font-size: 0.9rem; color: var(--text-light); }
+        .profile-info h3 {
+            font-size: 1.05rem; margin-bottom: 3px;
+            color: var(--dark-blue);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        .profile-info p { font-size: 0.85rem; color: var(--text-light); }
 
-        .balance-display {
-            padding: 20px; background-color: var(--light-blue);
-            margin: 15px; border-radius: 15px; text-align: center;
+        .menu-balance {
+            margin: 16px 20px;
+            padding: 16px 18px;
+            background: linear-gradient(135deg, #F0F5FF 0%, #E0EAFF 100%);
+            border-radius: 16px;
+            display: flex; align-items: center;
+            border: 1px solid rgba(42, 94, 232, 0.1);
+            flex-shrink: 0;
         }
 
-        .balance-amount {
-            font-size: 2rem; font-weight: 700;
-            color: var(--primary-blue); margin-bottom: 10px;
+        .balance-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-size: 1rem; margin-right: 12px;
+            flex-shrink: 0;
         }
 
-        .balance-label { font-size: 0.9rem; color: var(--text-light); }
+        .balance-info { flex: 1; display: flex; flex-direction: column; }
+        .balance-info .balance-label { font-size: 0.72rem; color: var(--text-light); }
+        .balance-info .balance-amount { font-size: 1.15rem; font-weight: 700; color: var(--dark-blue); }
 
-        .menu-nav { padding: 20px 0; }
+        .balance-add {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--white);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary-blue); text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+        }
+        .balance-add:hover { background: var(--primary-blue); color: var(--white); transform: scale(1.1); }
+
+        .menu-cta {
+            margin: 0 20px 20px;
+            padding: 16px 18px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+            border-radius: 16px;
+            display: flex; align-items: center;
+            color: var(--white); text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(42, 94, 232, 0.25);
+            flex-shrink: 0;
+        }
+        .menu-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(42, 94, 232, 0.35); }
+        .menu-cta > i:first-child {
+            font-size: 1.2rem; margin-right: 12px;
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .menu-cta > div { flex: 1; display: flex; flex-direction: column; }
+        .menu-cta strong { font-size: 0.95rem; margin-bottom: 2px; }
+        .menu-cta span { font-size: 0.78rem; opacity: 0.9; }
+        .menu-cta > i:last-child { font-size: 0.85rem; opacity: 0.8; }
+
+        .menu-section {
+            padding: 8px 20px;
+            flex-shrink: 0;
+        }
+        .menu-section-title {
+            font-size: 0.72rem; font-weight: 700;
+            color: var(--text-light); text-transform: uppercase;
+            letter-spacing: 1.2px; padding: 8px 8px;
+        }
 
         .menu-item {
             display: flex; align-items: center;
-            padding: 15px 20px; color: var(--text-dark);
+            padding: 12px 12px; color: var(--text-dark);
             text-decoration: none; transition: var(--transition);
-            border-left: 3px solid transparent;
+            border-radius: 12px; margin-bottom: 2px;
+            font-weight: 500; font-size: 0.95rem;
         }
         .menu-item:hover {
-            background-color: rgba(42, 94, 232, 0.05);
-            border-left-color: var(--primary-orange);
+            background-color: rgba(42, 94, 232, 0.08);
             color: var(--primary-blue);
         }
         .menu-item.active {
-            background-color: rgba(42, 94, 232, 0.1);
-            border-left-color: var(--primary-blue);
+            background-color: rgba(42, 94, 232, 0.12);
             color: var(--primary-blue);
+            font-weight: 600;
         }
-        .menu-item i { margin-right: 15px; font-size: 1.2rem; width: 20px; text-align: center; }
+        .menu-item .item-icon {
+            width: 34px; height: 34px; border-radius: 10px;
+            background: rgba(42, 94, 232, 0.08);
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 12px;
+            color: var(--primary-blue); font-size: 0.9rem;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .menu-item:hover .item-icon,
+        .menu-item.active .item-icon {
+            background: var(--primary-blue); color: var(--white);
+        }
+        .menu-item .item-badge {
+            margin-left: auto;
+            background: var(--primary-orange); color: var(--white);
+            font-size: 0.7rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px;
+        }
+
+        .menu-footer {
+            padding: 20px;
+            margin-top: auto;
+            border-top: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+        .menu-logout {
+            display: flex; align-items: center; justify-content: center;
+            padding: 12px; border-radius: 12px;
+            background: rgba(244, 67, 54, 0.08);
+            color: var(--error-red); text-decoration: none;
+            font-weight: 600; font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .menu-logout:hover { background: var(--error-red); color: var(--white); }
+        .menu-logout i { margin-right: 8px; }
+
+        /* ===== FIN MENU MOBILE ===== */
 
         .main-content { padding: 15px 0 80px; min-height: calc(100vh - 70px); }
 
@@ -314,7 +420,7 @@
         .platforms-container {
             display: flex; overflow-x: auto;
             gap: 10px; padding: 10px 0 20px;
-            margin-bottom: 20px; scrollbar-width: none;
+            margin-bottom: 10px; scrollbar-width: none;
         }
         .platforms-container::-webkit-scrollbar { display: none; }
 
@@ -340,7 +446,53 @@
 
         .platform-name { font-weight: 600; color: var(--text-dark); font-size: 0.85rem; }
 
-        .services-container { max-height: 300px; overflow-y: auto; margin-bottom: 20px; }
+        /* ===== BANNIÈRE PLUS DE SERVICES ===== */
+        .more-services-banner {
+            background: linear-gradient(135deg, #F0F5FF 0%, #E0EAFF 100%);
+            border: 1px dashed rgba(42, 94, 232, 0.35);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin: 5px 0 20px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .more-services-content {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .more-services-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 15px rgba(42, 94, 232, 0.25);
+        }
+        .more-services-text {
+            display: flex; flex-direction: column; flex: 1;
+        }
+        .more-services-text strong {
+            font-size: 0.95rem; color: var(--dark-blue);
+            font-weight: 700;
+        }
+        .more-services-text span {
+            font-size: 0.82rem; color: var(--text-light);
+        }
+        .more-services-link {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 11px 18px;
+            background: var(--primary-blue); color: var(--white);
+            border-radius: 50px; text-decoration: none;
+            font-weight: 600; font-size: 0.88rem;
+            transition: var(--transition);
+            text-align: center;
+        }
+        .more-services-link:hover {
+            background: var(--primary-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 122, 0, 0.25);
+        }
+        .more-services-link i { font-size: 0.8rem; }
+
+        .services-container { max-height: 400px; overflow-y: auto; margin-bottom: 20px; }
 
         .service-item {
             background-color: #f9f9f9; border-radius: 12px;
@@ -535,26 +687,75 @@
             <a href="#" class="logo">Lik<span class="yellow">e</span>o<span class="dot">.</span>Boost</a>
             <button class="menu-close" id="menuClose"><i class="fas fa-times"></i></button>
         </div>
-        <div class="user-info">
-            <div class="user-avatar" id="userAvatar">U</div>
-            <div class="user-details">
+
+        <div class="menu-profile">
+            <div class="profile-avatar" id="userAvatar">U</div>
+            <div class="profile-info">
                 <h3 id="userName">Utilisateur</h3>
                 <p id="userEmail">email@example.com</p>
             </div>
         </div>
-        <div class="balance-display">
-            <div class="balance-amount" id="userBalance">0 XAF</div>
-            <div class="balance-label">Votre solde</div>
+
+        <div class="menu-balance">
+            <div class="balance-icon"><i class="fas fa-wallet"></i></div>
+            <div class="balance-info">
+                <span class="balance-label">Solde disponible</span>
+                <span class="balance-amount" id="userBalance">0 XAF</span>
+            </div>
+            <a href="depot.html" class="balance-add" title="Déposer"><i class="fas fa-plus"></i></a>
         </div>
-        <nav class="menu-nav">
-            <a href="dashboard.html" class="menu-item active"><i class="fas fa-home"></i>Tableau de bord</a>
-            <a href="historique-commandes.html" class="menu-item" data-testid="link-menu-orders"><i class="fas fa-shopping-cart"></i>Mes commandes</a>
-            <a href="depot.html" class="menu-item"><i class="fas fa-wallet"></i>Depot</a>
-            <a href="historique-commandes.html" class="menu-item"><i class="fas fa-history"></i>Historique</a>
-            <a href="#" class="menu-item"><i class="fas fa-user"></i>Mon profil</a>
-            <a href="#" class="menu-item"><i class="fas fa-headset"></i>Support</a>
-            <a href="#" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>Deconnexion</a>
-        </nav>
+
+        <a href="commander.html" class="menu-cta">
+            <i class="fas fa-rocket"></i>
+            <div>
+                <strong>Tous les services</strong>
+                <span>4000+ services de boost</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Navigation</div>
+            <a href="dashboard.html" class="menu-item active">
+                <span class="item-icon"><i class="fas fa-home"></i></span>
+                Tableau de bord
+            </a>
+            <a href="historique-commandes.html" class="menu-item" data-testid="link-menu-orders">
+                <span class="item-icon"><i class="fas fa-shopping-bag"></i></span>
+                Mes commandes
+            </a>
+            <a href="commander.html" class="menu-item">
+                <span class="item-icon"><i class="fas fa-th-large"></i></span>
+                Tous les services
+                <span class="item-badge">4000+</span>
+            </a>
+            <a href="depot.html" class="menu-item">
+                <span class="item-icon"><i class="fas fa-wallet"></i></span>
+                Dépôt
+            </a>
+            <a href="historique-commandes.html" class="menu-item">
+                <span class="item-icon"><i class="fas fa-history"></i></span>
+                Historique
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">Mon compte</div>
+            <a href="#" class="menu-item">
+                <span class="item-icon"><i class="fas fa-user"></i></span>
+                Mon profil
+            </a>
+            <a href="#" class="menu-item">
+                <span class="item-icon"><i class="fas fa-headset"></i></span>
+                Support
+            </a>
+        </div>
+
+        <div class="menu-footer">
+            <a href="#" class="menu-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        </div>
     </div>
 
     <header class="mobile-header">
@@ -640,6 +841,20 @@
 
                 <div id="step1">
                     <div class="platforms-container" id="platformsContainer"></div>
+
+                    <div class="more-services-banner">
+                        <div class="more-services-content">
+                            <div class="more-services-icon"><i class="fas fa-rocket"></i></div>
+                            <div class="more-services-text">
+                                <strong>Plus de 4000 services disponibles</strong>
+                                <span>Vous ne trouvez pas ce que vous cherchez ?</span>
+                            </div>
+                        </div>
+                        <a href="commander.html" class="more-services-link">
+                            Voir tous les services <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+
                     <div class="flow-navigation">
                         <div></div>
                         <button class="btn btn-primary" id="nextToStep2" disabled>Suivant <i class="fas fa-arrow-right"></i></button>
@@ -816,11 +1031,12 @@
                 }
                 
                 // Prix fournisseur en USD -> XAF, puis application du multiplicateur de profit
-                // rateXAF = prix pour 1000 unites (ou 10 commentaires si Custom Comments)
                 const rateUSD = parseFloat(service.rate);
                 const rateXAF = rateUSD * USD_TO_XAF * PROFIT_MULTIPLIER;
                 
                 // costPerUnit = prix reel pour 1 unite/commentaire (utilise pour le calcul)
+                // Custom Comments : le rate Exo est pour 10 commentaires
+                // Autres services  : le rate Exo est pour 1000 unites
                 const costPerUnit = isCustomComments ? (rateXAF / 10) : (rateXAF / 1000);
                 
                 platforms[platform].services.push({
@@ -830,8 +1046,8 @@
                     isCustomComments: isCustomComments,
                     category: category,
                     description: service.desc ? decodeHtml(service.desc) : null,
-                    costPerUnit: costPerUnit,      // Prix reel par unite (utilise pour total)
-                    pricePerK: rateXAF,            // Prix affiche pour 1000 unites (info)
+                    costPerUnit: costPerUnit,
+                    pricePerK: rateXAF,
                     min: parseInt(service.min) || 1,
                     max: parseInt(service.max) || 1000000,
                     refill: service.refill,
@@ -913,7 +1129,6 @@
                         exoServices = await response.json();
                         console.log('ExoSupplier services loaded:', exoServices.length);
                         
-                        // Organiser les services par plateforme
                         platformsData = organizeServicesByPlatform(exoServices);
                         console.log('Platforms organized:', platformsData.map(p => p.name + ' (' + p.services.length + ')'));
                         
@@ -956,7 +1171,6 @@
                     price: price
                 };
                 
-                // Ajouter les commentaires personnalises si presents
                 if (comments) {
                     body.comments = comments;
                 }
@@ -967,7 +1181,6 @@
                     body: JSON.stringify(body)
                 });
                 
-                // Parser la reponse JSON avec gestion d'erreur robuste
                 let data;
                 try {
                     data = await response.json();
@@ -976,7 +1189,6 @@
                     return { error: 'Erreur serveur', message: 'Une erreur est survenue. Veuillez reessayer.' };
                 }
                 
-                // Si reponse non OK, retourner les details de l'erreur
                 if (!response.ok) {
                     console.error('Order API error:', response.status, data);
                     return data;
@@ -1067,7 +1279,6 @@
             document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('totalOrders').textContent = userData.totalOrders || 0;
-            // activeOrders sera mis a jour par loadRealActiveOrdersCount()
             document.getElementById('activeOrders').textContent = '...';
             document.getElementById('totalSpent').textContent = `${formatNumber(userData.totalSpent || 0)} XAF`;
         }
@@ -1082,7 +1293,6 @@
                 const data = await response.json();
                 
                 if (data.orders && data.orders.length > 0) {
-                    // Compter les commandes actives (statuts EN COURS, EN ATTENTE, PARTIEL, etc.)
                     const activeCount = data.orders.filter(order => {
                         const status = (order.status || '').toLowerCase()
                             .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -1128,8 +1338,19 @@
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
+                    
+                    const changed = !currentPlatform || currentPlatform.id !== platform.id;
                     currentPlatform = platform;
                     document.getElementById('nextToStep2').disabled = false;
+                    
+                    // Si la plateforme a change, reinitialiser le service et recharger la liste
+                    if (changed) {
+                        currentService = null;
+                        loadServices(currentPlatform.id);
+                    }
+                    
+                    // AUTO-AVANCEMENT vers l'etape 2
+                    showStep(2);
                 });
                 
                 container.appendChild(card);
@@ -1147,7 +1368,6 @@
                 const item = document.createElement('div');
                 item.className = 'service-item';
                 
-                // Affichage du prix correct selon le type de service
                 const priceLabel = service.isCustomComments
                     ? `${formatNumber(service.costPerUnit)} XAF/commentaire`
                     : `${formatNumber(service.pricePerK)} XAF/1K`;
@@ -1165,13 +1385,11 @@
                     item.classList.add('selected');
                     currentService = service;
                     
-                    // Mettre a jour la quantite minimum
                     currentQuantity = Math.max(service.min, 100);
                     document.getElementById('quantityInput').value = currentQuantity;
                     document.getElementById('quantityInput').min = service.min;
                     document.getElementById('quantityInput').max = service.max;
                     
-                    // Afficher le champ de commentaires si c'est un service de commentaires personnalises
                     const commentsSection = document.getElementById('customCommentsSection');
                     const quantityInput = document.getElementById('quantityInput');
                     const quantityBtns = document.querySelector('.quantity-input');
@@ -1191,6 +1409,9 @@
                     
                     document.getElementById('nextToStep3').disabled = false;
                     updatePriceDisplay();
+                    
+                    // AUTO-AVANCEMENT vers l'etape 3
+                    showStep(3);
                 });
                 
                 container.appendChild(item);
@@ -1298,7 +1519,6 @@
                 currentQuantity = commentsArray.length;
             }
             
-            // Verifier la quantite minimum
             if (currentQuantity < currentService.min) {
                 showNotification('error', 'Quantite invalide', `Minimum requis: ${currentService.min}`);
                 return;
@@ -1422,7 +1642,6 @@
                     console.log("Utilisateur connecte:", user.uid);
                     currentUser = user;
                     
-                    // Charger les services ExoSupplier seulement si l'utilisateur est connecte
                     loadExoServices();
                     
                     try {
@@ -1432,7 +1651,6 @@
                         tryLoadPlatforms();
                         hideLoading();
                         
-                        // Charger le vrai nombre de commandes actives
                         loadRealActiveOrdersCount();
                         
                         showNotification('success', 'Bienvenue!', `Bon retour ${userData.username || 'utilisateur'}!`);
@@ -1480,10 +1698,13 @@
                 }
             });
             
-            // Navigation simplifiee: Plateforme -> Service -> Quantite -> Lien -> Confirmation
+            // Navigation manuelle (les boutons restent disponibles)
             document.getElementById('nextToStep2').addEventListener('click', () => {
                 if (currentPlatform) {
-                    loadServices(currentPlatform.id);
+                    const container = document.getElementById('servicesContainer');
+                    if (container.children.length === 0) {
+                        loadServices(currentPlatform.id);
+                    }
                     showStep(2);
                 }
             });
@@ -1529,7 +1750,6 @@
             // Quantite
             const quantityInput = document.getElementById('quantityInput');
             
-            // Verifier si le service actuel est en mode commentaires personnalises
             function isCustomCommentsService() {
                 return !!(currentService && currentService.isCustomComments);
             }
@@ -1560,7 +1780,6 @@
                 updateTotal();
             });
             
-            // Ecouteur pour les commentaires personnalises
             document.getElementById('customComments').addEventListener('input', function() {
                 const comments = this.value.split('\n').filter(c => c.trim());
                 const count = comments.length;
