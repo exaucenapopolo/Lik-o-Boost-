@@ -24,27 +24,26 @@ const db = admin.firestore();
 // ---------- CONSTANTES ----------
 const EXO_API_URL = 'https://exosupplier.com/api/v2';
 const USD_TO_XAF = 615;
-// Multiplicateur de profit (doit être IDENTIQUE au frontend dashboard.html)
 const PROFIT_MULTIPLIER = 1.81;
 
+// ---------- CONSTANTES SBH ----------
+const SBH_API_URL = 'https://socialboosthorizon.com/api/v1';
+const SBH_API_KEY = process.env.SBH_API_KEY;
+
 // ---------- DICTIONNAIRES DE STATUTS PARTENAIRES ----------
-// Liste exhaustive des mots signifiant un succès
 const STATUS_SUCCES = [
-    "1", "success", "successful", "completed", "termine", "terminee", 
-    "succes", "reussi", "paid", "ok", "approuve", "approuvee", 
+    "1", "success", "successful", "completed", "termine", "terminee",
+    "succes", "reussi", "paid", "ok", "approuve", "approuvee",
     "approved", "paye", "payee", "valide", "validee", "validated"
 ];
 
-// Liste exhaustive des mots signifiant un échec ou une annulation
 const STATUS_ECHEC = [
-    "-1", "2", "failed", "echec", "echoue", "echouee", "annule", 
-    "annulee", "cancelled", "canceled", "rejected", "error", 
+    "-1", "2", "failed", "echec", "echoue", "echouee", "annule",
+    "annulee", "cancelled", "canceled", "rejected", "error",
     "expired", "expire", "refuse", "refusee", "declined"
 ];
 
 // ---------- FONCTIONS UTILITAIRES ----------
-
-// Fonction qui nettoie le texte (enlève majuscules, accents et espaces)
 function normalizeStatus(statusStr) {
     if (statusStr === null || statusStr === undefined) return "inconnu";
     return String(statusStr)
@@ -54,15 +53,13 @@ function normalizeStatus(statusStr) {
         .trim();
 }
 
-// Fonction qui décide si le paiement est validé, échoué ou en attente
 function interpretPaymentStatus(rawStatus) {
     const normalized = normalizeStatus(rawStatus);
     if (STATUS_SUCCES.includes(normalized)) return 'success';
     if (STATUS_ECHEC.includes(normalized)) return 'failed';
-    return 'pending'; 
+    return 'pending';
 }
 
-// Normalise les commentaires en tableau (quelle que soit l'entrée)
 function normalizeComments(comments) {
     if (Array.isArray(comments)) {
         return comments.filter(c => c && String(c).trim());
@@ -87,6 +84,54 @@ async function verifyToken(req) {
     }
 }
 
+// ---------- FONCTIONS SBH ----------
+async function sbhFetch(path, options = {}) {
+    const url = `${SBH_API_URL}${path}`;
+    const headers = {
+        'X-Api-Key': SBH_API_KEY,
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+    const response = await fetch(url, { ...options, headers });
+    const data = await response.json();
+    return { status: response.status, data };
+}
+
+async function fetchSBHServices(source = null, catalog = null) {
+    const params = new URLSearchParams();
+    if (source) params.append('source', source);
+    if (catalog) params.append('catalog', catalog);
+    const query = params.toString();
+    const { data } = await sbhFetch(`/services${query ? '?' + query : ''}`);
+    return data;
+}
+
+async function placeSBHOrder(serviceId, link, quantity, comments = null) {
+    const body = { service_id: serviceId, link, quantity };
+    if (comments) body.comments = comments;
+    const { data } = await sbhFetch('/order', {
+        method: 'POST',
+        body: JSON.stringify(body)
+    });
+    return data;
+}
+
+async function getSBHOrderStatus(orderId) {
+    const { data } = await sbhFetch(`/order/${orderId}`);
+    return data;
+}
+
+async function getSBHOrders(limit = 100) {
+    const { data } = await sbhFetch(`/orders?limit=${limit}`);
+    return data;
+}
+
+async function getSBHBalance() {
+    const { data } = await sbhFetch('/balance');
+    return data;
+}
+
+// ---------- FONCTIONS EXOSUPPLIER ----------
 async function fetchExoServices() {
     const params = new URLSearchParams();
     params.append('key', process.env.EXO_SUPPLIER_API_KEY);
@@ -165,9 +210,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ---------- ROUTES ----------
-
-// GET /api/exo/services
+// ---------- ROUTES EXOSUPPLIER (INCHANGÉES) ----------
 app.get('/api/exo/services', async (req, res) => {
     try {
         const services = await fetchExoServices();
@@ -178,7 +221,6 @@ app.get('/api/exo/services', async (req, res) => {
     }
 });
 
-// POST /api/exo/order
 app.post('/api/exo/order', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
@@ -197,13 +239,8 @@ app.post('/api/exo/order', async (req, res) => {
         }
 
         const rateXAF = parseFloat(exoService.rate) * USD_TO_XAF * PROFIT_MULTIPLIER;
-        
-        // Normalisation robuste des commentaires (string ou array)
         const commentsArray = normalizeComments(comments);
-        
-        // Calcul du coût selon le type de service
-        // - Custom Comments : le rate Exo est PAR 10 COMMENTAIRES (donc /10)
-        // - Autres services  : le rate Exo est PAR 1000 UNITES  (donc /1000)
+
         let cost = 0;
         if (exoService.type === 'Custom Comments') {
             cost = (rateXAF / 10) * commentsArray.length;
@@ -236,7 +273,6 @@ app.post('/api/exo/order', async (req, res) => {
         let finalOrderId;
         let newBalance;
 
-        // Transaction unique : balance + stats + commande + compteur
         await db.runTransaction(async (transaction) => {
             const counterRef = db.collection('counters').doc('commandes');
             const counterDoc = await transaction.get(counterRef);
@@ -251,7 +287,7 @@ app.post('/api/exo/order', async (req, res) => {
             const balance = userDoc2.data().balance || 0;
             newBalance = balance - cost;
 
-            transaction.update(userRef2, { 
+            transaction.update(userRef2, {
                 balance: newBalance,
                 totalOrders: admin.firestore.FieldValue.increment(1),
                 totalSpent: admin.firestore.FieldValue.increment(cost),
@@ -295,7 +331,6 @@ app.post('/api/exo/order', async (req, res) => {
     }
 });
 
-// GET /api/orders/:uid
 app.get('/api/orders/:uid', async (req, res) => {
     try {
         const uid = req.params.uid;
@@ -327,7 +362,7 @@ app.get('/api/orders/:uid', async (req, res) => {
                         else if (raw === 'partial') status = 'Partiel';
                         else if (raw === 'canceled' || raw === 'cancelled') status = 'Annulée';
                         else status = exoStatus.status;
-                        
+
                         remains = exoStatus.remains !== undefined ? exoStatus.remains : remains;
                         startCount = exoStatus.start_count !== undefined ? exoStatus.start_count : startCount;
 
@@ -369,14 +404,13 @@ app.get('/api/orders/:uid', async (req, res) => {
             return dateB - dateA;
         });
 
-        // Recalcul du compteur réel "activeOrders" pour rester cohérent
         try {
             const activeCount = orders.filter(o => {
                 const s = (o.status || '')
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                     .toLowerCase().replace(/[_-]/g, ' ').trim();
-                return s === 'en cours' || s === 'en attente' || 
-                       s === 'in progress' || s === 'processing' || 
+                return s === 'en cours' || s === 'en attente' ||
+                       s === 'in progress' || s === 'processing' ||
                        s === 'partiel' || s === 'partial';
             }).length;
 
@@ -396,7 +430,6 @@ app.get('/api/orders/:uid', async (req, res) => {
     }
 });
 
-// POST /api/exo-status
 app.post('/api/exo-status', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
@@ -451,7 +484,6 @@ app.post('/api/exo-status', async (req, res) => {
     }
 });
 
-// POST /api/exo/refill
 app.post('/api/exo/refill', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
@@ -484,7 +516,6 @@ app.post('/api/exo/refill', async (req, res) => {
     }
 });
 
-// POST /api/exo/cancel
 app.post('/api/exo/cancel', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
@@ -535,54 +566,51 @@ app.post('/api/exo/cancel', async (req, res) => {
     }
 });
 
-
 // ==========================================
-// ROUTES FAPSHI (DÉPÔTS)
+// ROUTES FAPSHI (INCHANGÉES)
 // ==========================================
 
-// 1. Initialiser le paiement
 app.post('/api/create-fapshi-checkout', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
         const { amount, description, email, name } = req.body;
-        
-        // Validation stricte du montant
+
         if (!Number.isFinite(Number(amount)) || Number(amount) <= 0) {
             return res.status(400).json({ error: 'Montant invalide' });
         }
-        
+
         if (!process.env.FAPSHI_API_USER || !process.env.FAPSHI_API_KEY) {
             throw new Error('Identifiants API Fapshi manquants dans les variables d\'environnement');
         }
 
         const txRef = db.collection('fapshiTransactions').doc();
-        
+
         const fapshiHeaders = {
             'apiuser': process.env.FAPSHI_API_USER,
             'apikey': process.env.FAPSHI_API_KEY,
             'Content-Type': 'application/json'
         };
-        
+
         const fapshiBody = {
             amount: Number(amount),
             email: email || 'client@likeoboost.com',
             externalId: txRef.id,
-            redirectUrl: req.headers.origin + '/depot.html' 
+            redirectUrl: req.headers.origin + '/depot.html'
         };
-        
+
         const fapshiRes = await fetch('https://live.fapshi.com/initiate-pay', {
             method: 'POST',
             headers: fapshiHeaders,
             body: JSON.stringify(fapshiBody)
         });
-        
+
         const fapshiData = await fapshiRes.json();
-        
+
         if (!fapshiRes.ok || !fapshiData.link) {
             console.error('Erreur Fapshi:', fapshiData);
             throw new Error('Erreur de communication avec l\'API Fapshi.');
         }
-        
+
         await txRef.set({
             userId: decoded.uid,
             amount: Number(amount),
@@ -592,7 +620,7 @@ app.post('/api/create-fapshi-checkout', async (req, res) => {
             transId: fapshiData.transId,
             checkoutUrl: fapshiData.link
         });
-        
+
         res.status(200).json({ checkoutUrl: fapshiData.link, transId: fapshiData.transId });
     } catch (err) {
         console.error('Erreur create-fapshi-checkout:', err);
@@ -600,18 +628,17 @@ app.post('/api/create-fapshi-checkout', async (req, res) => {
     }
 });
 
-// 2. Vérification manuelle et automatique du statut Fapshi
 app.post('/api/fapshi/verify-transaction', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
         const { transId } = req.body;
-        
+
         const txSnapshot = await db.collection('fapshiTransactions').where('transId', '==', transId).get();
         if (txSnapshot.empty) {
             return res.status(404).json({ error: 'Transaction introuvable dans la base de données.' });
         }
         const txDocRef = txSnapshot.docs[0].ref;
-        
+
         const fapshiHeaders = {
             'apiuser': process.env.FAPSHI_API_USER,
             'apikey': process.env.FAPSHI_API_KEY
@@ -620,34 +647,34 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
             headers: fapshiHeaders
         });
         const fapshiData = await fapshiRes.json();
-        
+
         const interpretedStatus = interpretPaymentStatus(fapshiData.status);
-        
+
         const result = await db.runTransaction(async (t) => {
             const txDoc = await t.get(txDocRef);
             const txData = txDoc.data();
-            
+
             if (txData.userId !== decoded.uid) {
                 throw new Error('Accès refusé');
             }
-            
+
             if (txData.status === 'CONFIRMED' || txData.status === 'completed') {
                 return { success: true, status: 'CONFIRMED', message: 'Déjà crédité' };
             }
-            
+
             if (interpretedStatus === 'success') {
                 const userRef = db.collection('users').doc(decoded.uid);
                 const userDoc = await t.get(userRef);
                 const currentBalance = userDoc.data().balance || 0;
-                
+
                 t.update(userRef, { balance: currentBalance + Number(txData.amount) });
-                t.update(txDocRef, { 
-                    status: 'CONFIRMED', 
+                t.update(txDocRef, {
+                    status: 'CONFIRMED',
                     dateConfirmed: admin.firestore.FieldValue.serverTimestamp(),
                     verifiedBy: 'api_direct_check_success'
                 });
                 return { success: true, status: 'CONFIRMED' };
-                
+
             } else if (interpretedStatus === 'failed') {
                 t.update(txDocRef, { status: 'FAILED', verifiedBy: 'api_direct_check_failed' });
                 return { success: true, status: 'FAILED' };
@@ -655,7 +682,7 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
                 return { success: true, status: 'PENDING' };
             }
         });
-        
+
         return res.status(200).json(result);
     } catch (err) {
         console.error('Erreur verify-transaction:', err);
@@ -663,20 +690,17 @@ app.post('/api/fapshi/verify-transaction', async (req, res) => {
     }
 });
 
-
-// ---------------------------------------------------------
-// ROUTES SWYCHR (AccountPe)
-// ---------------------------------------------------------
+// ==========================================
+// ROUTES SWYCHR (INCHANGÉES)
+// ==========================================
 app.post('/api/create-swychr', async (req, res) => {
     try {
         const { email, userId, username, country, phone, amount, amountXAF, currency } = req.body;
 
-        // Validation stricte du montant
         if (!Number.isFinite(Number(amount)) || Number(amount) <= 0) {
             return res.status(400).json({ success: false, error: 'Montant invalide' });
         }
 
-        // Authentification auprès de Swychr
         const authRes = await fetch('https://api.accountpe.com/api/payin/admin/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -689,20 +713,18 @@ app.post('/api/create-swychr', async (req, res) => {
         const authData = await authRes.json();
         if (!authData.token) throw new Error('Échec de l\'authentification Swychr');
 
-        // Génération de l'ID incrémenté
         const counterRef = db.collection('counters').doc('transactions');
         const transactionId = await db.runTransaction(async (transaction) => {
             const counterDoc = await transaction.get(counterRef);
             let currentCount = counterDoc.exists ? (counterDoc.data().count || 0) : 0;
             const nextCount = currentCount + 1;
             transaction.set(counterRef, { count: nextCount }, { merge: true });
-            return `LIKEO-PAY-${nextCount}`; 
+            return `LIKEO-PAY-${nextCount}`;
         });
 
-        const host = req.headers.host || 'likeoboost.com'; 
+        const host = req.headers.host || 'likeoboost.com';
         const baseUrl = `https://${host}`;
 
-        // Enregistrement dans Firestore
         await db.collection('transactions').doc(transactionId).set({
             userId,
             username: username || 'Client',
@@ -715,10 +737,9 @@ app.post('/api/create-swychr', async (req, res) => {
             status: 'pending',
             type: 'Recharge',
             label: `Recharge Swychr (${currency})`,
-            createdAt: admin.firestore.FieldValue.serverTimestamp() 
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // Création du lien chez Swychr
         const paymentRes = await fetch('https://api.accountpe.com/api/payin/create_payment_links', {
             method: 'POST',
             headers: {
@@ -778,17 +799,17 @@ app.get('/api/confirm-swychr', async (req, res) => {
 
         const statusData = await statusRes.json();
         const attributes = statusData?.data?.data?.attributes || statusData?.data?.attributes || {};
-        
+
         const interpretedStatus = interpretPaymentStatus(attributes.status);
 
         const txRef = db.collection('transactions').doc(transactionId);
-        
+
         const result = await db.runTransaction(async (transaction) => {
             const txDoc = await transaction.get(txRef);
             if (!txDoc.exists) throw new Error("Transaction introuvable");
 
             const txData = txDoc.data();
-            
+
             if (txData.status === 'completed' || txData.status === 'CONFIRMED') {
                 return { finalStatus: 'success', message: 'Déjà crédité' };
             }
@@ -798,7 +819,7 @@ app.get('/api/confirm-swychr', async (req, res) => {
                 transaction.update(userRef, {
                     balance: admin.firestore.FieldValue.increment(Number(txData.amountXAF || txData.amount))
                 });
-                
+
                 transaction.update(txRef, {
                     status: 'completed',
                     verifiedBy: 'api_direct_check_success',
@@ -826,16 +847,16 @@ app.post('/api/webhook-swychr', async (req, res) => {
         if (!attributes) return res.status(400).send('Payload invalide');
 
         const { status, transaction_id } = attributes;
-        
+
         const interpretedStatus = interpretPaymentStatus(status);
 
-        if (interpretedStatus === 'success') { 
+        if (interpretedStatus === 'success') {
             const txRef = db.collection('transactions').doc(transaction_id);
             const txDoc = await txRef.get();
 
             if (txDoc.exists && txDoc.data().status === 'pending') {
                 const { userId, amountXAF, amount } = txDoc.data();
-                
+
                 await db.collection('users').doc(userId).update({
                     balance: admin.firestore.FieldValue.increment(Number(amountXAF || amount))
                 });
@@ -851,6 +872,232 @@ app.post('/api/webhook-swychr', async (req, res) => {
     } catch (error) {
         console.error('Erreur Webhook Swychr:', error);
         return res.status(500).send('Erreur interne');
+    }
+});
+
+// ==========================================
+// ROUTES SOCIAL BOOST HORIZON (SBH) — NOUVEAU
+// ==========================================
+
+// GET /api/sbh/services
+app.get('/api/sbh/services', async (req, res) => {
+    try {
+        const { source, catalog } = req.query;
+        const data = await fetchSBHServices(source, catalog);
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Erreur SBH services:', error);
+        res.status(500).json({ success: false, error: 'Erreur chargement services SBH' });
+    }
+});
+
+// GET /api/sbh/balance (admin / optionnel)
+app.get('/api/sbh/balance', async (req, res) => {
+    try {
+        const data = await getSBHBalance();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Erreur SBH balance:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// POST /api/sbh/order
+app.post('/api/sbh/order', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const uid = decoded.uid;
+        const { service_id, link, quantity, comments } = req.body;
+
+        if (!service_id || !link || !quantity) {
+            return res.status(400).json({ success: false, error: 'Données manquantes' });
+        }
+
+        const servicesData = await fetchSBHServices();
+        const service = (servicesData.services || []).find(s => s.service_id === service_id);
+        if (!service) {
+            return res.status(400).json({ success: false, error: 'Service invalide' });
+        }
+
+        const commentsArray = normalizeComments(comments);
+        let cost = 0;
+
+        if (service.type === 'custom_comments' || service.type === 'Custom Comments') {
+            cost = (service.price_per_1000 / 1000) * commentsArray.length;
+        } else {
+            cost = (service.price_per_1000 / 1000) * quantity;
+        }
+
+        const userRef = db.collection('users').doc(uid);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ success: false, error: 'Utilisateur introuvable' });
+        }
+        const userData = userDoc.data();
+        const currentBalance = userData.balance || 0;
+        if (currentBalance < cost) {
+            return res.status(400).json({ success: false, error: 'Solde insuffisant', message: 'Votre solde est insuffisant pour cette commande.' });
+        }
+
+        const sbhResult = await placeSBHOrder(service_id, link, quantity, commentsArray.join('\n'));
+        if (!sbhResult.success) {
+            return res.status(400).json({ success: false, error: sbhResult.error || 'Erreur SBH' });
+        }
+
+        let newBalance;
+        await db.runTransaction(async (transaction) => {
+            const userRef2 = db.collection('users').doc(uid);
+            const userDoc2 = await transaction.get(userRef2);
+            const balance = userDoc2.data().balance || 0;
+            newBalance = balance - cost;
+
+            transaction.update(userRef2, {
+                balance: newBalance,
+                totalOrders: admin.firestore.FieldValue.increment(1),
+                totalSpent: admin.firestore.FieldValue.increment(cost),
+                activeOrders: admin.firestore.FieldValue.increment(1)
+            });
+
+            const orderRef = db.collection('commandes').doc();
+            transaction.set(orderRef, {
+                orderId: `SBH-${sbhResult.order_id}`,
+                userId: uid,
+                provider: 'sbh',
+                sbhOrderId: sbhResult.order_id,
+                serviceId: service_id,
+                serviceName: service.name,
+                platform: service.category || 'Autre',
+                link: link,
+                quantity: service.type === 'custom_comments' ? commentsArray.length : quantity,
+                customComments: service.type === 'custom_comments' ? commentsArray.join('\n') : '',
+                cost: cost,
+                status: 'En attente',
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                contactInfo: null
+            });
+        });
+
+        const updatedUser = await userRef.get();
+        const updatedData = updatedUser.data();
+
+        res.status(200).json({
+            success: true,
+            order_id: sbhResult.order_id,
+            newBalance: newBalance,
+            totalOrders: updatedData.totalOrders || 0,
+            activeOrders: updatedData.activeOrders || 0,
+            totalSpent: updatedData.totalSpent || 0
+        });
+    } catch (error) {
+        console.error('Erreur POST /api/sbh/order:', error);
+        res.status(500).json({ success: false, error: error.message || 'Erreur serveur' });
+    }
+});
+
+// GET /api/sbh/orders/:uid
+app.get('/api/sbh/orders/:uid', async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        const decoded = await verifyToken(req);
+        if (decoded.uid !== uid) {
+            return res.status(403).json({ success: false, error: 'Accès refusé' });
+        }
+
+        const ordersSnapshot = await db.collection('commandes')
+            .where('userId', '==', uid)
+            .where('provider', '==', 'sbh')
+            .get();
+
+        const orders = [];
+        for (const doc of ordersSnapshot.docs) {
+            const data = doc.data();
+            let status = data.status;
+
+            if (data.sbhOrderId && !['Terminé', 'Annulé', 'Partiel'].includes(status)) {
+                try {
+                    const sbhStatus = await getSBHOrderStatus(data.sbhOrderId);
+                    if (sbhStatus.success && sbhStatus.order) {
+                        const newStatus = sbhStatus.order.status;
+                        if (newStatus !== status) {
+                            status = newStatus;
+                            await doc.ref.update({
+                                status: status,
+                                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Erreur sync statut SBH:', e);
+                }
+            }
+
+            orders.push({
+                id: doc.id,
+                orderId: data.orderId,
+                serviceName: data.serviceName,
+                platform: data.platform,
+                link: data.link,
+                quantity: data.quantity,
+                cost: data.cost,
+                status: status,
+                createdAt: data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate().toISOString() : new Date(data.createdAt).toISOString()) : null,
+                provider: 'sbh'
+            });
+        }
+
+        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        res.status(200).json({ success: true, orders });
+    } catch (error) {
+        console.error('Erreur GET /api/sbh/orders/:uid:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// POST /api/sbh/cancel
+app.post('/api/sbh/cancel', async (req, res) => {
+    try {
+        const decoded = await verifyToken(req);
+        const { orderId } = req.body;
+
+        const orderRef = db.collection('commandes').doc(orderId);
+        const orderDoc = await orderRef.get();
+        if (!orderDoc.exists) {
+            return res.status(404).json({ success: false, error: 'Commande introuvable' });
+        }
+
+        const data = orderDoc.data();
+        if (data.userId !== decoded.uid || data.provider !== 'sbh') {
+            return res.status(403).json({ success: false, error: 'Accès refusé' });
+        }
+
+        if (data.status === 'Annulé' || data.status === 'Annulée') {
+            return res.status(400).json({ success: false, error: 'Déjà annulée' });
+        }
+
+        if (data.status !== 'En attente') {
+            return res.status(400).json({ success: false, error: 'Impossible d\'annuler une commande déjà en cours ou terminée' });
+        }
+
+        const refundAmount = Number(data.cost || 0);
+
+        await db.runTransaction(async (transaction) => {
+            const userRef = db.collection('users').doc(decoded.uid);
+            const userDoc = await transaction.get(userRef);
+            if (userDoc.exists) {
+                const currentBalance = userDoc.data().balance || 0;
+                transaction.update(userRef, { balance: currentBalance + refundAmount });
+            }
+            transaction.update(orderRef, {
+                status: 'Annulé',
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        });
+
+        res.status(200).json({ success: true, refundAmount });
+    } catch (error) {
+        console.error('Erreur POST /api/sbh/cancel:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
