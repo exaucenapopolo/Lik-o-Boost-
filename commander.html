@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander un service — Likéo Boost</title>
+
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/exaucenapopolo/Lik-o-Boost-/refs/heads/main/likeo.png">
+    <meta name="description" content="Commandez parmi plus de 12 000 services de boost pour Instagram, TikTok, Facebook, YouTube et bien plus.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #1a3a5c;
+            --primary-light: #2c5282;
+            --accent: #0f766e;
+            --accent-light: #14b8a6;
+            --bg: #f7f8fa;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a202c;
+            --text-muted: #718096;
+            --success: #2f855a;
+            --danger: #c53030;
+            --warning: #b7791f;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ---------- HEADER ---------- */
+        .site-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.35rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+        .logo span { color: var(--accent); }
+        .logo .dot { color: var(--primary); font-size: 1.6rem; line-height: 1; }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .header-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .header-nav a:hover { background: var(--bg); color: var(--text); }
+        .header-nav a.active { background: var(--bg); color: var(--primary); font-weight: 600; }
+
+        .header-balance {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+        .header-balance i { color: var(--accent); }
+
+        /* ---------- LAYOUT ---------- */
+        .page {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            position: sticky;
+            top: 88px;
+        }
+
+        .sidebar-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            padding: 8px 10px;
+            margin-bottom: 4px;
+        }
+
+        .category-list { list-style: none; }
+
+        .category-list li button {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+            font-family: inherit;
+        }
+        .category-list li button:hover { background: var(--bg); }
+        .category-list li button.active {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+        .category-list li button .count {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--bg);
+            color: var(--text-muted);
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        .category-list li button.active .count {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .sidebar-search {
+            margin: 12px 0 8px;
+        }
+        .sidebar-search input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .sidebar-search input:focus { border-color: var(--primary); }
+
+        /* ---------- MAIN ---------- */
+        .main-col { min-width: 0; }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .toolbar .result-count {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .services-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .service-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .service-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-lg);
+        }
+        .service-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .service-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .service-card-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .service-card-price {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .service-card-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-refill { background: #e6fffa; color: var(--accent); }
+        .badge-cancel { background: #fff5f5; color: var(--danger); }
+
+        /* ---------- ORDER PANEL ---------- */
+        .order-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .order-panel h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-row.full { grid-template-columns: 1fr; }
+
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+
+        .form-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .form-field label .required { color: var(--danger); }
+
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+            background: var(--surface);
+            color: var(--text);
+        }
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus { border-color: var(--primary); }
+
+        .form-field textarea { resize: vertical; min-height: 90px; }
+
+        .form-field .hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .quantity-group {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .quantity-group button {
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .quantity-group button:hover { background: var(--border); }
+        .quantity-group button:first-child { border-radius: 8px 0 0 8px; }
+        .quantity-group button:last-child { border-radius: 0 8px 8px 0; }
+        .quantity-group input {
+            flex: 1;
+            text-align: center;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+            font-weight: 600;
+        }
+
+        .price-summary {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+        .price-row.total {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+        .price-row.total .amount { color: var(--accent); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, opacity 0.15s;
+            text-decoration: none;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-light); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { background: var(--bg); }
+
+        .btn-block { width: 100%; }
+
+        /* ---------- HISTORY ---------- */
+        .history-section {
+            margin-top: 40px;
+        }
+
+        .history-section h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .history-table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .history-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--bg);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+        .history-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+        .history-table tr:last-child td { border-bottom: none; }
+        .history-table tr:hover td { background: var(--bg); }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .status-pending { background: #fefcbf; color: var(--warning); }
+        .status-progress { background: #ebf8ff; color: #2b6cb0; }
+        .status-done { background: #f0fff4; color: var(--success); }
+        .status-cancel { background: #fff5f5; color: var(--danger); }
+        .status-partial { background: #faf5ff; color: #6b46c1; }
+
+        /* ---------- LOADING / EMPTY ---------- */
+        .loading-box,
+        .empty-box {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .loading-box i { font-size: 1.5rem; margin-bottom: 12px; display: block; color: var(--border); }
+
+        /* ---------- TOAST ---------- */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 360px;
+        }
+
+        .toast {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--success);
+            border-radius: 8px;
+            padding: 14px 18px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        .toast i { font-size: 1rem; margin-top: 2px; }
+        .toast.success i { color: var(--success); }
+        .toast.error i { color: var(--danger); }
+        .toast.warning i { color: var(--warning); }
+        .toast .toast-body { flex: 1; font-size: 0.85rem; }
+        .toast .toast-body strong { display: block; margin-bottom: 2px; }
+        .toast .toast-body span { color: var(--text-muted); font-size: 0.8rem; }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 960px) {
+            .page { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .category-list { display: flex; flex-wrap: wrap; gap: 6px; }
+            .category-list li { flex: 0 0 auto; }
+            .category-list li button { width: auto; }
+            .header-nav { display: none; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .page { padding: 16px; }
+            .header-inner { padding: 0 16px; height: 56px; }
+            .logo { font-size: 1.15rem; }
+            .history-table th:nth-child(3),
+            .history-table td:nth-child(3) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="dashboard.html" class="logo">Lik<span>e</span>o<span class="dot">.</span>Boost</a>
+            <nav class="header-nav">
+                <a href="dashboard.html">Tableau de bord</a>
+                <a href="commander.html" class="active">Commander</a>
+                <a href="historique-commandes.html">Mes commandes</a>
+                <a href="depot.html">Dépôt</a>
+            </nav>
+            <div class="header-balance">
+                <i class="fas fa-wallet"></i>
+                <span id="headerBalance">0 XAF</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="page">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-search">
+                <input type="text" id="searchInput" placeholder="Rechercher un service…">
+            </div>
+            <div class="sidebar-title">Catégories</div>
+            <ul class="category-list" id="categoryList"></ul>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-col">
+            <div class="toolbar">
+                <h1 id="sectionTitle">Tous les services</h1>
+                <span class="result-count" id="resultCount"></span>
+            </div>
+
+            <div class="services-grid" id="servicesGrid">
+                <div class="loading-box">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    Chargement des services…
+                </div>
+            </div>
+
+            <!-- ORDER PANEL -->
+            <section class="order-panel" id="orderPanel" style="display:none;">
+                <h2>Commander</h2>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Service sélectionné</label>
+                        <input type="text" id="selectedServiceName" readonly style="background:var(--bg);">
+                    </div>
+                    <div class="form-field">
+                        <label>Prix / 1000 <span class="required">*</span></label>
+                        <input type="text" id="selectedServicePrice" readonly style="background:var(--bg);">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="orderLink">Lien cible <span class="required">*</span></label>
+                        <input type="url" id="orderLink" placeholder="https://instagram.com/…">
+                        <span class="hint">Lien direct de votre profil ou publication.</span>
+                    </div>
+                    <div class="form-field">
+                        <label for="orderQuantity">Quantité <span class="required">*</span></label>
+                        <div class="quantity-group">
+                            <button type="button" id="qtyMinus">−</button>
+                            <input type="number" id="orderQuantity" min="1" value="100">
+                            <button type="button" id="qtyPlus">+</button>
+                        </div>
+                        <span class="hint" id="quantityHint">Min — Max —</span>
+                    </div>
+                </div>
+
+                <div class="form-row full" id="commentsRow" style="display:none;">
+                    <div class="form-field">
+                        <label for="orderComments">Commentaires personnalisés <span class="required">*</span></label>
+                        <textarea id="orderComments" placeholder="Un commentaire par ligne…"></textarea>
+                        <span class="hint">Le nombre de lignes détermine la quantité commandée.</span>
+                    </div>
+                </div>
+
+                <div class="price-summary">
+                    <div class="price-row">
+                        <span>Prix unitaire</span>
+                        <span id="unitPriceDisplay">—</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Quantité</span>
+                        <span id="quantityDisplay">—</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total à payer</span>
+                        <span class="amount" id="totalDisplay">0 XAF</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-block" id="submitOrderBtn" disabled>
+                    <i class="fas fa-shopping-cart"></i> Passer la commande
+                </button>
+            </section>
+
+            <!-- HISTORY -->
+            <section class="history-section">
+                <h2>Mes dernières commandes SBH</h2>
+                <div class="history-table-wrap">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Service</th>
+                                <th>Quantité</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">
+                                    Chargement de l'historique…
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ---------- FIREBASE ----------
+        const firebaseConfig = {
+            apiKey: "AIzaSyDp4CpK_L6jlvE63eW4Q4BCemGPoXarbrw",
+            authDomain: "likeo-5e3e9.firebaseapp.com",
+            projectId: "likeo-5e3e9",
+            storageBucket: "likeo-5e3e9.firebasestorage.app",
+            messagingSenderId: "1071170297332",
+            appId: "1:1071170297332:web:fa5e60f75848b986712da1",
+            measurementId: "G-RV38D7VYF5"
+        };
+
+        let app, auth, db;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+        } catch (e) {
+            console.error('Firebase init error', e);
+        }
+
+        const API_BASE = '';
+
+        // ---------- STATE ----------
+        let currentUser = null;
+        let userData = null;
+        let allServices = [];
+        let categories = {};
+        let activeCategory = 'all';
+        let selectedService = null;
+        let currentQuantity = 100;
+
+        // ---------- HELPERS ----------
+        function formatXAF(n) {
+            return Number(n).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' XAF';
+        }
+
+        function toast(type, title, message) {
+            const c = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = 'toast ' + type;
+            const icon = type === 'success' ? 'fa-check-circle' :
+                         type === 'error' ? 'fa-times-circle' : 'fa-exclamation-triangle';
+            el.innerHTML = `<i class="fas ${icon}"></i>
+                <div class="toast-body"><strong>${title}</strong><span>${message}</span></div>`;
+            c.appendChild(el);
+            requestAnimationFrame(() => el.classList.add('show'));
+            setTimeout(() => {
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 300);
+            }, 4000);
+        }
+
+        async function apiFetch(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...options.headers };
+            if (currentUser) {
+                const token = await currentUser.getIdToken();
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+            const res = await fetch(API_BASE + path, { ...options, headers });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || data.message || 'Erreur serveur');
+            return data;
+        }
+
+        // ---------- AUTH ----------
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            currentUser = user;
+
+            const userRef = db.collection('users').doc(user.uid);
+            const snap = await userRef.get();
+            if (snap.exists) {
+                userData = snap.data();
+            } else {
+                userData = { balance: 0, username: user.email.split('@')[0] };
+            }
+            document.getElementById('headerBalance').textContent = formatXAF(userData.balance || 0);
+
+            await loadServices();
+            await loadHistory();
+        });
+
+        // ---------- SERVICES ----------
+        async function loadServices() {
+            const grid = document.getElementById('servicesGrid');
+            try {
+                const data = await apiFetch('/api/sbh/services');
+                if (!data.success || !Array.isArray(data.services)) {
+                    throw new Error(data.error || 'Catalogue indisponible');
+                }
+                allServices = data.services;
+
+                // Grouper par catégorie
+                categories = {};
+                allServices.forEach(s => {
+                    const cat = s.category || 'Autres';
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push(s);
+                });
+
+                renderCategories();
+                renderServices();
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = `<div class="empty-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Impossible de charger les services.<br><small>${err.message}</small>
+                </div>`;
+                toast('error', 'Erreur', err.message);
+            }
+        }
+
+        function renderCategories() {
+            const list = document.getElementById('categoryList');
+            list.innerHTML = '';
+
+            const allBtn = document.createElement('li');
+            allBtn.innerHTML = `<button data-cat="all" class="active">
+                Tous les services <span class="count">${allServices.length}</span>
+            </button>`;
+            list.appendChild(allBtn);
+
+            Object.keys(categories).sort().forEach(cat => {
+                const li = document.createElement('li');
+                li.innerHTML = `<button data-cat="${cat}">
+                    ${cat} <span class="count">${categories[cat].length}</span>
+                </button>`;
+                list.appendChild(li);
+            });
+
+            list.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    list.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeCategory = btn.dataset.cat;
+                    renderServices();
+                });
+            });
+        }
+
+        function getFilteredServices() {
+            let list = activeCategory === 'all' ? allServices : (categories[activeCategory] || []);
+            const q = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (q) {
+                list = list.filter(s =>
+                    (s.name || '').toLowerCase().includes(q) ||
+                    (s.service_id || '').toLowerCase().includes(q)
+                );
+            }
+            return list;
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            const list = getFilteredServices();
+
+            document.getElementById('sectionTitle').textContent =
+                activeCategory === 'all' ? 'Tous les services' : activeCategory;
+            document.getElementById('resultCount').textContent =
+                list.length + ' service' + (list.length > 1 ? 's' : '');
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="empty-box">
+                    <i class="fas fa-search"></i> Aucun service ne correspond à votre recherche.
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            list.forEach(service => {
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.dataset.id = service.service_id;
+
+                const refillBadge = service.refill ? '<span class="badge badge-refill">Refill</span>' : '';
+                const cancelBadge = service.cancel ? '<span class="badge badge-cancel">Annulable</span>' : '';
+
+                card.innerHTML = `
+                    <div class="service-card-header">
+                        <div class="service-card-name">${service.name}</div>
+                        <div class="service-card-price">${formatXAF(service.price_per_1000)} / 1K</div>
+                    </div>
+                    <div class="service-card-meta">
+                        <span>Min ${service.min} — Max ${Number(service.max).toLocaleString('fr-FR')}</span>
+                        ${refillBadge} ${cancelBadge}
+                    </div>
+                `;
+
+                card.addEventListener('click', () => selectService(service, card));
+                grid.appendChild(card);
+            });
+        }
+
+        // ---------- SELECTION ----------
+        function selectService(service, cardEl) {
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+            cardEl.classList.add('selected');
+            selectedService = service;
+
+            document.getElementById('selectedServiceName').value = service.name;
+            document.getElementById('selectedServicePrice').value = formatXAF(service.price_per_1000) + ' / 1000';
+
+            const isComments = service.type === 'custom_comments' || service.type === 'Custom Comments';
+            document.getElementById('commentsRow').style.display = isComments ? '' : 'none';
+
+            const qtyInput = document.getElementById('orderQuantity');
+            qtyInput.min = service.min;
+            qtyInput.max = service.max;
+
+            if (!isComments) {
+                currentQuantity = Math.max(service.min, 100);
+                qtyInput.value = currentQuantity;
+                qtyInput.disabled = false;
+            } else {
+                currentQuantity = 0;
+                qtyInput.value = 0;
+                qtyInput.disabled = true;
+            }
+
+            document.getElementById('quantityHint').textContent =
+                `Min ${service.min} — Max ${Number(service.max).toLocaleString('fr-FR')}`;
+
+            updatePriceSummary();
+            document.getElementById('orderPanel').style.display = '';
+            document.getElementById('orderPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('submitOrderBtn').disabled = false;
+        }
+
+        function updatePriceSummary() {
+            if (!selectedService) return;
+
+            const isComments = selectedService.type === 'custom_comments' || selectedService.type === 'Custom Comments';
+            const unit = selectedService.price_per_1000 / 1000;
+
+            let qty = currentQuantity;
+            if (isComments) {
+                const lines = document.getElementById('orderComments').value
+                    .split('\n').filter(l => l.trim());
+                qty = lines.length;
+                currentQuantity = qty;
+            }
+
+            const total = unit * qty;
+
+            document.getElementById('unitPriceDisplay').textContent = formatXAF(unit) + ' / unité';
+            document.getElementById('quantityDisplay').textContent = qty.toLocaleString('fr-FR');
+            document.getElementById('totalDisplay').textContent = formatXAF(total);
+        }
+
+        // ---------- QUANTITY ----------
+        document.getElementById('qtyMinus').addEventListener('click', () => {
+            if (!selectedService) return;
+            const min = selectedService.min;
+            currentQuantity = Math.max(min, currentQuantity - 100);
+            document.getElementById('orderQuantity').value = currentQuantity;
+            updatePriceSummary();
+        });
+
+        document.getElementById('qtyPlus').addEventListener('click', () => {
+            if (!selectedService) return;
+            const max = selectedService.max;
+            currentQuantity = Math.min(max, currentQuantity + 100);
+            document.getElementById('orderQuantity').value = currentQuantity;
+            updatePriceSummary();
+        });
+
+        document.getElementById('orderQuantity').addEventListener('input', function () {
+            if (!selectedService) return;
+            let v = parseInt(this.value) || selectedService.min;
+            v = Math.max(selectedService.min, Math.min(selectedService.max, v));
+            currentQuantity = v;
+            this.value = v;
+            updatePriceSummary();
+        });
+
+        document.getElementById('orderComments').addEventListener('input', updatePriceSummary);
+
+        // ---------- SEARCH ----------
+        document.getElementById('searchInput').addEventListener('input', renderServices);
+
+        // ---------- SUBMIT ORDER ----------
+        document.getElementById('submitOrderBtn').addEventListener('click', async () => {
+            if (!selectedService) return;
+
+            const link = document.getElementById('orderLink').value.trim();
+            if (!link) { toast('warning', 'Lien requis', 'Veuillez saisir un lien cible.'); return; }
+
+            const isComments = selectedService.type === 'custom_comments' || selectedService.type === 'Custom Comments';
+            let comments = null;
+            let quantity = currentQuantity;
+
+            if (isComments) {
+                const raw = document.getElementById('orderComments').value;
+                const lines = raw.split('\n').filter(l => l.trim());
+                if (lines.length === 0) {
+                    toast('warning', 'Commentaires requis', 'Ajoutez au moins un commentaire.');
+                    return;
+                }
+                comments = lines.join('\n');
+                quantity = lines.length;
+            }
+
+            if (quantity < selectedService.min) {
+                toast('warning', 'Quantité invalide', `Minimum : ${selectedService.min}`);
+                return;
+            }
+            if (quantity > selectedService.max) {
+                toast('warning', 'Quantité invalide', `Maximum : ${selectedService.max}`);
+                return;
+            }
+
+            const btn = document.getElementById('submitOrderBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Traitement…';
+
+            try {
+                const payload = {
+                    service_id: selectedService.service_id,
+                    link,
+                    quantity
+                };
+                if (comments) payload.comments = comments;
+
+                const res = await apiFetch('/api/sbh/order', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.success) throw new Error(res.error || 'Commande refusée');
+
+                toast('success', 'Commande passée', `Référence ${res.order_id}`);
+
+                if (res.newBalance !== undefined && userData) {
+                    userData.balance = res.newBalance;
+                    document.getElementById('headerBalance').textContent = formatXAF(res.newBalance);
+                }
+
+                // reset panel
+                document.getElementById('orderLink').value = '';
+                document.getElementById('orderComments').value = '';
+                document.getElementById('orderPanel').style.display = 'none';
+                selectedService = null;
+                document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+
+                await loadHistory();
+            } catch (err) {
+                toast('error', 'Erreur', err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Passer la commande';
+            }
+        });
+
+        // ---------- HISTORY ----------
+        async function loadHistory() {
+            const tbody = document.getElementById('historyBody');
+            if (!currentUser) return;
+
+            try {
+                const data = await apiFetch('/api/sbh/orders/' + currentUser.uid);
+                if (!data.success || !data.orders.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">
+                        Aucune commande pour le moment.
+                    </td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.orders.map(o => {
+                    const statusClass =
+                        o.status === 'Terminé' ? 'status-done' :
+                        o.status === 'Annulé' ? 'status-cancel' :
+                        o.status === 'Partiel' ? 'status-partial' :
+                        o.status === 'En cours' ? 'status-progress' : 'status-pending';
+
+                    const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('fr-FR') : '—';
+
+                    return `<tr>
+                        <td><strong>${o.orderId}</strong></td>
+                        <td>${o.serviceName}</td>
+                        <td>${Number(o.quantity).toLocaleString('fr-FR')}</td>
+                        <td>${formatXAF(o.cost)}</td>
+                        <td><span class="status-pill ${statusClass}">${o.status}</span></td>
+                        <td>${date}</td>
+                    </tr>`;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:30px;">
+                    ${err.message}
+                </td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>
