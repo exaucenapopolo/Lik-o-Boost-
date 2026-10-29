@@ -691,9 +691,9 @@
                             <input type="url" id="orderLink" class="form-control" placeholder="https://..." required>
                             <small style="color: var(--text-light); font-size: 0.85rem;">Pour les abonnes: veuillez fournir un lien de profil public. Pour les likes/commentaires: lien direct du post.</small>
                         </div>
-                        <div id="serviceDescriptionBox" class="service-description-box hidden" style="background: var(--primary-gradient); padding: 12px 15px; border-radius: 8px; margin-top: 10px;">
+                        <div id="serviceDescriptionBox" class="service-description-box hidden" style="background: var(--light-blue); padding: 12px 15px; border-radius: 8px; margin-top: 10px;">
                             <strong style="color: var(--text-dark);"><i class="fas fa-info-circle"></i> Information du service:</strong>
-                            <p id="serviceDescriptionText" style="margin: 8px 0 0 0; color: var(--text-secondary); font-size: 0.9rem;"></p>
+                            <p id="serviceDescriptionText" style="margin: 8px 0 0 0; color: var(--text-light); font-size: 0.9rem;"></p>
                         </div>
                     </div>
                     <div class="flow-navigation">
@@ -758,7 +758,9 @@
 
         // Taux de conversion USD vers XAF
         const USD_TO_XAF = 615;
-        
+        // Multiplicateur de profit (doit être IDENTIQUE au backend)
+        const PROFIT_MULTIPLIER = 1.81;
+
         // URL de base de l'API (utiliser Replit en production)
         const API_BASE_URL = '';
 
@@ -801,6 +803,7 @@
             services.forEach(service => {
                 const category = decodeHtml(service.category || '');
                 const platform = detectPlatform(category);
+                const isCustomComments = service.type === 'Custom Comments';
                 
                 if (!platforms[platform]) {
                     platforms[platform] = {
@@ -812,15 +815,23 @@
                     };
                 }
                 
-                // Convertir le prix USD en XAF (prix pour 1000 unites)
-                const pricePerK = parseFloat(service.rate) * USD_TO_XAF;
+                // Prix fournisseur en USD -> XAF, puis application du multiplicateur de profit
+                // rateXAF = prix pour 1000 unites (ou 10 commentaires si Custom Comments)
+                const rateUSD = parseFloat(service.rate);
+                const rateXAF = rateUSD * USD_TO_XAF * PROFIT_MULTIPLIER;
+                
+                // costPerUnit = prix reel pour 1 unite/commentaire (utilise pour le calcul)
+                const costPerUnit = isCustomComments ? (rateXAF / 10) : (rateXAF / 1000);
                 
                 platforms[platform].services.push({
                     exoId: service.service,
                     name: decodeHtml(service.name),
+                    type: service.type,
+                    isCustomComments: isCustomComments,
                     category: category,
                     description: service.desc ? decodeHtml(service.desc) : null,
-                    pricePerK: pricePerK,
+                    costPerUnit: costPerUnit,      // Prix reel par unite (utilise pour total)
+                    pricePerK: rateXAF,            // Prix affiche pour 1000 unites (info)
                     min: parseInt(service.min) || 1,
                     max: parseInt(service.max) || 1000000,
                     refill: service.refill,
@@ -942,7 +953,7 @@
                     quantity: quantity,
                     serviceName: serviceName || '',
                     platform: platform || '',
-                    price: price // Prix calcule cote frontend (deja x3)
+                    price: price
                 };
                 
                 // Ajouter les commentaires personnalises si presents
@@ -968,7 +979,7 @@
                 // Si reponse non OK, retourner les details de l'erreur
                 if (!response.ok) {
                     console.error('Order API error:', response.status, data);
-                    return data; // Retourner l'erreur avec le message
+                    return data;
                 }
                 
                 console.log('Order response:', data);
@@ -1056,12 +1067,12 @@
             document.getElementById('userBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('currentBalance').textContent = `${formatNumber(balance)} XAF`;
             document.getElementById('totalOrders').textContent = userData.totalOrders || 0;
-            // activeOrders will be updated by loadRealActiveOrdersCount()
+            // activeOrders sera mis a jour par loadRealActiveOrdersCount()
             document.getElementById('activeOrders').textContent = '...';
             document.getElementById('totalSpent').textContent = `${formatNumber(userData.totalSpent || 0)} XAF`;
         }
 
-        // Load real count of "in progress" orders from API
+        // Charger le vrai nombre de commandes "en cours" depuis l'API
         async function loadRealActiveOrdersCount() {
             try {
                 const headers = await getAuthHeaders();
@@ -1071,12 +1082,16 @@
                 const data = await response.json();
                 
                 if (data.orders && data.orders.length > 0) {
-                    // Count orders with status "In progress", "processing", "partial" (all active states)
+                    // Compter les commandes actives (statuts EN COURS, EN ATTENTE, PARTIEL, etc.)
                     const activeCount = data.orders.filter(order => {
-                        const status = (order.status || '').toLowerCase().replace(/[_-]/g, ' ');
-                        return status === 'in progress' || 
-                               status === 'inprogress' || 
+                        const status = (order.status || '').toLowerCase()
+                            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                            .replace(/[_-]/g, ' ').trim();
+                        return status === 'en cours' || 
+                               status === 'en attente' || 
+                               status === 'in progress' || 
                                status === 'processing' || 
+                               status === 'partiel' ||
                                status === 'partial';
                     }).length;
                     
@@ -1132,11 +1147,16 @@
                 const item = document.createElement('div');
                 item.className = 'service-item';
                 
+                // Affichage du prix correct selon le type de service
+                const priceLabel = service.isCustomComments
+                    ? `${formatNumber(service.costPerUnit)} XAF/commentaire`
+                    : `${formatNumber(service.pricePerK)} XAF/1K`;
+                
                 item.innerHTML = `
                     <div class="service-name">${service.name}</div>
                     <div class="service-desc">Min: ${service.min} | Max: ${formatNumber(service.max)}</div>
                     <div style="font-size: 0.9rem; color: var(--primary-blue); margin-top: 5px;">
-                        ${formatNumber(service.pricePerK)} XAF/1K
+                        ${priceLabel}
                     </div>
                 `;
                 
@@ -1152,19 +1172,17 @@
                     document.getElementById('quantityInput').max = service.max;
                     
                     // Afficher le champ de commentaires si c'est un service de commentaires personnalises
-                    const isCustomComments = service.name.toLowerCase().includes('custom') || 
-                                            service.name.toLowerCase().includes('personnalis') ||
-                                            service.name.toLowerCase().includes('your text') ||
-                                            service.name.toLowerCase().includes('commentaire');
                     const commentsSection = document.getElementById('customCommentsSection');
                     const quantityInput = document.getElementById('quantityInput');
                     const quantityBtns = document.querySelector('.quantity-input');
                     
-                    if (isCustomComments) {
+                    if (service.isCustomComments) {
                         commentsSection.classList.remove('hidden');
                         quantityInput.disabled = true;
                         quantityBtns.style.opacity = '0.5';
                         document.getElementById('customComments').value = '';
+                        currentQuantity = 0;
+                        document.getElementById('quantityInput').value = 0;
                     } else {
                         commentsSection.classList.add('hidden');
                         quantityInput.disabled = false;
@@ -1181,16 +1199,20 @@
 
         function updatePriceDisplay() {
             if (currentService) {
-                document.getElementById('unitPrice').textContent = `${formatNumber(currentService.pricePerK)} XAF/1K`;
-                document.getElementById('quantityUnit').textContent = 'unites';
+                if (currentService.isCustomComments) {
+                    document.getElementById('unitPrice').textContent = `${formatNumber(currentService.costPerUnit)} XAF/commentaire`;
+                    document.getElementById('quantityUnit').textContent = 'commentaire(s)';
+                } else {
+                    document.getElementById('unitPrice').textContent = `${formatNumber(currentService.pricePerK)} XAF/1K`;
+                    document.getElementById('quantityUnit').textContent = 'unites';
+                }
                 updateTotal();
             }
         }
 
         function updateTotal() {
             if (currentService) {
-                const unitPrice = currentService.pricePerK / 1000;
-                const total = unitPrice * currentQuantity;
+                const total = currentService.costPerUnit * currentQuantity;
                 document.getElementById('totalPreview').textContent = `${formatNumber(total)} XAF`;
             }
         }
@@ -1214,9 +1236,16 @@
         function generateSummary() {
             if (!currentPlatform || !currentService) return;
             
-            const unitPrice = currentService.pricePerK / 1000;
-            const total = unitPrice * currentQuantity;
+            const total = currentService.costPerUnit * currentQuantity;
             const link = document.getElementById('orderLink').value;
+            
+            const priceLabel = currentService.isCustomComments
+                ? `${formatNumber(currentService.costPerUnit)} XAF/commentaire`
+                : `${formatNumber(currentService.pricePerK)} XAF/1K`;
+            
+            const quantityLabel = currentService.isCustomComments
+                ? `${formatNumber(currentQuantity)} commentaire(s)`
+                : `${formatNumber(currentQuantity)} unites`;
             
             document.getElementById('orderSummary').innerHTML = `
                 <div class="summary-header"><h3>Recapitulatif</h3></div>
@@ -1230,11 +1259,11 @@
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Quantite:</span>
-                    <span class="summary-value">${formatNumber(currentQuantity)} unites</span>
+                    <span class="summary-value">${quantityLabel}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Prix/1K:</span>
-                    <span class="summary-value">${formatNumber(currentService.pricePerK)} XAF</span>
+                    <span class="summary-label">Prix:</span>
+                    <span class="summary-value">${priceLabel}</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Lien:</span>
@@ -1253,20 +1282,14 @@
                 return;
             }
             
-            // Verifier si c'est un service de commentaires personnalises
-            const isCustomComments = currentService.name.toLowerCase().includes('custom') || 
-                                    currentService.name.toLowerCase().includes('personnalis') ||
-                                    currentService.name.toLowerCase().includes('your text') ||
-                                    currentService.name.toLowerCase().includes('commentaire');
-            
             let customCommentsText = null;
-            if (isCustomComments) {
+            
+            if (currentService.isCustomComments) {
                 customCommentsText = document.getElementById('customComments').value.trim();
                 if (!customCommentsText) {
                     showNotification('error', 'Erreur', 'Veuillez entrer vos commentaires personnalises');
                     return;
                 }
-                // Compter les commentaires (lignes non vides)
                 const commentsArray = customCommentsText.split('\n').filter(c => c.trim());
                 if (commentsArray.length === 0) {
                     showNotification('error', 'Erreur', 'Veuillez entrer au moins un commentaire');
@@ -1281,8 +1304,7 @@
                 return;
             }
             
-            const unitPrice = currentService.pricePerK / 1000;
-            const total = unitPrice * currentQuantity;
+            const total = currentService.costPerUnit * currentQuantity;
             
             if (userData.balance < total) {
                 showNotification('error', 'Solde insuffisant', 'Veuillez effectuer un depot pour continuer');
@@ -1292,12 +1314,10 @@
             try {
                 showLoading();
                 
-                // Utiliser directement l'ID ExoSupplier du service
                 const serviceId = currentService.exoId;
                 let exoOrderId = null;
                 let exoOrderError = null;
                 
-                // Envoyer la commande (le backend verifie le solde, deduit, et envoie au fournisseur)
                 try {
                     const exoResult = await sendOrderToExoSupplier(
                         serviceId, 
@@ -1313,7 +1333,6 @@
                         exoOrderId = exoResult.order;
                         console.log('Commande creee:', exoOrderId);
                         
-                        // Mettre a jour les donnees utilisateur avec la reponse du serveur
                         if (exoResult.newBalance !== undefined) {
                             userData.balance = exoResult.newBalance;
                         }
@@ -1331,9 +1350,8 @@
                         console.error('Erreur commande:', exoOrderError);
                         hideLoading();
                         
-                        // Afficher un message specifique pour le solde insuffisant
                         if (exoResult.message) {
-                            showNotification('error', 'Solde insuffisant', exoResult.message);
+                            showNotification('error', 'Erreur', exoResult.message);
                         } else {
                             showNotification('error', 'Erreur', exoOrderError);
                         }
@@ -1350,7 +1368,6 @@
                 updateUserInfo();
                 hideLoading();
                 
-                // Afficher succes
                 document.getElementById('step5').classList.add('hidden');
                 const successDiv = document.getElementById('orderSuccess');
                 successDiv.style.display = 'block';
@@ -1415,7 +1432,7 @@
                         tryLoadPlatforms();
                         hideLoading();
                         
-                        // Load real active orders count from API
+                        // Charger le vrai nombre de commandes actives
                         loadRealActiveOrdersCount();
                         
                         showNotification('success', 'Bienvenue!', `Bon retour ${userData.username || 'utilisateur'}!`);
@@ -1481,7 +1498,6 @@
             
             document.getElementById('nextToStep4').addEventListener('click', () => {
                 if (currentService) {
-                    // Afficher la description du service si disponible
                     const descBox = document.getElementById('serviceDescriptionBox');
                     const descText = document.getElementById('serviceDescriptionText');
                     if (currentService.description) {
@@ -1513,15 +1529,13 @@
             // Quantite
             const quantityInput = document.getElementById('quantityInput');
             
-            // Fonction pour verifier si c'est un service de commentaires personnalises
+            // Verifier si le service actuel est en mode commentaires personnalises
             function isCustomCommentsService() {
-                if (!currentService) return false;
-                const name = currentService.name.toLowerCase();
-                return name.includes('custom') || name.includes('personnalis') || name.includes('your text');
+                return !!(currentService && currentService.isCustomComments);
             }
             
             document.getElementById('decreaseQty').addEventListener('click', () => {
-                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
+                if (isCustomCommentsService()) return;
                 const minQty = currentService?.min || 10;
                 if (currentQuantity > minQty) {
                     currentQuantity -= 100;
@@ -1532,14 +1546,14 @@
             });
             
             document.getElementById('increaseQty').addEventListener('click', () => {
-                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
+                if (isCustomCommentsService()) return;
                 currentQuantity += 100;
                 quantityInput.value = currentQuantity;
                 updateTotal();
             });
             
             quantityInput.addEventListener('input', function() {
-                if (isCustomCommentsService()) return; // Ignorer si commentaires personnalises
+                if (isCustomCommentsService()) return;
                 const val = parseInt(this.value) || 1;
                 const minQty = currentService?.min || 1;
                 currentQuantity = Math.max(minQty, val);
