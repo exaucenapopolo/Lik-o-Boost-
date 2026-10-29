@@ -106,16 +106,89 @@ async function fetchSBHServicesRaw(source = null, catalog = null) {
     return data;
 }
 
+/**
+ * Détermine le VRAI coût en XAF d'un service SBH (prix fournisseur).
+ *
+ * Convention SMM :
+ *  - `rate`               : USD par 1000 unités (champ standard des API SMM)
+ *  - `price_per_1000`     : peut être XAF ou une valeur mise en cache (à ne pas privilégier)
+ *  - `price`              : parfois per-unit en USD
+ *  - `currency`           : si présent, indique la devise ("USD", "XAF", "FCFA"…)
+ *
+ * On priorise le champ `rate` (le plus fiable). Fallback sur `price_per_1000`.
+ */
+function getServiceCostXAF(s) {
+    if (!s) return 0;
+
+    const currency = String(s.currency || '').toUpperCase().trim();
+    const rate = Number(s.rate);
+    const p1000 = Number(s.price_per_1000);
+    const price = Number(s.price);
+
+    // 1) Si devise explicite
+    if (currency === 'USD') {
+        const val = Number.isFinite(rate) && rate > 0 ? rate
+                  : Number.isFinite(p1000) && p1000 > 0 ? p1000
+                  : Number.isFinite(price) && price > 0 ? price * 1000
+                  : 0;
+        return val * USD_TO_XAF;
+    }
+    if (currency === 'XAF' || currency === 'FCFA') {
+        const val = Number.isFinite(rate) && rate > 0 ? rate
+                  : Number.isFinite(p1000) && p1000 > 0 ? p1000
+                  : Number.isFinite(price) && price > 0 ? price * 1000
+                  : 0;
+        return val;
+    }
+
+    // 2) Heuristique — priorité au champ `rate`
+    if (Number.isFinite(rate) && rate > 0) {
+        // Convention SMM : `rate` est en USD (valeur toujours < 100).
+        // Si rate >= 100, c'est probablement déjà en XAF.
+        return rate < 100 ? rate * USD_TO_XAF : rate;
+    }
+
+    // 3) Fallback : `price_per_1000`
+    if (Number.isFinite(p1000) && p1000 > 0) {
+        // Si la valeur est très petite (< 10), elle est probablement en USD
+        return p1000 < 10 ? p1000 * USD_TO_XAF : p1000;
+    }
+
+    // 4) Dernier recours : `price` (supposé per-unit en USD)
+    if (Number.isFinite(price) && price > 0 && price < 10) {
+        return price * 1000 * USD_TO_XAF;
+    }
+
+    return 0;
+}
+
 // Récupère les services SBH avec le multiplicateur de profit déjà appliqué
 async function fetchSBHServicesWithMargin(source = null, catalog = null) {
     const data = await fetchSBHServicesRaw(source, catalog);
     if (data && data.success && Array.isArray(data.services)) {
         data.services = data.services.map(s => {
-            const raw = Number(s.price_per_1000) || 0;
+            const costXAF = getServiceCostXAF(s);
+            const finalPrice = costXAF * PROFIT_MULTIPLIER;
+
+            // Debug console pour vérifier la cohérence
+            if (Math.random() < 0.02) { // log 2% pour ne pas spammer
+                console.log('[SBH PRICING SAMPLE]', {
+                    service_id: s.service_id,
+                    name: s.name,
+                    rate: s.rate,
+                    price_per_1000: s.price_per_1000,
+                    price: s.price,
+                    currency: s.currency,
+                    costXAF_calc: costXAF,
+                    finalPrice,
+                    multiplier: PROFIT_MULTIPLIER
+                });
+            }
+
             return {
                 ...s,
-                price_per_1000_raw: raw,
-                price_per_1000: raw * PROFIT_MULTIPLIER
+                price_per_1000_raw: costXAF,
+                price_per_1000: finalPrice
             };
         });
     }
@@ -890,6 +963,48 @@ app.post('/api/webhook-swychr', async (req, res) => {
 // ROUTES SOCIAL BOOST HORIZON (SBH)
 // ==========================================
 
+// GET /api/sbh/debug — INSPECTER la réponse brute de SBH
+app.get('/api/sbh/debug', async (req, res) => {
+    try {
+        const raw = await fetchSBHServicesRaw();
+        const services = Array.isArray(raw.services) ? raw.services : [];
+
+        const samples = services.slice(0, 5).map(s => {
+            const costXAF = getServiceCostXAF(s);
+            return {
+                service_id: s.service_id,
+                name: s.name,
+                category: s.category,
+                type: s.type,
+                min: s.min,
+                max: s.max,
+                // Champs de prix renvoyés par SBH
+                rate: s.rate,
+                price_per_1000: s.price_per_1000,
+                price: s.price,
+                currency: s.currency,
+                // Calcul actuel
+                costXAF_calc: costXAF,
+                finalPrice_displayed: costXAF * PROFIT_MULTIPLIER
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            total_services: services.length,
+            sample_services: samples,
+            all_fields_of_first: services[0] ? Object.keys(services[0]) : [],
+            config: {
+                PROFIT_MULTIPLIER,
+                USD_TO_XAF
+            }
+        });
+    } catch (error) {
+        console.error('Erreur /api/sbh/debug:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // GET /api/sbh/services (avec multiplicateur de profit appliqué)
 app.get('/api/sbh/services', async (req, res) => {
     try {
@@ -931,16 +1046,17 @@ app.post('/api/sbh/order', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Service invalide' });
         }
 
-        const rawPrice = Number(service.price_per_1000) || 0;
-        const ourPrice = rawPrice * PROFIT_MULTIPLIER;
+        // Utiliser la même logique de calcul que fetchSBHServicesWithMargin
+        const costXAF = getServiceCostXAF(service);
+        const ourPricePer1000 = costXAF * PROFIT_MULTIPLIER;
 
         const commentsArray = normalizeComments(comments);
         let cost = 0;
 
         if (service.type === 'custom_comments' || service.type === 'Custom Comments') {
-            cost = (ourPrice / 1000) * commentsArray.length;
+            cost = (ourPricePer1000 / 1000) * commentsArray.length;
         } else {
-            cost = (ourPrice / 1000) * quantity;
+            cost = (ourPricePer1000 / 1000) * quantity;
         }
 
         const userRef = db.collection('users').doc(uid);
