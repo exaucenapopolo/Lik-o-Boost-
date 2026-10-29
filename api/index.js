@@ -97,12 +97,28 @@ async function sbhFetch(path, options = {}) {
     return { status: response.status, data };
 }
 
-async function fetchSBHServices(source = null, catalog = null) {
+async function fetchSBHServicesRaw(source = null, catalog = null) {
     const params = new URLSearchParams();
     if (source) params.append('source', source);
     if (catalog) params.append('catalog', catalog);
     const query = params.toString();
     const { data } = await sbhFetch(`/services${query ? '?' + query : ''}`);
+    return data;
+}
+
+// Récupère les services SBH avec le multiplicateur de profit déjà appliqué
+async function fetchSBHServicesWithMargin(source = null, catalog = null) {
+    const data = await fetchSBHServicesRaw(source, catalog);
+    if (data && data.success && Array.isArray(data.services)) {
+        data.services = data.services.map(s => {
+            const raw = Number(s.price_per_1000) || 0;
+            return {
+                ...s,
+                price_per_1000_raw: raw,
+                price_per_1000: raw * PROFIT_MULTIPLIER
+            };
+        });
+    }
     return data;
 }
 
@@ -118,11 +134,6 @@ async function placeSBHOrder(serviceId, link, quantity, comments = null) {
 
 async function getSBHOrderStatus(orderId) {
     const { data } = await sbhFetch(`/order/${orderId}`);
-    return data;
-}
-
-async function getSBHOrders(limit = 100) {
-    const { data } = await sbhFetch(`/orders?limit=${limit}`);
     return data;
 }
 
@@ -876,14 +887,14 @@ app.post('/api/webhook-swychr', async (req, res) => {
 });
 
 // ==========================================
-// ROUTES SOCIAL BOOST HORIZON (SBH) — NOUVEAU
+// ROUTES SOCIAL BOOST HORIZON (SBH)
 // ==========================================
 
-// GET /api/sbh/services
+// GET /api/sbh/services (avec multiplicateur de profit appliqué)
 app.get('/api/sbh/services', async (req, res) => {
     try {
         const { source, catalog } = req.query;
-        const data = await fetchSBHServices(source, catalog);
+        const data = await fetchSBHServicesWithMargin(source, catalog);
         res.status(200).json(data);
     } catch (error) {
         console.error('Erreur SBH services:', error);
@@ -902,7 +913,7 @@ app.get('/api/sbh/balance', async (req, res) => {
     }
 });
 
-// POST /api/sbh/order
+// POST /api/sbh/order — applique PROFIT_MULTIPLIER
 app.post('/api/sbh/order', async (req, res) => {
     try {
         const decoded = await verifyToken(req);
@@ -913,19 +924,23 @@ app.post('/api/sbh/order', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Données manquantes' });
         }
 
-        const servicesData = await fetchSBHServices();
+        // Récupérer les services SANS marge (prix fournisseur brut)
+        const servicesData = await fetchSBHServicesRaw();
         const service = (servicesData.services || []).find(s => s.service_id === service_id);
         if (!service) {
             return res.status(400).json({ success: false, error: 'Service invalide' });
         }
 
+        const rawPrice = Number(service.price_per_1000) || 0;
+        const ourPrice = rawPrice * PROFIT_MULTIPLIER;
+
         const commentsArray = normalizeComments(comments);
         let cost = 0;
 
         if (service.type === 'custom_comments' || service.type === 'Custom Comments') {
-            cost = (service.price_per_1000 / 1000) * commentsArray.length;
+            cost = (ourPrice / 1000) * commentsArray.length;
         } else {
-            cost = (service.price_per_1000 / 1000) * quantity;
+            cost = (ourPrice / 1000) * quantity;
         }
 
         const userRef = db.collection('users').doc(uid);
@@ -936,7 +951,11 @@ app.post('/api/sbh/order', async (req, res) => {
         const userData = userDoc.data();
         const currentBalance = userData.balance || 0;
         if (currentBalance < cost) {
-            return res.status(400).json({ success: false, error: 'Solde insuffisant', message: 'Votre solde est insuffisant pour cette commande.' });
+            return res.status(400).json({
+                success: false,
+                error: 'Solde insuffisant',
+                message: `Solde insuffisant : ${Math.ceil(cost)} XAF requis, vous avez ${Math.floor(currentBalance)} XAF.`
+            });
         }
 
         const sbhResult = await placeSBHOrder(service_id, link, quantity, commentsArray.join('\n'));
